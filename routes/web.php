@@ -13,7 +13,6 @@ Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 // Student
-Route::prefix('student')->name('student.')->group(function () {
-    // /student/index → student.index
-    Route::get('index', [IndexController::class, 'index'])->name('index');
+Route::prefix('student')->group(function () {
+    Route::get('index', [IndexController::class, 'index'])->name('student.index');
 });
