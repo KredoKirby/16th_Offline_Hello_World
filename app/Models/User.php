@@ -45,4 +45,20 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function lessons()
+{
+    return $this->belongsToMany(Lesson::class)->withPivot('is_completed')->withTimestamps();
+}
+
+public function completedLessons()
+{
+    return $this->belongsToMany(Lesson::class, 'lesson_user')->withTimestamps();
+}
+
+public function progress()
+{
+    return $this->hasMany(Progress::class);
+}
+
 }

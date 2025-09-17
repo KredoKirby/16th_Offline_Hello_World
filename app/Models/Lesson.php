@@ -6,11 +6,29 @@ use Illuminate\Database\Eloquent\Model;
 
 class Lesson extends Model
 {
-    protected $fillable = ['course_id', 'title', 'content'];
+    protected $fillable = ['section_id', 'title', 'content'];
 
-    public function course()
+    public function section()
     {
-        return $this->belongsTo(Course::class);
+        return $this->belongsTo(Section::class);
     }
+
+    public function completedByUsers()
+{
+    return $this->belongsToMany(User::class, 'lesson_user')->withTimestamps();
+}
+
+public function progress()
+{
+    return $this->hasMany(Progress::class);
+}
+
+public function isCompletedBy($user)
+{
+    return $this->progress()
+                ->where('user_id', $user->id)
+                ->where('completed', true)
+                ->exists();
+}
 
 }

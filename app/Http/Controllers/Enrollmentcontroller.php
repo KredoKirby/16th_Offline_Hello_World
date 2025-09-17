@@ -3,59 +3,35 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Course;
 
 class Enrollmentcontroller extends Controller
 {
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
     /**
      * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+    */
+    public function store(Request $request, $courseId)
+{
+    $course = Course::findOrFail($courseId);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+    $course->enrollments()->firstOrCreate([
+        'user_id' => auth()->id(),
+    ]);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+    return redirect()->route('courses.show', $courseId)
+        ->with('success', 'You have enrolled in this course!');
+}
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
-    {
-        //
-    }
+    public function destroy(Course $course)
+{
+    $course->enrollments()->where('user_id', auth()->id())->delete();
+
+    return redirect()->route('courses.index')
+        ->with('success', 'You have unenrolled from this course.');
+}
+
 }

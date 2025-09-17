@@ -5,63 +5,46 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Course;
 
-class Coursecontroller extends Controller
+class CourseController extends Controller
 {
-    public function index()
+
+public function index(Request $request)
+{
+    $courses = Course::all();
+
+    // デフォルトは空配列
+    $enrolledCourseIds = [];
+
+    // ログインしている場合のみ取得
+    if (auth()->check()) {
+        $enrolledCourseIds = auth()->user()->enrollments()->pluck('course_id')->toArray();
+    }
+
+    $selectedCourse = null;
+    if ($request->has('course')) {
+        $selectedCourse = Course::find($request->course);
+    }
+
+    return view('courses.index', compact('courses', 'enrolledCourseIds', 'selectedCourse'));
+}
+
+
+
+
+
+    public function show($id)
     {
+        $course = Course::with('sections.lessons')->findOrFail($id);
+        $user = auth()->user();
+
+        // enroll済みかどうかを判定
+        $isEnrolled = $user 
+            ? $course->enrollments()->where('user_id', $user->id)->exists()
+            : false;
+
+        // コース一覧も右サイドで必要なので取得
         $courses = Course::all();
 
-    
-        return view('courses.index', compact('courses'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-           $course = Course::with('lessons')->findOrFail($id);
-
-           return view('courses.show', compact('course'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return view('courses.show', compact('course', 'isEnrolled', 'courses'));
     }
 }
