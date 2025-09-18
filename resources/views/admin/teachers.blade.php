@@ -1,8 +1,11 @@
-@extends('admin.partials.layout')
+@extends('layouts.admin')
 
-@section('title','Students')
+@section('title','Teachers')
 @section('content')
-  <h2 style="margin:0 0 12px;">Students</h2>
+  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px">
+    <h2 style="margin:0">Teachers</h2>
+    <a class="btn dark" href="{{ route('admin.teachers.add.form') }}">+ Add</a>
+  </div>
 
   <div class="card">
     <table>
@@ -12,7 +15,7 @@
           <th>EMAIL</th>
           <th>CREATED AT</th>
           <th>STATUS</th>
-          <th style="width:120px">ACTION</th>
+          <th style="width:160px">ACTION</th>
         </tr>
       </thead>
       <tbody>
@@ -29,12 +32,15 @@
             {{ $row['active'] ? 'Active':'Inactive' }}
           </td>
           <td>
-            <form method="POST" action="{{ route('admin.students.toggle', $row['id']) }}">
-              @csrf
-              <button class="btn ghost" type="submit">
-                {{ $row['active'] ? 'Inactivate' : 'Activate' }}
-              </button>
-            </form>
+            <div style="display:flex; gap:8px">
+              <a class="btn ghost" href="#"></a>
+              <form method="POST" action="{{ route('admin.teachers.toggle', $row['id']) }}">
+                @csrf
+                <button class="btn ghost" type="submit">
+                  {{ $row['active'] ? 'Inactivate' : 'Activate' }}
+                </button>
+              </form>
+            </div>
           </td>
         </tr>
       @endforeach

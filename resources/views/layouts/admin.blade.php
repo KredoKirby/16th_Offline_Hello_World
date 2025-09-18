@@ -27,13 +27,7 @@
   <div class="row g-3">
     <aside class="col-12 col-md-3">
       <div class="sidebar">
-        <div class="mb-3 fw-bold">Hello World</div>
-        <a href="{{ route('admin.dashboard') }}">Home</a>
-        <a href="{{ route('admin.students.index') }}">Students</a>
-        <a href="{{ route('admin.teachers.index') }}">Teachers</a>
-        <a href="{{ route('admin.courses.index') }}">Courses</a>
-        <a href="#">Self-learning</a>
-        <a href="#">Forum</a>
+       
         <hr>
         <div class="small">Username</div>
         <form method="POST" action="{{ route('logout') }}">

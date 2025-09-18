@@ -40,8 +40,12 @@
                     <input type="password" name="password" class="form-control form-control-lg fw-bold"
                         placeholder="Password" style="text-align: center;" required>
                 </div>
-
-                <div class="mb-4 text-center"> 
+                {{-- Confirm Password  new--}}
+                <div class="mb-3 fw-bold">
+                    <input type="password" name="password_confirmation" class="form-control form-control-lg fw-bold"
+                        placeholder="Confirm Password" style="text-align: center;" required autocomplete="new-password">
+                </div>
+                <div class="mb-4 text-center">
                     <button type="submit" class="btn w-25 fw-bold rounded-3 text-white"
                         style="background-color:#05445E;">
                         Register

@@ -13,25 +13,25 @@ class AdminController extends Controller
     {
         return [
             'students' => [
-                ['id' => 1, 'name' => 'David', 'email' => 'david@gmail.com', 'created_at' => '2025-08-22 06:52:47', 'active' => true,  'avatar' => '/images/avatar1.jpg'],
-                ['id' => 2, 'name' => 'Emma',  'email' => 'emma@gmail.com',  'created_at' => '2025-08-22 06:52:47', 'active' => false, 'avatar' => '/images/avatar2.jpg'],
-                ['id' => 3, 'name' => 'Liam',  'email' => 'liam@gmail.com',  'created_at' => '2025-08-22 06:52:47', 'active' => true,  'avatar' => '/images/avatar3.jpg'],
-                ['id' => 4, 'name' => 'Mia',   'email' => 'mia@gmail.com',   'created_at' => '2025-08-22 06:52:47', 'active' => true,  'avatar' => '/images/avatar4.jpg'],
+                ['id' => 1, 'name' => 'David', 'email' => 'david@gmail.com', 'created_at' => '2025-08-22 06:52:47', 'active' => true, 'avatar' => '/images/avatar1.jpg'],
+                ['id' => 2, 'name' => 'Emma', 'email' => 'emma@gmail.com', 'created_at' => '2025-08-22 06:52:47', 'active' => false, 'avatar' => '/images/avatar2.jpg'],
+                ['id' => 3, 'name' => 'Liam', 'email' => 'liam@gmail.com', 'created_at' => '2025-08-22 06:52:47', 'active' => true, 'avatar' => '/images/avatar3.jpg'],
+                ['id' => 4, 'name' => 'Mia', 'email' => 'mia@gmail.com', 'created_at' => '2025-08-22 06:52:47', 'active' => true, 'avatar' => '/images/avatar4.jpg'],
             ],
             'teachers' => [
-                ['id' => 1, 'name' => 'David', 'email' => 'david@gmail.com', 'created_at' => '2025-08-22 06:52:47', 'active' => true,  'avatar' => '/images/avatar1.jpg'],
-                ['id' => 2, 'name' => 'Sara',  'email' => 'sara@gmail.com',  'created_at' => '2025-08-22 06:52:47', 'active' => false, 'avatar' => '/images/avatar2.jpg'],
-                ['id' => 3, 'name' => 'Ken',   'email' => 'ken@gmail.com',   'created_at' => '2025-08-22 06:52:47', 'active' => true,  'avatar' => '/images/avatar3.jpg'],
-                ['id' => 4, 'name' => 'Aya',   'email' => 'aya@gmail.com',   'created_at' => '2025-08-22 06:52:47', 'active' => true,  'avatar' => '/images/avatar4.jpg'],
+                ['id' => 1, 'name' => 'David', 'email' => 'david@gmail.com', 'created_at' => '2025-08-22 06:52:47', 'active' => true, 'avatar' => '/images/avatar1.jpg'],
+                ['id' => 2, 'name' => 'Sara', 'email' => 'sara@gmail.com', 'created_at' => '2025-08-22 06:52:47', 'active' => false, 'avatar' => '/images/avatar2.jpg'],
+                ['id' => 3, 'name' => 'Ken', 'email' => 'ken@gmail.com', 'created_at' => '2025-08-22 06:52:47', 'active' => true, 'avatar' => '/images/avatar3.jpg'],
+                ['id' => 4, 'name' => 'Aya', 'email' => 'aya@gmail.com', 'created_at' => '2025-08-22 06:52:47', 'active' => true, 'avatar' => '/images/avatar4.jpg'],
             ],
             'courses' => [
-                ['id' => 1, 'name' => 'PHP',     'active' => true],
-                ['id' => 2, 'name' => 'HTML',    'active' => false],
+                ['id' => 1, 'name' => 'PHP', 'active' => true],
+                ['id' => 2, 'name' => 'HTML', 'active' => false],
                 ['id' => 3, 'name' => 'Laravel', 'active' => true],
             ],
             'forums' => [
                 ['question' => 'How to install Laravel?', 'course' => 'Laravel Basics', 'username' => 'Alice'],
-                ['question' => 'What is MVC?',            'course' => 'PHP 101',        'username' => 'Bob'],
+                ['question' => 'What is MVC?', 'course' => 'PHP 101', 'username' => 'Bob'],
             ],
         ];
     }
@@ -69,17 +69,23 @@ class AdminController extends Controller
 
         $studentCount = count($d['students']);
         $teacherCount = count($d['teachers']);
-        $courseCount  = count($d['courses']);
-        $forumCount   = count($d['forums']);
+        $courseCount = count($d['courses']);
+        $forumCount = count($d['forums']);
 
         $latestStudents = array_slice($d['students'], 0, 5);
         $latestTeachers = array_slice($d['teachers'], 0, 5);
-        $latestCourses  = array_slice($d['courses'], 0, 5);
-        $latestForums   = array_slice($d['forums'], 0, 4);
+        $latestCourses = array_slice($d['courses'], 0, 5);
+        $latestForums = array_slice($d['forums'], 0, 4);
 
         return view('admin.index', compact(
-            'studentCount','teacherCount','courseCount','forumCount',
-            'latestStudents','latestTeachers','latestCourses','latestForums'
+            'studentCount',
+            'teacherCount',
+            'courseCount',
+            'forumCount',
+            'latestStudents',
+            'latestTeachers',
+            'latestCourses',
+            'latestForums'
         ));
     }
     public function students()
@@ -112,20 +118,36 @@ class AdminController extends Controller
         $this->save($data);
     }
 
-    public function studentToggle($id) { $this->toggleByType('students', (int)$id); return back(); }
-    public function teacherToggle($id) { $this->toggleByType('teachers', (int)$id); return back(); }
-    public function courseToggle($id)  { $this->toggleByType('courses',  (int)$id); return back(); }
+    public function studentToggle($id)
+    {
+        $this->toggleByType('students', (int) $id);
+        return back();
+    }
+    public function teacherToggle($id)
+    {
+        $this->toggleByType('teachers', (int) $id);
+        return back();
+    }
+    public function courseToggle($id)
+    {
+        $this->toggleByType('courses', (int) $id);
+        return back();
+    }
 
-    // ── Teachers追加 ────────────────────────
+    // ── Teachers & Courses (Add)追加  ────────────────────────
+    // Teachers 追加フォーム
     public function teacherAddForm()
     {
-        return view('admin.teacher_add');
+        // 下の Blade を作る: resources/views/admin/teachers/create.blade.php
+        return view('admin.teachers.create');
     }
+
+    // Teachers 保存
     public function teacherAdd(Request $req)
     {
         $req->validate([
-            'name'     => 'required',
-            'email'    => 'required|email',
+            'name' => 'required',
+            'email' => 'required|email',
             'password' => 'required|min:4',
         ]);
 
@@ -134,15 +156,41 @@ class AdminController extends Controller
         $nextId = ($maxId ?? 0) + 1;
 
         $data['teachers'][] = [
-            'id'         => $nextId,
-            'name'       => $req->name,
-            'email'      => $req->email,
+            'id' => $nextId,
+            'name' => $req->name,
+            'email' => $req->email,
             'created_at' => date('Y-m-d H:i:s'),
-            'active'     => true,
-            'avatar'     => '/images/avatar1.jpg',
+            'active' => true,
+            'avatar' => '/images/avatar1.jpg',
         ];
         $this->save($data);
 
-        return redirect()->route('admin.teachers');
+        return redirect()->route('admin.teachers')->with('status', 'Teacher added.');
+    }
+
+    // Courses 追加フォーム
+    public function courseAddForm()
+    {
+        // 下の Blade を作る: resources/views/admin/courses/create.blade.php
+        return view('admin.courses.create');
+    }
+
+    // Courses 保存
+    public function courseAdd(Request $req)
+    {
+        $req->validate(['name' => 'required']);
+
+        $data = $this->data();
+        $maxId = collect($data['courses'])->max('id');
+        $nextId = ($maxId ?? 0) + 1;
+
+        $data['courses'][] = [
+            'id' => $nextId,
+            'name' => $req->name,
+            'active' => true,
+        ];
+        $this->save($data);
+
+        return redirect()->route('admin.courses')->with('status', 'Course added.');
     }
 }
