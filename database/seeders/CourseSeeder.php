@@ -9,31 +9,78 @@ use App\Models\Lesson;
 
 class CourseSeeder extends Seeder
 {
+    /**
+     * Run the database seeds.
+     */
     public function run(): void
     {
-        // サンプルコース作成
+        // コースを1つ作成
         $course = Course::create([
-            'title' => 'Laravel 入門',
-            'description' => 'Laravel の基礎を学ぶコースです。',
-            'image_url' => 'https://via.placeholder.com/800x200'
+            'title'       => 'Laravel入門コース',
+            'description' => 'Laravelを基礎から学ぶためのコースです。',
+            'image_url'   => 'https://via.placeholder.com/800x200',
+            'language'    => 'en',
+            'level'       => 'basic',
         ]);
 
-        // セクションを2つ追加
+        // ===== セクション1 =====
         $section1 = Section::create([
             'course_id' => $course->id,
-            'title' => 'イントロダクション'
+            'title'     => 'イントロダクション',
         ]);
 
+        Lesson::insert([
+            [
+                'section_id' => $section1->id,
+                'title'      => 'Laravelとは？',
+                'content'    => 'Laravelの概要と特徴を学びます。',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'section_id' => $section1->id,
+                'title'      => '開発環境を準備する',
+                'content'    => 'Laravelのインストール方法を学びます。',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'section_id' => $section1->id,
+                'title'      => '最初のアプリケーション',
+                'content'    => '簡単なHello Worldアプリを作ってみます。',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
+
+        // ===== セクション2 =====
         $section2 = Section::create([
             'course_id' => $course->id,
-            'title' => 'ルーティングとコントローラ'
+            'title'     => 'ルーティングとコントローラ',
         ]);
 
-        // 各セクションにレッスン追加
-        Lesson::create(['section_id' => $section1->id, 'title' => 'Laravel とは？']);
-        Lesson::create(['section_id' => $section1->id, 'title' => '環境構築']);
-
-        Lesson::create(['section_id' => $section2->id, 'title' => 'ルーティング基礎']);
-        Lesson::create(['section_id' => $section2->id, 'title' => 'コントローラの作成']);
+        Lesson::insert([
+            [
+                'section_id' => $section2->id,
+                'title'      => 'ルートの基本',
+                'content'    => 'ルート定義の書き方を学びます。',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'section_id' => $section2->id,
+                'title'      => 'コントローラの作成',
+                'content'    => 'コントローラを作成して処理をまとめます。',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'section_id' => $section2->id,
+                'title'      => 'ビューを返す',
+                'content'    => 'Bladeを使ってビューを返す方法を学びます。',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
     }
 }

@@ -13,6 +13,13 @@ class Lesson extends Model
         return $this->belongsTo(Section::class);
     }
 
+    public function users()
+{
+    return $this->belongsToMany(User::class)
+                ->withPivot('is_completed', 'completed_at')
+                ->withTimestamps();
+}
+
     public function completedByUsers()
 {
     return $this->belongsToMany(User::class, 'lesson_user')->withTimestamps();

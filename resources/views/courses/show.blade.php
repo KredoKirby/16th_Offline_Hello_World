@@ -8,25 +8,23 @@
         <div class="col-md-3 border-end">
             <h3 class="fw-bold">Courses</h3>
 
-            <ul class="nav nav-pills mb-3">
-                <li class="nav-item"><a class="nav-link active" href="#">All</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Active</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Completed</a></li>
-            </ul>
-
             @foreach($courses as $c)
-            <div class="card mb-3 shadow-sm">
-                <img src="{{ $c->image_url ?? 'https://via.placeholder.com/300x150' }}" 
-                     class="card-img-top" alt="{{ $c->title }}">
-                <div class="card-body p-2">
-                    <h6 class="card-title mb-1">{{ $c->title }}</h6>
-                    <div class="progress" style="height: 6px;">
-                        <div class="progress-bar" role="progressbar" 
-                             style="width: {{ rand(10,80) }}%;"></div>
+            <a href="{{ route('courses.show', $c->id) }}" class="text-decoration-none">
+                <div class="card mb-3 shadow-sm {{ $course->id === $c->id ? 'border-primary' : '' }}">
+                    <img src="{{ $c->image ?? 'https://via.placeholder.com/300x150' }}" 
+                         class="card-img-top" alt="{{ $c->title }}">
+                    <div class="card-body p-2">
+                        <h6 class="card-title mb-1">{{ $c->title }}</h6>
+                        @if(in_array($c->id, $enrolledCourseIds ?? []))
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar" role="progressbar" 
+                                     style="width: {{ rand(10,80) }}%;"></div>
+                            </div>
+                            <small class="text-muted">{{ rand(10,80) }}% Finish</small>
+                        @endif
                     </div>
-                    <small class="text-muted">{{ rand(10,80) }}% Finish</small>
                 </div>
-            </div>
+            </a>
             @endforeach
         </div>
 
@@ -34,7 +32,7 @@
         <div class="col-md-9 ps-4">
 
             {{-- コースヘッダー --}}
-            <img src="{{ $course->image_url ?? 'https://via.placeholder.com/800x200' }}" 
+            <img src="{{ $course->image ?? 'https://via.placeholder.com/800x200' }}" 
                  alt="{{ $course->title }}" class="img-fluid rounded mb-3">
 
             <h3 class="fw-bold">{{ $course->title }}</h3>

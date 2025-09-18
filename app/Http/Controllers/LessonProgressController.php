@@ -7,37 +7,28 @@ use App\Models\Lesson;
 
 class LessonProgressController extends Controller
 {
-    // LessonProgressController.php
-public function update(Request $request, Lesson $lesson)
-{
-    $user = auth()->user();
-
-    $lesson->progress()->updateOrCreate(
-        ['user_id' => $user->id],
-        ['completed' => $request->completed]
-    );
-
-    return response()->json(['status' => 'ok']);
-}
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
 
     public function toggle(Request $request, Lesson $lesson)
     {
         $user = auth()->user();
+        $isCompleted = (bool) $request->input('is_completed');
 
-        if ($user->completedLessons()->where('lesson_id', $lesson->id)->exists()) {
-            // すでに完了 → 削除
-            $user->completedLessons()->detach($lesson->id);
-            $status = 'unchecked';
+        if ($user->lessons()->where('lessons.id', $lesson->id)->exists()) {
+            $user->lessons()->updateExistingPivot($lesson->id, [
+                'is_completed' => $isCompleted,
+                'completed_at' => $isCompleted ? now() : null,
+            ]);
         } else {
-            // 未完了 → 追加
-            $user->completedLessons()->attach($lesson->id);
-            $status = 'checked';
+            $user->lessons()->attach($lesson->id, [
+                'is_completed' => $isCompleted,
+                'completed_at' => $isCompleted ? now() : null,
+            ]);
         }
 
-        return response()->json([
-            'status' => $status,
-            'lesson_id' => $lesson->id
-        ]);
+        return back();
     }
 }
-
