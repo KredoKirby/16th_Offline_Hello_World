@@ -130,59 +130,29 @@
         <h2 class="h4 mb-3">Lesson history</h2>
 
         <div class="vstack gap-3">
-            <!-- Item 1 -->
-            <div class="card shadow-sm">
-                <div
-                    class="card-body d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-3"
-                            style="width:48px;height:48px;">
-                            <i class="fa-solid fa-book-open text-secondary"></i>
+            @for ($i = 1; $i <= 3; $i++)
+                <div class="card shadow-sm">
+                    <div
+                        class="card-body d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-3"
+                                style="width:48px;height:48px;">
+                                <i class="fa-solid fa-book-open text-secondary"></i>
+                            </div>
+                            <div>
+                                <div class="text-muted small">
+                                    Course Name {{ $i }}, <span class="ms-1">Topic Name
+                                        {{ $i }}</span>
+                                </div>
+                                <div class="fw-semibold">
+                                    Sep 10 11:00–12:00 （i: {{ $i }}）
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <div class="text-muted small">Course Name, <span class="ms-1">Topic Name</span></div>
-                            <div class="fw-semibold">Sep 10 (Wed) 11:00–12:00</div>
-                        </div>
+                        <a href="#" class="btn btn-outline-primary">View Details {{ $i }}</a>
                     </div>
-                    <a href="#" class="btn btn-outline-primary">View Details</a>
                 </div>
-            </div>
-
-            <!-- Item 2 -->
-            <div class="card shadow-sm">
-                <div
-                    class="card-body d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-3"
-                            style="width:48px;height:48px;">
-                            <i class="fa-solid fa-code text-secondary"></i>
-                        </div>
-                        <div>
-                            <div class="text-muted small">Course Name, <span class="ms-1">Topic Name</span></div>
-                            <div class="fw-semibold">Sep 12 (Fri) 15:00–16:00</div>
-                        </div>
-                    </div>
-                    <a href="#" class="btn btn-outline-primary">View Details</a>
-                </div>
-            </div>
-
-            <!-- Item 3 -->
-            <div class="card shadow-sm">
-                <div
-                    class="card-body d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-3"
-                            style="width:48px;height:48px;">
-                            <i class="fa-solid fa-chalkboard-user text-secondary"></i>
-                        </div>
-                        <div>
-                            <div class="text-muted small">Course Name, <span class="ms-1">Topic Name</span></div>
-                            <div class="fw-semibold">Sep 14 (Sun) 09:30–10:30</div>
-                        </div>
-                    </div>
-                    <a href="#" class="btn btn-outline-primary">View Details</a>
-                </div>
-            </div>
+            @endfor
         </div>
 
         <!-- View More -->
