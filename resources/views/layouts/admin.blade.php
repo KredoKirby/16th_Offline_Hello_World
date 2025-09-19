@@ -1,51 +1,59 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  {{-- どちらか一つにする： --}}
-  {{-- A) すぐ反映したいなら Bootstrap CDN を使用（npm不要） --}}
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    {{-- Bootstrap CDN --}}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-  {{-- B) Breeze/Vite を使っているならこちら（npm run dev が必要） --}}
-  {{-- @vite(['resources/css/app.css','resources/js/app.js']) --}}
-
-  <title>@yield('title','Admin')</title>
-
-  <style>
-    body{ background:#fde1e1; }
-    .admin-wrap{ max-width:1200px; margin:24px auto; }
-    .sidebar{ width:220px; background:#9bd1d1; border-radius:12px; padding:20px; }
-    .sidebar a{ color:#083b4c; font-weight:700; text-decoration:none; display:block; padding:8px 0; }
-    .content{ background:#fff; border-radius:12px; padding:24px; box-shadow:0 2px 10px rgba(0,0,0,.05); }
-    .card-lite{ border:1px solid #eee; border-radius:10px; padding:16px; }
-  </style>
+    <title>@yield('title', 'Admin')</title>
 </head>
+
 <body>
-<div class="admin-wrap container-fluid">
-  <div class="row g-3">
-    <aside class="col-12 col-md-3">
-      <div class="sidebar">
-       
-        <hr>
-        <div class="small">Username</div>
-        <form method="POST" action="{{ route('logout') }}">
-          @csrf
-          <button class="btn btn-link p-0 text-danger">Logout</button>
-        </form>
-      </div>
-    </aside>
+    <div class="container-fluid p-0">
+        <div class="row g-0">
 
-    <main class="col-12 col-md-9">
-      <div class="content">
-        @yield('content')
-      </div>
-    </main>
-  </div>
-</div>
+            {{-- サイドバー --}}
+            <aside
+                class="col-12 col-md-3 col-lg-2 d-flex flex-column align-items-center py-4
+                vh-100 position-sticky top-0"
+                style="background-color:#9CDBE2;">
+                <div class="mb-4">
+                    <img src="{{ asset('images/HELLO2.png') }}" alt="Hello World"
+                        class="img-fluid rounded-circle" style="max-width:150px;">
+                </div>
 
-{{-- CDN を使う場合のみ --}}
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+                <nav class="nav flex-column w-100 px-4 fw-bold">
+                    <a class="nav-link text-dark" href="{{ route('admin.index') }}">Home</a>
+                    <a class="nav-link text-dark" href="{{ route('admin.students') }}">Students</a>
+                    <a class="nav-link text-dark" href="{{ route('admin.teachers') }}">Teachers</a>
+                    <a class="nav-link text-dark" href="{{ route('admin.courses') }}">Courses</a>
+                    <a class="nav-link text-dark" href="{{ route('admin.bootstrap') }}#self-learning">Self-learning</a>
+                    <a class="nav-link text-dark" href="{{ route('admin.forums') }}">Forum</a>
+                </nav>
+
+                <div class="mt-auto text-left w-100 px-5">
+                    <div class="small fw-bold">Username</div>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button class="btn btn-link text-danger fw-bold p-0">Logout</button>
+                    </form>
+                </div>
+            </aside>
+
+            {{-- メイン --}}
+            <main class="col bg-light p-0">
+                <div class="bg-white p-4 rounded shadow-sm h-100">
+                    @yield('content')
+                </div>
+            </main>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
