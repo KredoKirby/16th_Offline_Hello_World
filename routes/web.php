@@ -17,6 +17,17 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 
 
+Route::middleware(['auth'])->group(function () {
+
+Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
+Route::get('/courses/{course}', [CourseController::class, 'show'])->name('courses.show');
+Route::post('/courses/{course}/enroll', [CourseController::class, 'enroll'])->name('courses.enroll');
+Route::post('/lessons/{lesson}/progress', [LessonController::class, 'updateProgress'])
+    ->name('lessons.updateProgress');
+
+
+});
+
 
 
 

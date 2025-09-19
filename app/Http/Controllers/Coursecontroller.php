@@ -12,9 +12,16 @@ class CourseController extends Controller
         // すべてのコースを sections->lessons を eager load
         $courses = Course::with('sections.lessons')->get();
 
-        // ユーザーがログインしていれば完了したレッスンID配列を取得
-        $completedLessonIds = auth()->check()
-            ? auth()->user()->lessons()->wherePivot('is_completed', true)->pluck('lessons.id')->toArray()
+        // ログイン中ユーザーのデータを取得
+        $user = auth()->user();
+
+        $completedLessonIds = $user
+            ? $user->lessons()->wherePivot('is_completed', true)->pluck('lessons.id')->toArray()
+            : [];
+
+        // ユーザーが受講中のコースID配列
+        $enrolledCourseIds = $user
+            ? $user->courses()->pluck('courses.id')->toArray()
             : [];
 
         // 各コースの進捗(%)を作る
@@ -27,15 +34,22 @@ class CourseController extends Controller
             $courseProgress[$course->id] = $total ? round($completed / $total * 100) : 0;
         }
 
-        return view('courses.index', compact('courses', 'courseProgress'));
+        return view('courses.index', compact('courses', 'courseProgress', 'enrolledCourseIds'));
     }
 
     public function show($id)
     {
         $course = Course::with('sections.lessons')->findOrFail($id);
 
-        $completedLessonIds = auth()->check()
-            ? auth()->user()->lessons()->wherePivot('is_completed', true)->pluck('lessons.id')->toArray()
+        $user = auth()->user();
+
+        $completedLessonIds = $user
+            ? $user->lessons()->wherePivot('is_completed', true)->pluck('lessons.id')->toArray()
+            : [];
+
+        // 受講中コースID
+        $enrolledCourseIds = $user
+            ? $user->courses()->pluck('courses.id')->toArray()
             : [];
 
         $sectionProgress = [];
@@ -60,25 +74,28 @@ class CourseController extends Controller
 
         $coursePercent = $totalCourseLessons ? round($completedCourseLessons / $totalCourseLessons * 100) : 0;
 
+         $courses = Course::all();
+
         return view('courses.show', compact(
             'course',
             'sectionProgress',
             'coursePercent',
-            'completedLessonIds'
+            'completedLessonIds',
+            'enrolledCourseIds',
+             'courses'
         ));
     }
 
     public function enroll(Course $course)
-{
-    $user = auth()->user();
+    {
+        $user = auth()->user();
 
-    // すでに受講していないか確認
-    if (!$user->courses->contains($course->id)) {
-        $user->courses()->attach($course->id);
+        // すでに受講していないか確認
+        if (!$user->courses->contains($course->id)) {
+            $user->courses()->attach($course->id);
+        }
+
+        return redirect()->route('courses.show', $course->id)
+                         ->with('success', 'You have enrolled in the course!');
     }
-
-    return redirect()->route('courses.index', ['course_id' => $course->id])
-                     ->with('success', 'You have enrolled in the course!');
-}
-
 }

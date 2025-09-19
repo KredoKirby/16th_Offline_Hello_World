@@ -20,4 +20,13 @@ class LessonController extends Controller
     return response()->json(['status' => 'ok']);
 }
 
+ public function show(Lesson $lesson)
+    {
+        return response()->json([
+            'id'    => $lesson->id,
+            'title' => $lesson->title,
+            'content' => $lesson->content ?? 'No content yet',
+        ]);
+    }
+
 }
