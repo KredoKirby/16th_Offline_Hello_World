@@ -56,7 +56,7 @@ Route::middleware('auth')->group(function () {
   
     // Student
     Route::prefix('student')->group(function () {
-        Route::get('index', [IndexController::class, 'index'])->name('student.index');
+        Route::get('/', [IndexController::class, 'index'])->name('student.index');
         Route::get('mylearning', [MylearningController::class, 'show'])->name('student.mylearning');
         Route::get('lesson_history', [LessonhistoryController::class, 'show'])->name('student.lessonhistory');
         Route::get('profile', [ProfileController::class, 'show'])->name('student.profile');

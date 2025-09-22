@@ -10,11 +10,9 @@
             <div class="card-body">
                 <div
                     class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3">
-                    <!-- 左：アイコン + テキスト -->
                     <div class="d-flex align-items-center gap-3">
                         <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-3"
                             style="width:56px;height:56px;">
-                            <!-- 画像にしたい場合は下の<i>を<img>に変えてOK -->
                             <i class="fa-solid fa-code fa-lg text-secondary"></i>
                         </div>
                         <div>
@@ -27,7 +25,6 @@
                         </div>
                     </div>
 
-                    <!-- 右：ボタン -->
                     <a href="#" class="btn btn-primary">
                         Enter classroom
                     </a>
