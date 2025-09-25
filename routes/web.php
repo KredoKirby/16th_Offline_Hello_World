@@ -68,4 +68,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/courses/{course}/enroll', [CourseController::class, 'enroll'])->name('courses.enroll');
     Route::post('/lessons/{lesson}/progress', [LessonController::class, 'updateProgress'])
         ->name('lessons.updateProgress');
+    Route::post('/courses/{course}/lessons/{lesson}/toggle', [LessonController::class, 'toggle'])
+        ->name('lessons.toggle');
+    Route::delete('/courses/{course}/unenroll', [CourseController::class, 'unenroll'])
+     ->name('courses.unenroll');
+
 });

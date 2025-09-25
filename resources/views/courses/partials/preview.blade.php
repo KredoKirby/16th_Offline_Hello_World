@@ -1,60 +1,55 @@
-{{-- 未受講コースのプレビュー --}}
 <div class="course-preview">
 
-    {{-- カバー画像 --}}
-    <img src="{{ $course->image ?? 'https://via.placeholder.com/800x200' }}" 
-         alt="{{ $course->title }}" 
-         class="img-fluid rounded mb-4">
-
-    {{-- タイトル --}}
-    <h2 class="fw-bold">{{ $course->title }}</h2>
-
-    {{-- サブタイトル / 説明 --}}
-    <p class="text-muted">{{ $course->description ?? "In this course, you will learn..." }}</p>
-
-    {{-- Enroll ボタン --}}
-    <form action="{{ route('courses.enroll', $course->id) }}" method="POST" class="mb-4">
-        @csrf
-        <button type="submit" class="btn btn-success rounded-pill px-4">
-            Enroll a course
-        </button>
-    </form>
-
-    {{-- Course content --}}
-    <h5 class="fw-bold">Course’s content</h5>
-    <p class="text-muted">{{ $course->sections->count() }} lessons</p>
-
-    {{-- Section リスト --}}
-    <div class="accordion" id="previewAccordion">
-        @foreach($course->sections as $section)
-        <div class="accordion-item mb-2 border rounded">
-            <h2 class="accordion-header" id="headingPrev{{ $section->id }}">
-                <button class="accordion-button collapsed bg-white" type="button" 
-                        data-bs-toggle="collapse" 
-                        data-bs-target="#collapsePrev{{ $section->id }}">
-                    <div class="d-flex align-items-center">
-                        {{-- アイコンやサムネ --}}
-                        <img src="https://via.placeholder.com/40x40" 
-                             class="me-2 rounded" alt="icon">
-                        <span>{{ $section->title }}</span>
-                    </div>
-                </button>
-            </h2>
-            <div id="collapsePrev{{ $section->id }}" 
-                 class="accordion-collapse collapse" 
-                 data-bs-parent="#previewAccordion">
-                <div class="accordion-body">
-                    <ul class="list-unstyled mb-0">
-                        @foreach($section->lessons as $lesson)
-                        <li class="mb-1 d-flex align-items-center">
-                            <i class="bi bi-play-circle me-2 text-secondary"></i>
-                            {{ $lesson->title }}
-                        </li>
-                        @endforeach
-                    </ul>
-                </div>
-            </div>
+    {{-- コース画像 --}}
+<div class="mb-3">
+    @if($course->image)
+        <img src="{{ asset('images/courses/' . $course->image) }}" 
+             class="course-header-image rounded"
+             alt="{{ $course->title }}">
+    @else
+        <div class="bg-secondary text-white text-center p-5 rounded">
+            No Image
         </div>
+    @endif
+</div>
+
+
+    </div>
+
+    {{-- タイトル & Enroll ボタン --}}
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h3 class="fw-bold mb-0">{{ $course->title }}</h3>
+        <form action="{{ route('courses.enroll', $course->id) }}" method="POST">
+            @csrf
+            <button type="submit" class="btn btn-info text-white fw-bold px-4 rounded-pill">
+                Enroll a course
+            </button>
+        </form>
+    </div>
+
+    {{-- 説明文 --}}
+    <p class="text-muted">{{ $course->description ?? 'No description available.' }}</p>
+
+    {{-- コースコンテンツ --}}
+    <h5 class="fw-bold mt-4">Course’s content 
+        <span class="text-muted small">
+            ({{ $course->sections->sum(fn($s) => $s->lessons->count()) }} lessons)
+        </span>
+    </h5>
+
+    {{-- 各セクション --}}
+    <div class="mt-3">
+        @foreach($course->sections as $section)
+            @foreach($section->lessons as $lesson)
+                <div class="d-flex align-items-center mb-2 p-2 border rounded bg-white shadow-sm">
+                       <img src="{{ asset('images/courses/' . $course->image) }}" 
+                         alt="Lesson thumbnail" 
+                         class="rounded me-3" 
+                         style="width:60px;height:60px;object-fit:cover;">
+                    <span class="fw-semibold">{{ $lesson->title }}</span>
+                </div>
+            @endforeach
         @endforeach
     </div>
+
 </div>
