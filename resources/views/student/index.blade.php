@@ -61,7 +61,6 @@
                                     </select>
                                 </div>
                             </div>
-
                             <div class="row g-2">
                                 <div class="col-6">
                                     <label class="form-label">Date</label>
@@ -70,22 +69,10 @@
                                 <div class="col-6">
                                     <label class="form-label">Time</label>
                                     <select class="form-select" name="time" required>
-                                        <option value="" selected disabled>Select time</option>
-                                        <option>08:00</option>
-                                        <option>09:00</option>
-                                        <option>10:00</option>
-                                        <option>11:00</option>
-                                        <option>12:00</option>
-                                        <option>13:00</option>
-                                        <option>14:00</option>
-                                        <option>15:00</option>
-                                        <option>16:00</option>
-                                        <option>17:00</option>
-                                        <option>18:00</option>
-                                        <option>19:00</option>
-                                        <option>20:00</option>
-                                        <option>21:00</option>
-                                        <option>22:00</option>
+                                        @for ($h = 0; $h < 24; $h++)
+                                            <option value="{{ sprintf('%02d:00', $h) }}">{{ sprintf('%02d:00', $h) }}
+                                            </option>
+                                        @endfor
                                     </select>
                                 </div>
                             </div>

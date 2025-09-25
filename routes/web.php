@@ -6,24 +6,36 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\LessonProgressController;
-use App\Http\Controllers\Student\IndexController;
-use App\Http\Controllers\Student\ProfileController;
 use App\Http\Controllers\Student\MylearningController;
 use App\Http\Controllers\Student\LessonhistoryController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Student\IndexController as StudentIndexController;
+use App\Http\Controllers\Teacher\IndexController as TeacherIndexController;
+use App\Http\Controllers\Student\ProfileController as StudentProfileController;
+use App\Http\Controllers\Teacher\ProfileController as TeacherProfileController;
+
 //All
 Auth::routes();
 
 // ── Authenticated Routes ─────────────────────────────
 Route::middleware('auth')->group(function () {
-    Route::get('/', [HomeController::class, 'index']);
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/dashboard', fn() => view('dashboard'))->name('dashboard');
 
+    Route::get('/', function () {
+        $role = Auth::user()->role_id;
+        return match ($role) {
+            1 => redirect()->route('admin.index'),
+            2 => redirect()->route('teachers.index'),
+            3 => redirect()->route('students.index'),
+            4 => redirect()->route('courses.index'), // basic_user
+        };
+    })->name('home');
+
     // ── Admin ───────────────────────────────────
-    Route::prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('admin')->middleware(['auth','can:admin'])->name('admin.')->group(function () {
         Route::get('/bootstrap', [AdminController::class, 'bootstrap'])->name('bootstrap');
 
         Route::get('/', [AdminController::class, 'index'])->name('index');
@@ -37,7 +49,7 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/courses', [AdminController::class, 'courses'])->name('courses');
         Route::post('/courses/{id}/toggle', [AdminController::class, 'courseToggle'])->name('courses.toggle');
-      
+
         // 追加フォーム表示 & 保存 course
         Route::get('/courses/create', [AdminController::class, 'courseAddForm'])->name('courses.create');
         Route::post('/courses', [AdminController::class, 'courseAdd'])->name('courses.store');
@@ -53,15 +65,21 @@ Route::middleware('auth')->group(function () {
         Route::post('/courses', [AdminController::class, 'courseAdd'])->name('courses.store');
 
     });
-  
+
     // Student
-    Route::prefix('student')->group(function () {
-        Route::get('/', [IndexController::class, 'index'])->name('student.index');
-        Route::get('mylearning', [MylearningController::class, 'show'])->name('student.mylearning');
-        Route::get('lesson_history', [LessonhistoryController::class, 'show'])->name('student.lessonhistory');
-        Route::get('profile', [ProfileController::class, 'show'])->name('student.profile');
+    Route::prefix('students')->middleware('can:students')->group(function () {
+        Route::get('/', [StudentIndexController::class, 'index'])->name('students.index');
+        Route::get('mylearning', [MylearningController::class, 'show'])->name('students.mylearning');
+        Route::get('lesson_history', [LessonhistoryController::class, 'show'])->name('students.lessonhistory');
+        Route::get('profile', [StudentProfileController::class, 'show'])->name('students.profile');
     });
-  
+
+    // Teacher
+    Route::prefix('teachers')->middleware('can:teachers')->group(function () {
+        Route::get('/', [TeacherIndexController::class, 'index'])->name('teachers.index');
+        Route::get('profile', [TeacherProfileController::class, 'show'])->name('teachers.profile');
+    });
+
     // Courses
     Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
     Route::get('/courses/{course}', [CourseController::class, 'show'])->name('courses.show');
