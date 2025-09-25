@@ -35,7 +35,7 @@ Route::middleware('auth')->group(function () {
     })->name('home');
 
     // ── Admin ───────────────────────────────────
-    Route::prefix('admin')->middleware(['auth','can:admin'])->name('admin.')->group(function () {
+    Route::prefix('admin')->middleware('can:admin')->name('admin.')->group(function () {
         Route::get('/bootstrap', [AdminController::class, 'bootstrap'])->name('bootstrap');
 
         Route::get('/', [AdminController::class, 'index'])->name('index');
