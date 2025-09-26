@@ -15,6 +15,7 @@ use App\Http\Controllers\Student\IndexController as StudentIndexController;
 use App\Http\Controllers\Teacher\IndexController as TeacherIndexController;
 use App\Http\Controllers\Student\ProfileController as StudentProfileController;
 use App\Http\Controllers\Teacher\ProfileController as TeacherProfileController;
+use App\Http\Controllers\SelfLearningController;
 
 //All
 Auth::routes();
@@ -97,5 +98,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/lessons/{lesson}/progress', [LessonController::class, 'updateProgress'])->name('lessons.updateProgress');
     Route::post('/courses/{course}/lessons/{lesson}/toggle', [LessonController::class, 'toggle'])->name('lessons.toggle');
     Route::delete('/courses/{course}/unenroll', [CourseController::class, 'unenroll'])->name('courses.unenroll');
+
+    //  Selflearning
+    Route::prefix('selflearning')->group(function () {
+        Route::get('/', [SelfLearningController::class, 'index'])->name('selflearning.index');
+        Route::get('/{id}', [SelfLearningController::class, 'show'])->name('selflearning.show');
+});
 
 });
