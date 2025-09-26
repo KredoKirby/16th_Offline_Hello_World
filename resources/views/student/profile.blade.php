@@ -15,9 +15,6 @@
                             <div style="width:200px;height:200px;object-fit:cover;">
                                 <img src="#" alt="Profile" class="img-fluid rounded-4 border">
                             </div>
-                            <button type="button" class="btn btn-light border shadow-sm mt-3">
-                                Upload Photo
-                            </button>
                         </div>
                     </div>
 
@@ -28,14 +25,21 @@
                             <dt class="col-5 col-sm-2">Email</dt>
                             <dd class="col-7 col-sm-10">Test</dd>
                             <dt class="col-5 col-sm-2">About</dt>
-                            <dd class="col-7 col-sm-10">Test</dd>
+                            <dd class="col-7 col-sm-10">Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio
+                                consequatur veniam enim neque impedit deserunt ducimus, nihil ratione ipsum at.</dd>
                         </dl>
-                        {{-- Edit button --}}
-                        <div>
-                            <a href="#" class="btn btn-info fw-semibold px-4 shadow-sm">
-                                Edit Profile
-                            </a>
-                        </div>
+                    </div>
+                </div>
+                <div class="row g-4 align-items-center">
+                    <div class="col-md-4 d-flex align-items-center">
+                        <button type="button" class="btn btn-light border shadow-sm">
+                            Upload Photo
+                        </button>
+                    </div>
+                    <div class="col-md-8 d-flex align-items-center justify-content-md-end">
+                        <a href="#" class="btn btn-info fw-semibold px-4 shadow-sm">
+                            Edit Profile
+                        </a>
                     </div>
                 </div>
             </div>
