@@ -13,7 +13,7 @@
         <div class="card p-5 mx-auto w-75 fw-bold"
             style="max-width: 800px; border-radius: 15px; background-color: #9CDBE2; color: white;">
 
-           <img src="{{ asset('images/HELLO 2.png') }}" alt="Hello World" width="252" height="252" class="d-block mx-auto">
+           <img src="{{ asset('images/HELLO2.png') }}" alt="Hello World" width="252" height="252" class="d-block mx-auto">
 
             {{-- エラーメッセージ --}}
             @if ($errors->any())
