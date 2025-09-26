@@ -42,11 +42,11 @@
                     <a class="nav-link text-dark" href="#">Self-learning</a>
 
                     {{-- Forums --}}
-                    <a class="nav-link text-dark" href="{{ route('admin.forums.index') }}">Forum</a>
+                    <a class="nav-link text-dark" href="">Forum</a>
                 </nav>
 
                 <div class="mt-auto text-left w-100 px-5">
-                    <div class="small fw-bold">Username</div>
+                    <div class="small fw-bold">{{ Auth::user()->name}}</div>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button class="btn btn-link text-danger fw-bold p-0">Logout</button>

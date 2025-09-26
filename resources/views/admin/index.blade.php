@@ -119,7 +119,7 @@
                     <div class="text-center text-muted py-3">No forums yet</div>
                 @endforelse
 
-                <a href="{{ route('admin.forums.index') }}" class="d-block text-center mt-2 fw-bold">View More</a>
+                <a href="" class="d-block text-center mt-2 fw-bold">View More</a>
             </div>
         </div>
     </div>

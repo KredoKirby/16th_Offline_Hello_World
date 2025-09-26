@@ -7,9 +7,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
-<body class="bg-light d-flex align-items-center justify-content-center vh-100 fw-bold">
+<body class="bg-white d-flex align-items-center justify-content-center vh-100 fw-bold">
 
-    <div class="container d-flex justify-content-center align-items-center vh-100 fw-bold" style="background-color: #ffffff;">
+    <div class="container d-flex justify-content-center align-items-center vh-100 fw-bold">
         <div class="card p-5 mx-auto w-75 fw-bold"
             style="max-width: 800px; border-radius: 15px; background-color: #9CDBE2; color: white;">
 
