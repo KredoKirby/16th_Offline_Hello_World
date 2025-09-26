@@ -127,26 +127,5 @@ class CourseSeeder extends Seeder
             ['section_id' => $enBasicSec2->id, 'title' => '買い物の会話', 'content' => 'お店で使える表現。', 'created_at' => now(), 'updated_at' => now()],
             ['section_id' => $enBasicSec2->id, 'title' => '値段を尋ねる', 'content' => 'How much is this? の使い方。', 'created_at' => now(), 'updated_at' => now()],
         ]);
-
-        // ===== English Advanced =====
-        $enAdv = Course::create([
-            'title'       => 'English Advanced',
-            'description' => 'ディスカッションやプレゼンができる上級英語を学ぶコースです。',
-            'image'       => 'englishadvanced.jpg',
-            'language'    => 'english',
-            'level'       => 'advanced',
-        ]);
-
-        $enAdvSec1 = Section::create(['course_id' => $enAdv->id, 'title' => 'Discussion']);
-        Lesson::insert([
-            ['section_id' => $enAdvSec1->id, 'title' => 'ディベート', 'content' => '賛成・反対を述べる。', 'created_at' => now(), 'updated_at' => now()],
-            ['section_id' => $enAdvSec1->id, 'title' => '意見交換', 'content' => '多様な意見を表現する。', 'created_at' => now(), 'updated_at' => now()],
-        ]);
-
-        $enAdvSec2 = Section::create(['course_id' => $enAdv->id, 'title' => 'Presentation']);
-        Lesson::insert([
-            ['section_id' => $enAdvSec2->id, 'title' => 'スライド作成', 'content' => '効果的な資料作り。', 'created_at' => now(), 'updated_at' => now()],
-            ['section_id' => $enAdvSec2->id, 'title' => '発表練習', 'content' => '自信を持って発表する方法。', 'created_at' => now(), 'updated_at' => now()],
-        ]);
     }
 }
