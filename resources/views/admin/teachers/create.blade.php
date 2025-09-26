@@ -1,31 +1,43 @@
 @extends('layouts.admin')
-@section('title','Add Teacher')
+@section('title', 'Add Teacher')
 
 @section('content')
-  <h2 class="mb-3">Add Teacher</h2>
-
-  @if ($errors->any())
-    <div class="alert">
-      <ul>
-        @foreach ($errors->all() as $e)<li>{{ $e }}</li>@endforeach
-      </ul>
+<div class="container-fluid py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold m-0">Add Teacher</h3>
+        <a href="{{ route('admin.teachers.index') }}" class="btn btn-outline-secondary">← Back</a>
     </div>
-  @endif
 
-  <form method="POST" action="{{ route('admin.teachers.add') }}" class="card p-3">
-    @csrf
-    <label class="mb-2">Name</label>
-    <input type="text" name="name" value="{{ old('name') }}" required class="mb-3">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            {{-- 保存先：POST admin.teachers.store --}}
+            <form method="POST" action="{{ route('admin.teachers.store') }}">
+                @csrf
 
-    <label class="mb-2">Email</label>
-    <input type="email" name="email" value="{{ old('email') }}" required class="mb-3">
+                <div class="mb-3">
+                    <label class="form-label">Name <span class="text-danger">*</span></label>
+                    <input type="text" name="name" value="{{ old('name') }}" class="form-control" required>
+                    @error('name') <div class="text-danger small">{{ $message }}</div> @enderror
+                </div>
 
-    <label class="mb-2">Password</label>
-    <input type="password" name="password" required class="mb-4">
+                <div class="mb-3">
+                    <label class="form-label">Email <span class="text-danger">*</span></label>
+                    <input type="email" name="email" value="{{ old('email') }}" class="form-control" required>
+                    @error('email') <div class="text-danger small">{{ $message }}</div> @enderror
+                </div>
 
-    <div style="display:flex; gap:8px">
-      <button class="btn dark" type="submit">Save</button>
-      <a class="btn ghost" href="{{ route('admin.teachers') }}">Cancel</a>
+                <div class="mb-3">
+                    <label class="form-label">Password <span class="text-danger">*</span></label>
+                    <input type="password" name="password" class="form-control" minlength="4" required>
+                    @error('password') <div class="text-danger small">{{ $message }}</div> @enderror
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success">Create</button>
+                    <a href="{{ route('admin.teachers.index') }}" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
     </div>
-  </form>
+</div>
 @endsection
