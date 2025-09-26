@@ -5,7 +5,7 @@
     <div class="row">
 
         {{-- 左サイド --}}
-        <div class="col-md-3 border-end bg-white" style="min-height:100vh;">
+        <div class="courses-col-md-3 col-md-3 border-end bg-white" style="min-height:100vh;">
             <h3 class="fw-bold mb-3">
                 <a href="{{ route('courses.index') }}" class="text-decoration-none text-dark">Courses</a>
             </h3>

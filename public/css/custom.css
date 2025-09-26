@@ -1,13 +1,13 @@
 /* ====== Course Page Custom Style ====== */
 /* 左サイド全体 */
-.col-md-3 {
+.courses-col-md-3 {
     background: #f5f5f5; /* スクショと同じ薄グレー */
     min-height: 100vh;
     padding: 20px;
 }
 
 /* 見出し */
-.col-md-3 h3 {
+.courses-col-md-3 h3 {
     font-weight: 700;
     font-size: 28px;
     margin-bottom: 20px;
@@ -59,7 +59,7 @@ form.d-flex button {
 
 
 /* 言語フィルタボタン */
-.col-md-3 .btn-outline-dark {
+.courses-col-md-3 .btn-outline-dark {
     border: 2px solid #d1d5db; 
     border-radius: 8px;
     font-weight: 500;
@@ -72,14 +72,14 @@ form.d-flex button {
 }
 
 /* ホバー時*/
-.col-md-3 .btn-outline-dark:hover {
+.courses-col-md-3 .btn-outline-dark:hover {
     border-color: #6b7280;
     color: #374151;
     background: #f3f4f6; 
 }
 
 /* アクティブ時*/
-.col-md-3 .btn-outline-dark.active {
+.courses-col-md-3 .btn-outline-dark.active {
     border-color: #374151 !important;
     color: #111827 !important;
     font-weight: 600 !important;
@@ -88,11 +88,11 @@ form.d-flex button {
 
 
 /* コースカード */
-.col-md-3 a {
+.courses-col-md-3 a {
     text-decoration: none;
     color: inherit;
 }
-.col-md-3 .d-flex {
+.courses-col-md-3 .d-flex {
     background: #fff;
     border: none !important;
     border-radius: 6px;
@@ -100,13 +100,13 @@ form.d-flex button {
     margin-bottom: 16px;
     align-items: center;
 }
-.col-md-3 .d-flex img {
+.courses-col-md-3 .d-flex img {
     border-radius: 4px;
     width: 60px;
     height: 60px;
     object-fit: cover;
 }
-.col-md-3 .d-flex h6 {
+.courses-col-md-3 .d-flex h6 {
     font-weight: 700;
     font-size: 18px;
     margin-bottom: 4px;
@@ -114,17 +114,17 @@ form.d-flex button {
 
 
 /* プログレスバー */
-.col-md-3 .progress {
+.courses-col-md-3 .progress {
     height: 8px;
     background: #d3d3d3;
     border-radius: 4px;
     margin: 4px 0;
 }
-.col-md-3 .progress-bar {
+.courses-col-md-3 .progress-bar {
     background: #00bcd4; /* 水色 */
     border-radius: 4px;
 }
-.col-md-3 small {
+.courses-col-md-3 small {
     font-size: 12px;
     color: #555;
 }
