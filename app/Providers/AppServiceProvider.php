@@ -1,24 +1,83 @@
 <?php
-
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
+use App\Models\User;
+use Illuminate\Auth\Access\Response;
 
-class AppServiceProvider extends ServiceProvider
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+
+
+class AuthServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
-    public function register(): void
-    {
-        //
-    }
+    // /**
+    //  * The policy mappings for the application.
+    //  *
+    //  * @var array<class-string, class-string>
+    //  */
+    protected $policies = [];
 
-    /**
-     * Bootstrap any application services.
-     */
-    public function boot(): void
+    // /**
+    //  * Register the application's policies.
+    //  *
+    //  * @return void
+    //  */
+    // public function register()
+    // {
+    //     $this->booting(function () {
+    //         $this->registerPolicies();
+    //     });
+    // }
+
+    // /**
+    //  * Register the application's policies.
+    //  *
+    //  * @return void
+    //  */
+    // public function registerPolicies()
+    // {
+    //     foreach ($this->policies() as $model => $policy) {
+    //         Gate::policy($model, $policy);
+    //     }
+    // }
+
+    // /**
+    //  * Get the policies defined on the provider.
+    //  *
+    //  * @return array<class-string, class-string>
+    //  */
+    // public function policies()
+    // {
+    //     return $this->policies;
+    // }
+
+    public function boot()
     {
-        //
+        $this->registerPolicies();
+
+        // Role mapping: 1=admin, 2=teacher, 3=student, 4=basic_user
+        Gate::define('admin', function (User $user) {
+            return $user->role_id == 1
+                ? Response::allow()
+                : Response::deny('Administrator privileges are required.');
+        });
+
+        Gate::define('teachers', function (User $user) {
+            return $user->role_id == 2
+                ? Response::allow()
+                : Response::deny('This page is for teachers.');
+        });
+
+        Gate::define('students', function (User $user) {
+            return $user->role_id == 3
+                ? Response::allow()
+                : Response::deny('This page is for students.');
+        });
+
+        Gate::define('basic_user', function (User $user) {
+            return $user->role_id == 4
+                ? Response::allow()
+                : Response::deny('This page is for basic user.');
+        });
     }
 }

@@ -26,16 +26,27 @@
                 </div>
 
                 <nav class="nav flex-column w-100 px-4 fw-bold">
+                    {{-- Home --}}
                     <a class="nav-link text-dark" href="{{ route('admin.index') }}">Home</a>
-                    <a class="nav-link text-dark" href="{{ route('admin.students') }}">Students</a>
-                    <a class="nav-link text-dark" href="{{ route('admin.teachers') }}">Teachers</a>
-                    <a class="nav-link text-dark" href="{{ route('admin.courses') }}">Courses</a>
-                    <a class="nav-link text-dark" href="{{ route('admin.bootstrap') }}#self-learning">Self-learning</a>
-                    <a class="nav-link text-dark" href="{{ route('admin.forums') }}">Forum</a>
+
+                    {{-- Students --}}
+                    <a class="nav-link text-dark" href="{{ route('admin.students.index') }}">Students</a>
+
+                    {{-- Teachers --}}
+                    <a class="nav-link text-dark" href="{{ route('admin.teachers.index') }}">Teachers</a>
+
+                    {{-- Courses --}}
+                    <a class="nav-link text-dark" href="{{ route('admin.courses.index') }}">Courses</a>
+
+                    {{-- Self-learning（未実装なら # のままでも可） --}}
+                    <a class="nav-link text-dark" href="#">Self-learning</a>
+
+                    {{-- Forums --}}
+                    <a class="nav-link text-dark" href="">Forum</a>
                 </nav>
 
                 <div class="mt-auto text-left w-100 px-5">
-                    <div class="small fw-bold">Username</div>
+                    <div class="small fw-bold">{{ Auth::user()->name}}</div>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button class="btn btn-link text-danger fw-bold p-0">Logout</button>
@@ -49,7 +60,6 @@
                     @yield('content')
                 </div>
             </main>
-
         </div>
     </div>
 
