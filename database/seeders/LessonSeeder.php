@@ -10,7 +10,7 @@ class LessonSeeder extends Seeder
 {
     public function run(): void
     {
-        Lesson::truncate();
+        // Lesson::truncate();
 
         $laravel = Course::where('title', 'Laravel入門')->first();
         $bootstrap = Course::where('title', 'Bootstrapデザイン')->first();
