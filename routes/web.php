@@ -13,6 +13,8 @@ use App\Http\Controllers\Student\LessonhistoryController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\SelfLearningController;
+
 //All
 Auth::routes();
 
@@ -72,5 +74,11 @@ Route::middleware('auth')->group(function () {
         ->name('lessons.toggle');
     Route::delete('/courses/{course}/unenroll', [CourseController::class, 'unenroll'])
      ->name('courses.unenroll');
+
+    //  Selflearning
+    Route::prefix('selflearning')->group(function () {
+        Route::get('/', [SelfLearningController::class, 'index'])->name('selflearning.index');
+        Route::get('/{id}', [SelfLearningController::class, 'show'])->name('selflearning.show');
+});
 
 });
