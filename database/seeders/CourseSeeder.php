@@ -9,75 +9,65 @@ use App\Models\Lesson;
 
 class CourseSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // コースを1つ作成
-        $course = Course::create([
-            'title'       => 'Laravel入門コース',
-            'description' => 'Laravelを基礎から学ぶためのコースです。',
-            'image_url'   => 'https://via.placeholder.com/800x200',
-            'language'    => 'en',
+        // ===== php Basic コース =====
+        $it = Course::create([
+            'title'       => 'Basic PHP',
+            'description' => 'PHPを中心にした基礎的なITスキルを学ぶコースです。',
+            'image'   => 'phpbasic.jpg',
+            'language'    => 'it',   // ← タブ判定用
             'level'       => 'basic',
         ]);
 
-        // ===== セクション1 =====
-        $section1 = Section::create([
-            'course_id' => $course->id,
-            'title'     => 'イントロダクション',
+        $itSection = Section::create([
+            'course_id' => $it->id,
+            'title'     => 'PHP入門',
         ]);
 
         Lesson::insert([
             [
-                'section_id' => $section1->id,
-                'title'      => 'Laravelとは？',
-                'content'    => 'Laravelの概要と特徴を学びます。',
+                'section_id' => $itSection->id,
+                'title'      => 'PHPとは？',
+                'content'    => 'PHPの概要と基本文法を学びます。',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'section_id' => $section1->id,
-                'title'      => '開発環境を準備する',
-                'content'    => 'Laravelのインストール方法を学びます。',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'section_id' => $section1->id,
-                'title'      => '最初のアプリケーション',
-                'content'    => '簡単なHello Worldアプリを作ってみます。',
+                'section_id' => $itSection->id,
+                'title'      => '開発環境構築',
+                'content'    => 'PHPを動かす環境を整えます。',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
         ]);
 
-        // ===== セクション2 =====
-        $section2 = Section::create([
-            'course_id' => $course->id,
-            'title'     => 'ルーティングとコントローラ',
+        // ===== English Basic コース =====
+        $english = Course::create([
+            'title'       => 'English Basic',
+            'description' => '日常英会話の基礎を学ぶコースです。',
+            'image'   => 'englishbasic.jpg',
+            'language'    => 'english',  // ← タブ判定用
+            'level'       => 'basic',
+        ]);
+
+        $englishSection = Section::create([
+            'course_id' => $english->id,
+            'title'     => 'Greetings',
         ]);
 
         Lesson::insert([
             [
-                'section_id' => $section2->id,
-                'title'      => 'ルートの基本',
-                'content'    => 'ルート定義の書き方を学びます。',
+                'section_id' => $englishSection->id,
+                'title'      => '挨拶を学ぶ',
+                'content'    => 'Hello, Good morning など日常的な挨拶を学びます。',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'section_id' => $section2->id,
-                'title'      => 'コントローラの作成',
-                'content'    => 'コントローラを作成して処理をまとめます。',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'section_id' => $section2->id,
-                'title'      => 'ビューを返す',
-                'content'    => 'Bladeを使ってビューを返す方法を学びます。',
+                'section_id' => $englishSection->id,
+                'title'      => '自己紹介を学ぶ',
+                'content'    => '英語で自己紹介する方法を学びます。',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
