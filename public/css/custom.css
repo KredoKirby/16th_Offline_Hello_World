@@ -1,0 +1,220 @@
+/* ====== Course Page Custom Style ====== */
+/* 左サイド全体 */
+.courses-col-md-3 {
+    background: #f5f5f5; /* スクショと同じ薄グレー */
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* 見出し */
+.courses-col-md-3 h3 {
+    font-weight: 700;
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+/* 検索フォームの見た目 */
+form.d-flex input.form-control {
+    border-radius: 20px !important;
+    font-size: 14px;
+}
+
+form.d-flex button {
+    border-radius: 20px !important;
+    font-size: 14px;
+}
+
+/* タブ全体 */
+.custom-tabs {
+    border-bottom: 1px solid #ddd;
+    gap: 1rem;
+}
+
+
+.custom-tabs .nav-link {
+    color: #374151; 
+    font-weight: normal;
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    background: none !important;
+    padding: 0.5rem 0;
+    transition: all 0.2s ease;
+}
+
+/* ホバー時 */
+.custom-tabs .nav-link:hover {
+    color: #374151;
+}
+
+/* アクティブタブ */
+.custom-tabs .nav-link.active {
+    color:  #374151;
+    font-weight: bold;
+    border-bottom: 2px solid #374151;
+    background: none !important; 
+}
+
+
+
+
+/* 言語フィルタボタン */
+.courses-col-md-3 .btn-outline-dark {
+    border: 2px solid #d1d5db; 
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 16px;
+    color: #374151;
+    background: #fff;
+    margin-right: 10px;
+    padding: 4px 14px;
+    transition: all 0.2s ease;
+}
+
+/* ホバー時*/
+.courses-col-md-3 .btn-outline-dark:hover {
+    border-color: #6b7280;
+    color: #374151;
+    background: #f3f4f6; 
+}
+
+/* アクティブ時*/
+.courses-col-md-3 .btn-outline-dark.active {
+    border-color: #374151 !important;
+    color: #111827 !important;
+    font-weight: 600 !important;
+    background: none !important; 
+}
+
+
+/* コースカード */
+.courses-col-md-3 a {
+    text-decoration: none;
+    color: inherit;
+}
+.courses-col-md-3 .d-flex {
+    background: #fff;
+    border: none !important;
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-bottom: 16px;
+    align-items: center;
+}
+.courses-col-md-3 .d-flex img {
+    border-radius: 4px;
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+}
+.courses-col-md-3 .d-flex h6 {
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 4px;
+}
+
+
+/* プログレスバー */
+.courses-col-md-3 .progress {
+    height: 8px;
+    background: #d3d3d3;
+    border-radius: 4px;
+    margin: 4px 0;
+}
+.courses-col-md-3 .progress-bar {
+    background: #00bcd4; /* 水色 */
+    border-radius: 4px;
+}
+.courses-col-md-3 small {
+    font-size: 12px;
+    color: #555;
+}
+
+
+/* コース画像 */
+.course-header-image {
+    width: 100%;
+    height: 300px;          
+    object-fit: cover;      
+    border-radius: 8px;
+}
+
+
+/* ====== Selflearning Page Custom Style ====== */
+
+/* コースタイトルの下の情報 */
+.course-meta {
+    font-size: 14px;
+    color: #666;
+}
+
+/* アコーディオン全体 */
+.accordion-item {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    overflow: hidden;
+}
+
+/* アコーディオンのヘッダー */
+.accordion-button {
+    font-weight: 600;
+    background: #fafafa;
+    color: #333;
+    padding: 12px 16px;
+}
+.accordion-button:not(.collapsed) {
+    background: #f0f0f0;
+    box-shadow: none;
+}
+
+/* セクション右端の「3 lectures 25 minutes」 */
+.accordion-button .small {
+    font-size: 13px;
+    color: #888;
+}
+
+/* レッスン行 */
+.lesson-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 4px;
+    border-bottom: 1px solid #eee;
+}
+
+/* レッスン左のアイコンとタイトル */
+.lesson-title {
+    font-size: 15px;
+    color: #333;
+}
+.lesson-title i {
+    color: #444;
+}
+
+/* レッスン右側（時間・ボタン類） */
+.lesson-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* 再生時間 */
+.lesson-duration {
+    font-size: 14px;
+    color: #555;
+}
+
+/* 再生ボタン */
+.lesson-actions .btn-outline-primary {
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-size: 13px;
+}
+
+/* textボタン */
+.lesson-actions .btn-info {
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 13px;
+    font-weight: 600;
+}
