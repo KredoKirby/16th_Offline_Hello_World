@@ -20,10 +20,13 @@ class Lesson extends Model
                 ->withTimestamps();
 }
 
-    public function completedByUsers()
-{
-    return $this->belongsToMany(User::class, 'lesson_user')->withTimestamps();
+  // App/Models/Lesson.php
+public function completedByUsers() {
+    return $this->belongsToMany(User::class, 'lesson_user')
+                ->withPivot('completed_at')
+                ->withTimestamps();
 }
+
 
 public function progress()
 {

@@ -9,13 +9,18 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+  public function up(): void
 {
     Schema::table('lesson_user', function (Blueprint $table) {
-        $table->boolean('is_completed')->default(false);
-        $table->timestamp('completed_at')->nullable();
+        if (!Schema::hasColumn('lesson_user', 'is_completed')) {
+            $table->boolean('is_completed')->default(false);
+        }
+        if (!Schema::hasColumn('lesson_user', 'completed_at')) {
+            $table->timestamp('completed_at')->nullable();
+        }
     });
 }
+
 
 public function down(): void
 {

@@ -12,9 +12,9 @@ class CourseSeeder extends Seeder
     public function run(): void
     {
         /*
-        |--------------------------------------------------------------------------
+        |-------------------------------------------------
         | IT Courses
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------
         */
 
         // ===== PHP Basic =====
@@ -28,20 +28,21 @@ class CourseSeeder extends Seeder
 
         $phpIntro = Section::create(['course_id' => $php->id, 'title' => 'PHP入門']);
         Lesson::insert([
-            ['section_id' => $phpIntro->id, 'title' => 'PHPとは？', 'content' => 'PHPの歴史と特徴。', 'created_at' => now(), 'updated_at' => now()],
-            ['section_id' => $phpIntro->id, 'title' => '環境構築', 'content' => 'XAMPP/MAMPで環境を整える。', 'created_at' => now(), 'updated_at' => now()],
+            ['section_id' => $phpIntro->id, 'title' => 'PHPとは？', 'content' => 'PHPの歴史と特徴。', 'image'      => 'lesson_php_intro.jpg','created_at' => now(), 'updated_at' => now()],
+            ['section_id' => $phpIntro->id, 'title' => '環境構築', 'content' => 'XAMPP/MAMPで環境を整える。', 'image'      => 'lesson_php_setup.jpg',
+            'created_at' => now(), 'updated_at' => now()],
         ]);
 
         $phpSyntax = Section::create(['course_id' => $php->id, 'title' => '基礎文法']);
         Lesson::insert([
             ['section_id' => $phpSyntax->id, 'title' => '変数と定数', 'content' => '変数と定数の基本。', 'created_at' => now(), 'updated_at' => now()],
-            ['section_id' => $phpSyntax->id, 'title' => '条件分岐', 'content' => 'if, switch文。', 'created_at' => now(), 'updated_at' => now()],
+            ['section_id' => $phpSyntax->id, 'title' => '条件分岐', 'content' => 'if, switch文。','image'=> 'lesson_php_vary.jpg', 'created_at' => now(), 'updated_at' => now()],
         ]);
 
         $phpPrac = Section::create(['course_id' => $php->id, 'title' => '実践']);
         Lesson::insert([
             ['section_id' => $phpPrac->id, 'title' => 'フォーム処理', 'content' => 'ユーザー入力を処理する。', 'created_at' => now(), 'updated_at' => now()],
-            ['section_id' => $phpPrac->id, 'title' => '掲示板アプリ', 'content' => 'シンプルなアプリを作成。', 'created_at' => now(), 'updated_at' => now()],
+            ['section_id' => $phpPrac->id, 'title' => '掲示板アプリ', 'content' => 'シンプルなアプリを作成。', 'image'=> 'lesson_php_make.jpg','created_at' => now(), 'updated_at' => now()],
         ]);
 
 
@@ -102,9 +103,9 @@ class CourseSeeder extends Seeder
 
 
         /*
-        |--------------------------------------------------------------------------
+        |-------------------------------------------------------------------
         | English Courses
-        |--------------------------------------------------------------------------
+        |------------------------------------------------------------------
         */
 
         // ===== English Basic =====

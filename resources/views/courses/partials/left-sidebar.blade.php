@@ -6,15 +6,22 @@ unset($allQuery['status']); // Allタブでは status を削除
 @endphp
 
 {{-- 検索フォーム --}}
-<form method="GET" action="{{ route('courses.index') }}" class="d-flex align-items-center mb-3" style="width: 60%;">
+<form method="GET" action="{{ route('courses.index') }}" class="mb-3 d-flex align-items-center video-search-bar" style="width: 250px;">
     @foreach(request()->except('search') as $key => $value)
         <input type="hidden" name="{{ $key }}" value="{{ $value }}">
     @endforeach
-    <input type="text" name="search" class="form-control form-control-sm me-1 rounded-pill" placeholder="Search" value="{{ request('search') }}">
-    <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" type="submit">
-        <i class="fa-solid fa-magnifying-glass"></i>
-    </button>
+    <div class="input-group dashboard-search">
+        <span class="input-group-text bg-white">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </span>
+        <input type="text" 
+               name="search" 
+               class="form-control" 
+               placeholder="Search"
+               value="{{ request('search') }}">
+    </div>
 </form>
+
 
 {{-- タブ --}}
 <ul class="nav custom-tabs mb-3">
