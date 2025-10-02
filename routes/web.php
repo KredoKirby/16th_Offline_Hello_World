@@ -82,7 +82,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [StudentIndexController::class, 'index'])->name('students.index');
         Route::get('mylearning', [MylearningController::class, 'show'])->name('students.mylearning');
         Route::get('lesson_history', [LessonhistoryController::class, 'show'])->name('students.lessonhistory');
-        Route::get('profile', [StudentProfileController::class, 'show'])->name('students.profile');
+        Route::get('{user_id}/profile', [StudentProfileController::class, 'show'])->name('students.profile');
     });
 
     // Teacher

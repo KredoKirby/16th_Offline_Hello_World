@@ -3,10 +3,10 @@
 @section('title', 'Profile')
 
 @section('content')
-    <section class="container py-4 w-50">
+    <section class="container py-4 w-75">
 
         {{-- Profile card --}}
-        <div class="card shadow-sm mb-4">
+        <div class="card shadow-sm mb-5">
             <div class="card-body">
                 <div class="row g-4 align-items-center">
                     {{-- Photo + Upload --}}
@@ -20,13 +20,12 @@
 
                     {{-- Name / Email / About --}}
                     <div class="col-md-8">
-                        <h3 class="h5 fw-bold mb-3">Shinya Nakaguchi</h3>
+                        <h3 class="h3 fw-bold mb-4 mt-3">{{ $user->name }}</h3>
                         <dl class="row mb-4">
                             <dt class="col-5 col-sm-2">Email</dt>
-                            <dd class="col-7 col-sm-10">Test</dd>
+                            <dd class="col-7 col-sm-10">{{ $user->email }}</dd>
                             <dt class="col-5 col-sm-2">About</dt>
-                            <dd class="col-7 col-sm-10">Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio
-                                consequatur veniam enim neque impedit deserunt ducimus, nihil ratione ipsum at.</dd>
+                            <dd class="col-7 col-sm-10">{{ $user->about }}</dd>
                         </dl>
                     </div>
                 </div>

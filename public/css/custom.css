@@ -218,3 +218,97 @@ form.d-flex button {
     font-size: 13px;
     font-weight: 600;
 }
+
+.sidebar {
+  --sb-bg: #9CDBE2;                /* 通常 背景色（薄い水色） */
+  --sb-bg-rgb: 156,219,226;
+
+  --sb-fg: #05445E;                /* 通常 文字色（濃い青） */
+  --sb-fg-rgb: 5,68,94;
+
+  --sb-fg-2: color-mix(in srgb, var(--sb-fg) 92%, black 8%); /* fgの少し濃いトーン */
+  background-color: var(--sb-bg);
+  color: var(--sb-fg);
+}
+
+/* ベース（Bootstrapの後に読み込むこと） */
+.sidebar .nav-link {
+  position: relative;
+  display: block;
+  padding: .6rem .9rem;
+  border-radius: 12px;
+  color: var(--sb-fg);
+  text-decoration: none;
+  transition: color .2s ease, background-color .2s ease, box-shadow .2s ease, transform .08s ease;
+}
+
+/* ホバー（通常時） */
+.sidebar .nav-link:hover,
+.sidebar .nav-link:focus {
+  background: rgba(var(--sb-fg-rgb), .08);
+  color: var(--sb-fg-2);
+}
+
+/* =========================
+   反転アクティブ（“かっこよく”）
+   ========================= */
+/* 文字=背景色 / 背景=前景色 の反転 + グラデ/インナー枠/柔らかい影 */
+.sidebar .nav-link.active,
+.sidebar .nav-link[aria-current="page"] {
+  color: var(--sb-bg); /* 文字を薄水色に */
+  /* 濃い青を基調にした微グラデ（のっぺり回避） */
+  background:
+    linear-gradient(180deg, var(--sb-fg-2) 0%, var(--sb-fg) 100%);
+  /* 外側はふんわり、内側は薄い縁取りで締める */
+  box-shadow:
+    0 6px 16px rgba(var(--sb-fg-rgb), .28),
+    inset 0 0 0 1px rgba(var(--sb-bg-rgb), .35);
+  font-weight: 700;
+}
+
+/* アクティブ時の“光の走査”エフェクト（控えめ） */
+.sidebar .nav-link.active::after,
+.sidebar .nav-link[aria-current="page"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  /* 斜めに走るハイライト */
+  background: linear-gradient(120deg,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,.25) 18%,
+    rgba(255,255,255,0) 36%);
+  transform: translateX(-120%);
+  transition: transform .5s ease;
+  pointer-events: none;
+}
+
+/* ホバーで光がスッと横切る */
+.sidebar .nav-link.active:hover::after,
+.sidebar .nav-link[aria-current="page"]:hover::after {
+  transform: translateX(120%);
+}
+
+/* アクティブ + ホバーでほんの少し濃く＆持ち上げる */
+.sidebar .nav-link.active:hover,
+.sidebar .nav-link[aria-current="page"]:hover {
+  background: color-mix(in srgb, var(--sb-fg) 92%, black 8%);
+  transform: translateY(-1px);
+}
+
+/* キーボード操作でも見失わないフォーカスリング */
+.sidebar .nav-link:focus-visible {
+  outline: 2px solid rgba(var(--sb-bg-rgb), .9);
+  outline-offset: 2px;
+}
+
+/* クリック時の“押し感” */
+.sidebar .nav-link:active { transform: translateY(1px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar .nav-link,
+  .sidebar .nav-link::after {
+    transition: none;
+  }
+}
+
