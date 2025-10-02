@@ -6,14 +6,17 @@
 
   {{-- ヘッダー --}}
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="m-0 fw-bold">Courses</h2>
-    <a href="{{ route('admin.courses.create') }}" class="btn btn-primary fw-bold rounded-pill px-3">
+    <h2 class="m-0 fw-bold text-dark">Courses</h2>
+    <a href="{{ route('admin.courses.create') }}" 
+       class="btn fw-bold rounded-pill px-3"
+       style="background-color:#05445E; color:white;">
       ＋ Add a course
     </a>
   </div>
 
   {{-- 見出し行 --}}
-  <div class="d-flex bg-warning bg-opacity-25 px-3 py-2 mb-2 fw-bold text-uppercase small rounded">
+  <div class="d-flex px-3 py-2 mb-2 fw-bold text-uppercase small rounded"
+       style="background-color:#ECFF7E; color:#05445E;">
     <div class="me-3" style="width:90px;">Photo</div>
     <div class="flex-grow-1">Name</div>
   </div>
@@ -25,43 +28,33 @@
 
       <div class="accordion-item border rounded-3 shadow-sm mb-3">
         <h2 class="accordion-header" id="heading-{{ $row['id'] }}">
-          <button class="accordion-button bg-white {{ $isOpen ? '' : 'collapsed' }}" type="button"
+          <button class="accordion-button {{ $isOpen ? '' : 'collapsed' }}" type="button"
                   data-bs-toggle="collapse" data-bs-target="#collapse-{{ $row['id'] }}"
-                  aria-expanded="{{ $isOpen ? 'true' : 'false' }}" aria-controls="collapse-{{ $row['id'] }}">
+                  aria-expanded="{{ $isOpen ? 'true' : 'false' }}" aria-controls="collapse-{{ $row['id'] }}"
+                  style="background-color:white;">
             <div class="d-flex align-items-center w-100 gap-3">
-
-              {{-- PHOTO --}}
               @php
                 $src = !empty($row['image']) ? asset('storage/' . $row['image']) : asset('images/default-course.png');
               @endphp
               <img src="{{ $src }}" alt="{{ $row['name'] }}"
                    class="rounded-circle border shadow-sm" width="48" height="48">
-
-              {{-- NAME --}}
-              <span class="fw-semibold">{{ $row['name'] }}</span>
+              <span class="fw-semibold text-dark">{{ $row['name'] }}</span>
             </div>
           </button>
         </h2>
 
-        <div id="collapse-{{ $row['id'] }}" class="accordion-collapse collapse {{ $isOpen ? 'show' : '' }}"
+        <div id="collapse-{{ $row['id'] }}" 
+             class="accordion-collapse collapse {{ $isOpen ? 'show' : '' }}"
              aria-labelledby="heading-{{ $row['id'] }}" data-bs-parent="#coursesAccordion">
 
           <div class="accordion-body bg-white border-top">
             <div class="table-responsive">
               <table class="table align-middle mb-0">
-                <colgroup>
-                  <col width="50%">
-                  <col width="25%">
-                  <col width="25%">
-                </colgroup>
                 <tbody>
-                  @foreach (['Topic Name', 'Topic Name', 'Topic Name', 'Topic Name'] as $i => $topic)
+                  @foreach (['Topic Name','Topic Name','Topic Name','Topic Name'] as $i => $topic)
                     @php $topicActive = $i % 2 === 0; @endphp
-                    <tr class="border rounded shadow-sm">
-                      {{-- トピック名 --}}
+                    <tr>
                       <td class="ps-4 fw-semibold">{{ $topic }}</td>
-
-                      {{-- ステータス --}}
                       <td>
                         <div class="d-inline-flex align-items-center gap-2">
                           @if ($topicActive)
@@ -71,27 +64,8 @@
                           @endif
                         </div>
                       </td>
-
-                      {{-- アクション --}}
                       <td class="text-end text-nowrap">
-                        <div class="btn-group">
-                          @if ($topicActive)
-                            <form method="POST" action="#">
-                              @csrf
-                              <button class="btn btn-sm btn-outline-secondary rounded-pill">Inactivate</button>
-                            </form>
-                          @else
-                            <form method="POST" action="#">
-                              @csrf
-                              <button class="btn btn-sm btn-success rounded-pill">Activate</button>
-                            </form>
-                          @endif
-
-                          <form method="POST" action="#">
-                            @csrf @method('DELETE')
-                            <button class="btn btn-sm btn-danger rounded-pill">Delete</button>
-                          </form>
-                        </div>
+                        
                       </td>
                     </tr>
                   @endforeach
@@ -101,7 +75,8 @@
 
             {{-- Add a topic --}}
             <div class="text-center p-3">
-              <button class="btn btn-primary fw-bold btn-sm rounded-pill px-4 shadow-sm">
+              <button class="btn fw-bold btn-sm rounded-pill px-4 shadow-sm"
+                      style="background-color:#05445E; color:white;">
                 Add a topic
               </button>
             </div>
@@ -110,6 +85,5 @@
       </div>
     @endforeach
   </div>
-
 </div>
 @endsection
