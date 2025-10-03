@@ -85,66 +85,64 @@
 @elseif($isStudent)
     <aside
         class="col-12 col-md-3 col-lg-2 d-flex flex-column align-items-center py-4
-                vh-100 position-sticky top-0 sidebar"
+         vh-100 position-sticky top-0 sidebar-shell"
         style="background-color:#9CDBE2;">
+
+        {{-- Brand / Logo（装飾なし） --}}
         <div class="mb-4">
-            <img src="{{ asset('images/HELLO2.png') }}" alt="Hello World" class="img-fluid rounded-circle"
-                style="max-width:150px;">
+            <img src="{{ asset('images/HELLO2.png') }}" alt="Hello World" class="brand-logo">
         </div>
 
-        <nav class="nav flex-column w-100 px-4 fw-bold">
-            {{-- Home --}}
-            <a class="nav-link mb-2 {{ request()->routeIs('students.index') ? 'active' : '' }}"
+        {{-- Main nav --}}
+        <nav class="nav flex-column w-100 px-4 fw-semibold s-nav">
+            <a class="nav-link s-link mb-1 {{ request()->routeIs('students.index') ? 'active' : '' }}"
                 href="{{ route('students.index') }}">Home</a>
-
-            {{-- Courses --}}
-            <a class="nav-link mb-2 {{ request()->routeIs('courses.index') ? 'active' : '' }}"
+            <a class="nav-link s-link mb-1 {{ request()->routeIs('courses.index') ? 'active' : '' }}"
                 href="{{ route('courses.index') }}">Courses</a>
-
-            {{-- Self-learning（未実装なら # のままでも可） --}}
-            <a class="nav-link mb-2" href="#">Self-learning</a>
-
-            {{-- Forums --}}
-            <a class="nav-link" href="">Forum</a>
+            <a class="nav-link s-link mb-1" href="#">Self-learning</a>
+            <a class="nav-link s-link" href="#">Forum</a>
         </nav>
+
+        {{-- Footer / User --}}
         <div class="mt-auto w-100">
-            <div class="nav flex-column w-100 px-4 fw-bold">
+            <div class="nav flex-column w-100 px-4 fw-semibold">
                 <div class="dropup">
                     <button
-                        class="nav-link d-flex align-items-center gap-2 dropdown-toggle p-0 bg-transparent border-0 text-start w-100"
-                        id="userMenuButton" data-bs-toggle="dropdown" aria-expanded="false" style="color: inherit;">
+                        class="nav-link s-link d-flex align-items-center gap-2 dropdown-toggle p-0 bg-transparent border-0 text-start w-100 s-user-toggle"
+                        id="userMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fa-solid fa-user-circle"></i>
                         <span class="text-truncate">{{ Auth::user()->name }}</span>
                     </button>
-                    <ul class="dropdown-menu w-100 shadow border-0" aria-labelledby="userMenuButton">
+
+                    <ul class="dropdown-menu s-menu w-100 shadow border-0" aria-labelledby="userMenuButton">
                         <li>
-                            <a class="dropdown-item fw-semibold {{ request()->routeIs('students.profile') ? 'active' : '' }}"
+                            <a class="dropdown-item s-menu-item {{ request()->routeIs('students.profile') ? 'active' : '' }}"
                                 href="{{ route('students.profile', ['user_id' => Auth::user()]) }}">
                                 <i class="fa-regular fa-user me-2"></i> Profile
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item fw-semibold {{ request()->routeIs('students.mylearning') ? 'active' : '' }}"
+                            <a class="dropdown-item s-menu-item {{ request()->routeIs('students.mylearning') ? 'active' : '' }}"
                                 href="{{ route('students.mylearning') }}">
                                 <i class="fa-solid fa-graduation-cap me-2"></i> My learning
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item fw-semibold {{ request()->routeIs('students.lessonshistory') ? 'active' : '' }}"
+                            <a class="dropdown-item s-menu-item {{ request()->routeIs('students.lessonhistory') ? 'active' : '' }}"
                                 href="{{ route('students.lessonhistory') }}">
                                 <i class="fa-solid fa-clock-rotate-left me-2"></i> Lesson history
                             </a>
                         </li>
                     </ul>
                 </div>
+
                 <form method="POST" action="{{ route('logout') }}" class="mt-2">
                     @csrf
-                    <button type="submit" class="nav-link p-0 bg-transparent border-0 text-start w-100 fw-bold"
-                        style="color:#DB1F48;">
+                    <button type="submit"
+                        class="nav-link s-link s-link-danger p-0 bg-transparent border-0 text-start w-100">
                         <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
                     </button>
                 </form>
-
             </div>
         </div>
     </aside>
