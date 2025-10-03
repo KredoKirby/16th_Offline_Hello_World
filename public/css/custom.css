@@ -1,7 +1,7 @@
 /* ====== Course Page Custom Style ====== */
 /* 左サイド全体 */
 .courses-col-md-3 {
-    background: #f5f5f5; /* スクショと同じ薄グレー */
+    background: #f5f5f5; 
     min-height: 100vh;
     padding: 20px;
 }
@@ -133,6 +133,166 @@ form.d-flex button {
 
 /* ====== Selflearning Page Custom Style ====== */
 
+.selflearning-back-btn {
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.9rem;
+}
+.selflearning-back-btn i {
+    font-size: 0.8rem;
+}
+
+
+/*  self learning Dashboard Page *****/
+
+
+/* 検索バー */
+.video-search-bar {
+    max-width: 250px; 
+}
+.video-search-bar .input-group {
+    border: 1px solid #ddd;
+    border-radius: 25px; 
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.video-search-bar .input-group-text {
+    background: #fff;
+    border: none;
+    color: #888;
+}
+
+.video-search-bar input {
+    border: none;
+    box-shadow: none !important;
+    font-size: 14px;
+    padding: 8px 12px;
+}
+
+/* Status カード */
+.dashboard-status-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+.dashboard-status-card h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+}
+.dashboard-status-enrolled {
+    background-color: #d4f8d4;
+}
+.dashboard-status-completed {
+    background-color: #ffd6d6;
+}
+.dashboard-status-hours {
+    background-color: #fff7cc;
+}
+
+/* Active / Completed タブ */
+.video-status-tabs {
+    display: flex;
+    gap: 10px;
+}
+
+.video-status-tabs button {
+    flex: 1;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    background: #f8f9fa;
+    color: #555;
+    font-size: 14px;
+    padding: 6px 12px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+/* hover */
+.video-status-tabs button:hover {
+    background: #e9ecef;
+    border-color: #bbb;
+    color: #000;
+}
+
+/* active */
+.video-status-tabs button.active {
+    background: #75E6DA; 
+    color: #fff;
+    border-color: #75E6DA;
+    font-weight: bold;
+}
+
+
+
+
+
+/* My Courses タブ */
+.dashboard-courses .nav-pills .nav-link {
+    font-weight: 600;
+    border-radius: 0;
+    color: #333;
+    padding: 6px 16px;
+}
+.dashboard-courses .nav-pills .nav-link.active {
+    border-bottom: 3px solid #0d6efd;
+    background: transparent;
+    color: #0d6efd;
+}
+
+/* コースカード */
+.dashboard-course-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    padding: 15px;
+    margin-bottom: 15px;
+    transition: transform 0.2s ease;
+}
+.dashboard-course-card:hover {
+    transform: translateY(-3px);
+}
+.dashboard-course-img {
+    width: 80px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+.dashboard-course-card .progress {
+    height: 8px;
+    border-radius: 5px;
+}
+
+/* サイドカード */
+.dashboard-side-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    padding: 15px;
+}
+
+/* Recommended Courses */
+.dashboard-recommend-item {
+    border-bottom: 1px solid #eee;
+    padding: 8px 0;
+    display: flex;
+    align-items: center;
+}
+.dashboard-recommend-item:last-child {
+    border-bottom: none;
+}
+.dashboard-recommend-img {
+    width: 60px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+
+/* showpage *****************/
 /* コースタイトルの下の情報 */
 .course-meta {
     font-size: 14px;
@@ -205,10 +365,127 @@ form.d-flex button {
 
 /* textボタン */
 .lesson-actions .btn-info {
-    border-radius: 20px;
-    padding: 4px 12px;
+    border-radius: 30px;          
+    padding: 6px 16px;              
     font-size: 13px;
     font-weight: 600;
+    background: linear-gradient(135deg, #4fc3f7, #0288d1); 
+    border: none;
+    color: #fff;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);          
+    transition: all 0.25s ease-in-out;
+}
+
+.lesson-actions .btn-info:hover {
+    background: linear-gradient(135deg, #03a9f4, #0277bd);
+    transform: translateY(-2px);                           
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+
+
+
+/* ---- lesson video page layout ---- */
+.video-player-header {
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+.video-container video {
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+/* 再生コントロール風UI */
+.video-controls {
+    background-color: #189AB4; 
+    color: white;
+    font-weight: 500;
+    padding: 8px 12px;
+    border-radius: 3px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* ボタンスタイル */
+.lesson-buttons {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.lesson-buttons .btn {
+    flex: 1;
+    font-weight: bold;
+    border-radius: 4px;
+    text-transform: lowercase;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+
+    
+}
+
+.lesson-buttons .btn-secondary {
+    background-color: #9CDBE2;
+    border: none;
+    color: #fff;
+}
+
+.lesson-buttons .btn-success {
+    background-color: #75E6DA;
+    border: none;
+    color: #fff;
+}
+
+.lesson-buttons .btn-primary {
+    background-color: #4aa8e3;
+    border: none;
+    color: #fff;
+}
+
+/* ---- video list ---- */
+.video-list {
+    background-color: #f7f7f7;
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 4px;
+}
+
+.video-list h5 {
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.video-list strong {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.video-list ul {
+    padding-left: 15px;
+}
+
+.video-list li {
+    margin-bottom: 5px;
+    font-size: 0.95rem;
+}
+
+.video-list li a {
+    text-decoration: none;
+    color: #333;
+}
+
+.video-list li a:hover {
+    text-decoration: underline;
+}
+
+.video-list li .fw-bold.text-dark {
+    color: #189AB4 !important; /* アクティブレッスン */
+}
+
+.video-list small {
+    color: #666;
 }
 
 .sidebar {

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Lesson; 
 
 class SelfLearningController extends Controller
 {
@@ -42,4 +43,55 @@ class SelfLearningController extends Controller
         $course = Course::with('sections')->findOrFail($id);
         return view('selflearning.show', compact('course'));
     }
+
+    // レッスン再生ページ
+   public function lessonVideo($courseId, $lessonId)
+        {
+            $course = Course::with('sections.lessons')->findOrFail($courseId);
+            $lessons = $course->sections->flatMap->lessons->values(); // 全レッスンをフラットに
+            $currentLesson = $lessons->firstWhere('id', $lessonId);
+
+            $currentIndex = $lessons->search(fn($l) => $l->id === $currentLesson->id);
+            $previousLesson = $lessons->get($currentIndex - 1);
+            $nextLesson = $lessons->get($currentIndex + 1);
+
+            return view('selflearning.lesson-video', [
+                'course' => $course,
+                'currentLesson' => $currentLesson,
+                'previousLesson' => $previousLesson,
+                'nextLesson' => $nextLesson,
+            ]);
+        }
+
+
+        public function lessonText($courseId, $lessonId)
+            {
+                // コースを取得
+                $course = Course::with('sections.lessons')->findOrFail($courseId);
+
+                // 該当レッスンを取得
+                $currentLesson = $course->sections
+                    ->flatMap->lessons   
+                    ->firstWhere('id', $lessonId);
+
+                if (!$currentLesson) {
+                    abort(404, 'Lesson not found');
+                }
+
+                return view('selflearning.lesson-text', compact('course', 'currentLesson'));
+            }
+
+            public function lessonDone($courseId, $lessonId) {
+                $lesson = Lesson::findOrFail($lessonId);
+
+                auth()->user()->completedLessons()->syncWithoutDetaching([
+                    $lesson->id => ['completed_at' => now()]
+                ]);
+
+                return redirect()->route('selflearning.lessonVideo', [$courseId, $lessonId])
+                                ->with('success', 'Lesson marked as completed!');
+}
+
+            
+
 }
