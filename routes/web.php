@@ -82,7 +82,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [StudentIndexController::class, 'index'])->name('students.index');
         Route::get('mylearning', [MylearningController::class, 'show'])->name('students.mylearning');
         Route::get('lesson_history', [LessonhistoryController::class, 'show'])->name('students.lessonhistory');
-        Route::get('profile', [StudentProfileController::class, 'show'])->name('students.profile');
+        Route::get('{user_id}/profile', [StudentProfileController::class, 'show'])->name('students.profile');
     });
 
     // Teacher
@@ -100,9 +100,15 @@ Route::middleware('auth')->group(function () {
     Route::delete('/courses/{course}/unenroll', [CourseController::class, 'unenroll'])->name('courses.unenroll');
 
     //  Selflearning
-    Route::prefix('selflearning')->group(function () {
-        Route::get('/', [SelfLearningController::class, 'index'])->name('selflearning.index');
-        Route::get('/{id}', [SelfLearningController::class, 'show'])->name('selflearning.show');
+   Route::prefix('selflearning')->group(function () {
+    Route::get('/', [SelfLearningController::class, 'index'])->name('selflearning.index');
+    Route::get('/{id}', [SelfLearningController::class, 'show'])->name('selflearning.show');
+    Route::get('/{courseId}/lesson/{lessonId}', [SelfLearningController::class, 'lessonVideo'])
+        ->name('selflearning.lessonVideo');
+    Route::post('/{courseId}/lesson/{lessonId}/done', [SelfLearningController::class, 'lessonDone'])
+        ->name('selflearning.lesson.done');
+    Route::get('/{courseId}/lesson/{lessonId}/text', [SelfLearningController::class, 'lessonText'])
+        ->name('selflearning.lesson.text');
 });
 
 });
