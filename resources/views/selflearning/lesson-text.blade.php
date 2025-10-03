@@ -19,9 +19,25 @@
             
 
             {{-- スライド / テキスト表示枠 --}}
-            <div class="bg-white shadow-sm rounded p-4" style="min-height:70vh;">
-                {!! $currentLesson->content !!}  
-                {{-- スライド画像 / HTML本文 --}}
+            @if($currentLesson->image)
+                <div class="position-relative text-center">
+                    <img src="{{ asset('images/lessons/' . $currentLesson->image) }}" 
+                        alt="{{ $currentLesson->title }}" 
+                        class="img-fluid rounded shadow">
+
+                    {{-- スライド番号（右下） --}}
+                    <div class="position-absolute bottom-0 end-0 m-2 px-2 py-1 bg-dark bg-opacity-50 text-white rounded small">
+                        {{ $currentIndex + 1 }} / {{ $totalLessons }}
+                    </div>
+                </div>
+            @else
+                <div class="bg-light text-muted text-center p-3 w-100">
+                    No Image
+                </div>
+            @endif
+
+
+
             </div>
         </div>
 
