@@ -29,17 +29,18 @@ class Course extends Model
     return $this->belongsToMany(User::class, 'course_user')->withTimestamps();
 }
 
-    // app/Models/Course.php
+    
 public function completionRate($userId)
 {
     $totalLessons = $this->sections->flatMap->lessons->count();
-    $completedLessons = \DB::table('lesson_user')
-        ->where('user_id', $userId)
+
+    $completedLessons = User::find($userId)
+        ->completedLessons()
         ->whereIn('lesson_id', $this->sections->flatMap->lessons->pluck('id'))
-        ->where('is_completed', 1)
         ->count();
 
     return $totalLessons > 0 ? round(($completedLessons / $totalLessons) * 100) : 0;
 }
+
 
 }

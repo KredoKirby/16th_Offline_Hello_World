@@ -91,13 +91,17 @@ Route::middleware('auth')->group(function () {
         Route::get('profile', [TeacherProfileController::class, 'show'])->name('teachers.profile');
     });
 
-    // Courses
-    Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
-    Route::get('/courses/{course}', [CourseController::class, 'show'])->name('courses.show');
-    Route::post('/courses/{course}/enroll', [CourseController::class, 'enroll'])->name('courses.enroll');
-    Route::post('/lessons/{lesson}/progress', [LessonController::class, 'updateProgress'])->name('lessons.updateProgress');
-    Route::post('/courses/{course}/lessons/{lesson}/toggle', [LessonController::class, 'toggle'])->name('lessons.toggle');
-    Route::delete('/courses/{course}/unenroll', [CourseController::class, 'unenroll'])->name('courses.unenroll');
+  // Courses
+    Route::prefix('courses')->group(function () {
+        Route::get('/', [CourseController::class, 'index'])->name('courses.index');
+        Route::get('/{course}', [CourseController::class, 'show'])->name('courses.show');
+        Route::post('/{course}/enroll', [CourseController::class, 'enroll'])->name('courses.enroll');
+        Route::delete('/{course}/unenroll', [CourseController::class, 'unenroll'])->name('courses.unenroll');
+        Route::post('/{course}/lessons/{lesson}/progress', [LessonController::class, 'updateProgress'])
+            ->name('lessons.updateProgress');
+        Route::post('/{course}/lessons/{lesson}/toggle', [LessonController::class, 'toggle'])
+            ->name('lessons.toggle');
+    });
 
     //  Selflearning
    Route::prefix('selflearning')->group(function () {
@@ -109,6 +113,10 @@ Route::middleware('auth')->group(function () {
         ->name('selflearning.lesson.done');
     Route::get('/{courseId}/lesson/{lessonId}/text', [SelfLearningController::class, 'lessonText'])
         ->name('selflearning.lesson.text');
+    Route::post('/{courseId}/lesson/{lessonId}/toggle', [SelfLearningController::class, 'toggleLesson'])       
+        ->name('selflearning.lesson.toggle');
+
+
 });
 
 });
