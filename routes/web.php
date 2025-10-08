@@ -88,7 +88,7 @@ Route::middleware('auth')->group(function () {
     // Teacher
     Route::prefix('teachers')->middleware('can:teachers')->group(function () {
         Route::get('/', [TeacherIndexController::class, 'index'])->name('teachers.index');
-        Route::get('profile', [TeacherProfileController::class, 'show'])->name('teachers.profile');
+        Route::get('{user_id}/profile', [TeacherProfileController::class, 'show'])->name('teachers.profile');
     });
 
     // Courses

@@ -1,5 +1,5 @@
 {{-- resources/views/admin/teachers/edit.blade.php --}}
-@extends('layouts.admin')
+@extends('layouts.app')
 @section('title','Edit Teacher')
 
 @section('content')
