@@ -9,77 +9,89 @@
 @if ($isAdmin)
     <aside
         class="col-12 col-md-3 col-lg-2 d-flex flex-column align-items-center py-4
-                vh-100 position-sticky top-0"
+         vh-100 position-sticky top-0 sidebar-shell"
         style="background-color:#9CDBE2;">
+
+        {{-- Brand / Logo（装飾なし） --}}
         <div class="mb-4">
-            <img src="{{ asset('images/HELLO2.png') }}" alt="Hello World" class="img-fluid rounded-circle"
-                style="max-width:150px;">
+            <img src="{{ asset('images/HELLO2.png') }}" alt="Hello World" class="brand-logo">
         </div>
 
-        <nav class="nav flex-column w-100 px-4 fw-bold">
-            {{-- Home --}}
-            <a class="nav-link text-dark" href="{{ route('admin.index') }}">Home</a>
-
-            {{-- Students --}}
-            <a class="nav-link text-dark" href="{{ route('admin.students.index') }}">Students</a>
-
-            {{-- Teachers --}}
-            <a class="nav-link text-dark" href="{{ route('admin.teachers.index') }}">Teachers</a>
-
-            {{-- Courses --}}
-            <a class="nav-link text-dark" href="{{ route('admin.courses.index') }}">Courses</a>
-
-            {{-- Self-learning（未実装なら # のままでも可） --}}
-            <a class="nav-link text-dark" href="#">Self-learning</a>
-
-            {{-- Forums --}}
-            <a class="nav-link text-dark" href="">Forum</a>
+        {{-- Main nav --}}
+        <nav class="nav flex-column w-100 px-4 fw-semibold s-nav">
+            <a class="nav-link s-link mb-1 {{ request()->routeIs('admin.index') ? 'active' : '' }}"
+                href="{{ route('admin.index') }}">Home</a>
+            <a class="nav-link s-link mb-1 {{ request()->routeIs('admin.students.index') ? 'active' : '' }}"
+                href="{{ route('admin.students.index') }}">Students</a>
+            <a class="nav-link s-link mb-1 {{ request()->routeIs('admin.teachers.index') ? 'active' : '' }}"
+                href="{{ route('admin.teachers.index') }}">Teachers</a>
+            <a class="nav-link s-link mb-1 {{ request()->routeIs('admin.courses.index') ? 'active' : '' }}"
+                href="{{ route('admin.courses.index') }}">Courses</a>
+            <a class="nav-link s-link mb-1" href="#">Self-learning</a>
+            <a class="nav-link s-link" href="#">Forum</a>
         </nav>
 
-        <div class="mt-auto text-left w-100 px-5">
-            <div class="small fw-bold">{{ Auth::user()->name }}</div>
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button class="btn btn-link text-danger fw-bold p-0">Logout</button>
-            </form>
+        {{-- Footer / User --}}
+        <div class="mt-auto w-100">
+            <div class="nav flex-column w-100 px-4 fw-semibold">
+                <div>
+                    <a class="nav-link s-link d-flex align-items-center gap-2 p-0 bg-transparent text-start w-100"
+                        href="{{ route('teachers.profile', ['user_id' => Auth::id()]) }}">
+                        <i class="fa-solid fa-user-circle"></i>
+                        <span class="text-truncate">{{ Auth::user()->name }}</span>
+                    </a>
+                </div>
+
+                <form method="POST" action="{{ route('logout') }}" class="mt-2">
+                    @csrf
+                    <button type="submit"
+                        class="nav-link s-link s-link-danger p-0 bg-transparent border-0 text-start w-100">
+                        <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
+                    </button>
+                </form>
+            </div>
         </div>
     </aside>
 @elseif($isTeacher)
     <aside
         class="col-12 col-md-3 col-lg-2 d-flex flex-column align-items-center py-4
-                vh-100 position-sticky top-0"
+         vh-100 position-sticky top-0 sidebar-shell"
         style="background-color:#9CDBE2;">
+
+        {{-- Brand / Logo（装飾なし） --}}
         <div class="mb-4">
-            <img src="{{ asset('images/HELLO2.png') }}" alt="Hello World" class="img-fluid rounded-circle"
-                style="max-width:150px;">
+            <img src="{{ asset('images/HELLO2.png') }}" alt="Hello World" class="brand-logo">
         </div>
 
-        <nav class="nav flex-column w-100 px-4 fw-bold">
-            {{-- Home --}}
-            <a class="nav-link text-dark" href="{{ route('admin.index') }}">Home</a>
-
-            {{-- Students --}}
-            <a class="nav-link text-dark" href="{{ route('admin.students.index') }}">Students</a>
-
-            {{-- Teachers --}}
-            <a class="nav-link text-dark" href="{{ route('admin.teachers.index') }}">Teachers</a>
-
-            {{-- Courses --}}
-            <a class="nav-link text-dark" href="{{ route('admin.courses.index') }}">Courses</a>
-
-            {{-- Self-learning（未実装なら # のままでも可） --}}
-            <a class="nav-link text-dark" href="#">Self-learning</a>
-
-            {{-- Forums --}}
-            <a class="nav-link text-dark" href="">Forum</a>
+        {{-- Main nav --}}
+        <nav class="nav flex-column w-100 px-4 fw-semibold s-nav">
+            <a class="nav-link s-link mb-1 {{ request()->routeIs('teachers.index') ? 'active' : '' }}"
+                href="{{ route('teachers.index') }}">Schedule</a>
+            <a class="nav-link s-link mb-1 {{ request()->routeIs('courses.index') ? 'active' : '' }}"
+                href="{{ route('courses.index') }}">Courses</a>
+            <a class="nav-link s-link mb-1" href="#">Self-learning</a>
+            <a class="nav-link s-link" href="#">Forum</a>
         </nav>
 
-        <div class="mt-auto text-left w-100 px-5">
-            <div class="small fw-bold">{{ Auth::user()->name }}</div>
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button class="btn btn-link text-danger fw-bold p-0">Logout</button>
-            </form>
+        {{-- Footer / User --}}
+        <div class="mt-auto w-100">
+            <div class="nav flex-column w-100 px-4 fw-semibold">
+                <div>
+                    <a class="nav-link s-link d-flex align-items-center gap-2 p-0 bg-transparent text-start w-100"
+                        href="{{ route('teachers.profile', ['user_id' => Auth::id()]) }}">
+                        <i class="fa-solid fa-user-circle"></i>
+                        <span class="text-truncate">{{ Auth::user()->name }}</span>
+                    </a>
+                </div>
+
+                <form method="POST" action="{{ route('logout') }}" class="mt-2">
+                    @csrf
+                    <button type="submit"
+                        class="nav-link s-link s-link-danger p-0 bg-transparent border-0 text-start w-100">
+                        <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
+                    </button>
+                </form>
+            </div>
         </div>
     </aside>
 @elseif($isStudent)

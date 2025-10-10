@@ -53,10 +53,11 @@ class User extends Authenticatable
     }
 
     
-    public function courses()
-{
-    return $this->belongsToMany(Course::class, 'course_user')->withTimestamps();
-}
+    public function courses() {
+        return $this->belongsToMany(Course::class, 'enrollments', 'user_id', 'course_id')
+                ->withPivot(['status','enrollment_date'])
+                ->withTimestamps();
+    }
 
 
     public function lessons()
@@ -67,10 +68,9 @@ class User extends Authenticatable
 }
 
 
-public function completedLessons() {
-    return $this->belongsToMany(Lesson::class, 'lesson_user')
-                ->withPivot('completed_at')
-                ->withTimestamps();
+public function completedLessons()
+{
+    return $this->belongsToMany(Lesson::class, 'lesson_user')->withTimestamps();
 }
 
 public function progress()

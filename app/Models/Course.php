@@ -24,10 +24,12 @@ class Course extends Model
     {
         return $this->hasMany(Section::class);
     }
-    public function users()
-{
-    return $this->belongsToMany(User::class, 'course_user')->withTimestamps();
-}
+
+    public function users() {
+        return $this->belongsToMany(User::class, 'enrollments', 'course_id', 'user_id')
+                ->withPivot(['status','enrollment_date'])
+                ->withTimestamps();
+    }
 
     // app/Models/Course.php
 public function completionRate($userId)
