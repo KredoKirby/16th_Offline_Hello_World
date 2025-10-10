@@ -33,8 +33,8 @@ Route::middleware('auth')->group(function () {
         $role = Auth::user()->role_id;
         return match ($role) {
             1 => redirect()->route('admin.dashboard'),   // admin
-            2 => redirect()->route('teacher.home'),      // teacher
-            3 => redirect()->route('student.home'),      // student
+            2 => redirect()->route('teachers.index'),      // teacher
+            3 => redirect()->route('students.index'),      // student
             4 => redirect()->route('courses.index'),     // user
         };
     })->name('home');
@@ -117,16 +117,16 @@ Route::middleware('auth')->group(function () {
     });
 
     /* ------------------- Student area ------------------- */
-    Route::prefix('students')->middleware('can:students')->name('student.')->group(function () {
-        Route::get('/', [StudentIndexController::class, 'index'])->name('home');
+    Route::prefix('students')->middleware('can:students')->name('students.')->group(function () {
+        Route::get('/', [StudentIndexController::class, 'index'])->name('index');
         Route::get('mylearning',      [MylearningController::class, 'show'])->name('mylearning');
         Route::get('lesson_history',  [LessonhistoryController::class, 'show'])->name('lessonhistory');
         Route::get('profile',         [StudentProfileController::class, 'show'])->name('profile');
     });
 
     /* ------------------- Teacher area ------------------- */
-    Route::prefix('teachers')->middleware('can:teachers')->name('teacher.')->group(function () {
-        Route::get('/', [TeacherIndexController::class, 'index'])->name('home');
+    Route::prefix('teachers')->middleware('can:teachers')->name('teachers.')->group(function () {
+        Route::get('/', [TeacherIndexController::class, 'index'])->name('index');
         Route::get('profile', [TeacherProfileController::class, 'show'])->name('profile');
     });
 });
