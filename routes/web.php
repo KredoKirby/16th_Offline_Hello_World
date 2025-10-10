@@ -32,10 +32,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/', function () {
         $role = Auth::user()->role_id;
         return match ($role) {
-            1 => redirect()->route('admin.dashboard'),   // admin
-            2 => redirect()->route('teachers.index'),      // teacher
-            3 => redirect()->route('students.index'),      // student
-            4 => redirect()->route('courses.index'),     // user
+            1 => redirect()->route('admin.index'), // admin
+            2 => redirect()->route('teachers.index'), // teacher
+            3 => redirect()->route('students.index'), // student
+            4 => redirect()->route('courses.index'), // basic_user
         };
     })->name('home');
 
