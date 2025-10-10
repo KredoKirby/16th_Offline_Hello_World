@@ -13,25 +13,25 @@ class AdminController extends Controller
     {
         return [
             'students' => [
-                ['id' => 1, 'name' => 'David', 'email' => 'david@gmail.com', 'created_at' => '2025-08-22 06:52:47', 'active' => true,  'avatar' => '/images/avatar1.jpg'],
-                ['id' => 2, 'name' => 'Emma',  'email' => 'emma@gmail.com',  'created_at' => '2025-08-22 06:52:47', 'active' => false, 'avatar' => '/images/avatar2.jpg'],
-                ['id' => 3, 'name' => 'Liam',  'email' => 'liam@gmail.com',  'created_at' => '2025-08-22 06:52:47', 'active' => true,  'avatar' => '/images/avatar3.jpg'],
-                ['id' => 4, 'name' => 'Mia',   'email' => 'mia@gmail.com',   'created_at' => '2025-08-22 06:52:47', 'active' => true,  'avatar' => '/images/avatar4.jpg'],
+                ['id' => 1, 'name' => 'David', 'email' => 'david@gmail.com', 'created_at' => '2025-08-22 06:52:47', 'active' => true, 'avatar' => '/images/avatar1.jpg'],
+                ['id' => 2, 'name' => 'Emma', 'email' => 'emma@gmail.com', 'created_at' => '2025-08-22 06:52:47', 'active' => false, 'avatar' => '/images/avatar2.jpg'],
+                ['id' => 3, 'name' => 'Liam', 'email' => 'liam@gmail.com', 'created_at' => '2025-08-22 06:52:47', 'active' => true, 'avatar' => '/images/avatar3.jpg'],
+                ['id' => 4, 'name' => 'Mia', 'email' => 'mia@gmail.com', 'created_at' => '2025-08-22 06:52:47', 'active' => true, 'avatar' => '/images/avatar4.jpg'],
             ],
             'teachers' => [
-                ['id' => 1, 'name' => 'David', 'email' => 'david@gmail.com', 'created_at' => '2025-08-22 06:52:47', 'active' => true,  'avatar' => '/images/avatar1.jpg'],
-                ['id' => 2, 'name' => 'Sara',  'email' => 'sara@gmail.com',  'created_at' => '2025-08-22 06:52:47', 'active' => false, 'avatar' => '/images/avatar2.jpg'],
-                ['id' => 3, 'name' => 'Ken',   'email' => 'ken@gmail.com',   'created_at' => '2025-08-22 06:52:47', 'active' => true,  'avatar' => '/images/avatar3.jpg'],
-                ['id' => 4, 'name' => 'Aya',   'email' => 'aya@gmail.com',   'created_at' => '2025-08-22 06:52:47', 'active' => true,  'avatar' => '/images/avatar4.jpg'],
+                ['id' => 1, 'name' => 'David', 'email' => 'david@gmail.com', 'created_at' => '2025-08-22 06:52:47', 'active' => true, 'avatar' => '/images/avatar1.jpg'],
+                ['id' => 2, 'name' => 'Sara', 'email' => 'sara@gmail.com', 'created_at' => '2025-08-22 06:52:47', 'active' => false, 'avatar' => '/images/avatar2.jpg'],
+                ['id' => 3, 'name' => 'Ken', 'email' => 'ken@gmail.com', 'created_at' => '2025-08-22 06:52:47', 'active' => true, 'avatar' => '/images/avatar3.jpg'],
+                ['id' => 4, 'name' => 'Aya', 'email' => 'aya@gmail.com', 'created_at' => '2025-08-22 06:52:47', 'active' => true, 'avatar' => '/images/avatar4.jpg'],
             ],
             'courses' => [
-                ['id' => 1, 'name' => 'PHP',     'active' => true],
-                ['id' => 2, 'name' => 'HTML',    'active' => false],
+                ['id' => 1, 'name' => 'PHP', 'active' => true],
+                ['id' => 2, 'name' => 'HTML', 'active' => false],
                 ['id' => 3, 'name' => 'Laravel', 'active' => true],
             ],
             'forums' => [
                 ['question' => 'How to install Laravel?', 'course' => 'Laravel Basics', 'username' => 'Alice'],
-                ['question' => 'What is MVC?',            'course' => 'PHP 101',        'username' => 'Bob'],
+                ['question' => 'What is MVC?', 'course' => 'PHP 101', 'username' => 'Bob'],
             ],
         ];
     }
@@ -63,7 +63,8 @@ class AdminController extends Controller
     {
         $d = $this->data();
         foreach ($d[$type] as $row) {
-            if (($row['id'] ?? null) === $id) return $row;
+            if (($row['id'] ?? null) === $id)
+                return $row;
         }
         return null;
     }
@@ -86,17 +87,23 @@ class AdminController extends Controller
 
         $studentsCount = count($d['students']);
         $teachersCount = count($d['teachers']);
-        $coursesCount  = count($d['courses']);
-        $forumsCount   = count($d['forums']);
+        $coursesCount = count($d['courses']);
+        $forumsCount = count($d['forums']);
 
         $latestStudents = array_slice($d['students'], 0, 5);
         $latestTeachers = array_slice($d['teachers'], 0, 5);
-        $latestCourses  = array_slice($d['courses'],  0, 5);
-        $latestForums   = array_slice($d['forums'],   0, 4);
+        $latestCourses = array_slice($d['courses'], 0, 5);
+        $latestForums = array_slice($d['forums'], 0, 4);
 
         return view('admin.index', compact(
-            'studentsCount','teachersCount','coursesCount','forumsCount',
-            'latestStudents','latestTeachers','latestCourses','latestForums'
+            'studentsCount',
+            'teachersCount',
+            'coursesCount',
+            'forumsCount',
+            'latestStudents',
+            'latestTeachers',
+            'latestCourses',
+            'latestForums'
         ));
     }
 
@@ -129,9 +136,21 @@ class AdminController extends Controller
         });
     }
 
-    public function studentToggle($id) { $this->toggleByType('students', (int)$id); return back(); }
-    public function teacherToggle($id) { $this->toggleByType('teachers', (int)$id); return back(); }
-    public function courseToggle($id)  { $this->toggleByType('courses',  (int)$id); return back(); }
+    public function studentToggle($id)
+    {
+        $this->toggleByType('students', (int) $id);
+        return back();
+    }
+    public function teacherToggle($id)
+    {
+        $this->toggleByType('teachers', (int) $id);
+        return back();
+    }
+    public function courseToggle($id)
+    {
+        $this->toggleByType('courses', (int) $id);
+        return back();
+    }
 
     // ── Teachers: Add ───────────────────────
     public function teacherAddForm()
@@ -147,7 +166,7 @@ class AdminController extends Controller
             'password' => 'required|min:4',
         ]);
 
-        $data  = $this->data();
+        $data = $this->data();
         $maxId = collect($data['teachers'])->max('id');
         $nextId = ($maxId ?? 0) + 1;
 
@@ -175,7 +194,7 @@ class AdminController extends Controller
     {
         $req->validate(['name' => 'required']);
 
-        $data  = $this->data();
+        $data = $this->data();
         $maxId = collect($data['courses'])->max('id');
         $nextId = ($maxId ?? 0) + 1;
 
@@ -189,7 +208,7 @@ class AdminController extends Controller
     /** 詳細（/admin/courses/{id}） */
     public function courseShow($id)
     {
-        $course = $this->findItem('courses', (int)$id);
+        $course = $this->findItem('courses', (int) $id);
         abort_if(!$course, 404);
         return view('admin.courses.show', compact('course'));
     }
@@ -197,7 +216,7 @@ class AdminController extends Controller
     /** 編集フォーム（/admin/courses/{id}/edit） */
     public function courseEdit($id)
     {
-        $course = $this->findItem('courses', (int)$id);
+        $course = $this->findItem('courses', (int) $id);
         abort_if(!$course, 404);
         return view('admin.courses.edit', compact('course'));
     }
@@ -206,19 +225,19 @@ class AdminController extends Controller
     public function courseUpdate(Request $req, $id)
     {
         $req->validate(['name' => 'required|string|max:255']);
-        $this->updateItem('courses', (int)$id, function ($row) use ($req) {
-            $row['name']   = $req->input('name');
+        $this->updateItem('courses', (int) $id, function ($row) use ($req) {
+            $row['name'] = $req->input('name');
             $row['active'] = $req->has('active');
             return $row;
         });
 
         return redirect()->route('admin.courses.show', $id)->with('status', 'Course updated.');
     }
-      // ── Teachers: Edit / Update ─────────────────────────
+    // ── Teachers: Edit / Update ─────────────────────────
     /** 編集フォーム（/admin/teachers/{id}/edit） */
     public function teacherEdit($id)
     {
-        $t = $this->findItem('teachers', (int)$id);
+        $t = $this->findItem('teachers', (int) $id);
         abort_if(!$t, 404);
 
         // ビュー側では $t を使います（例：resources/views/admin/teachers/edit.blade.php）
@@ -229,14 +248,14 @@ class AdminController extends Controller
     public function teacherUpdate(Request $req, $id)
     {
         $req->validate([
-            'name'  => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'email' => 'required|email',
             // avatar は任意（テキストパス想定）
         ]);
 
-        $this->updateItem('teachers', (int)$id, function ($row) use ($req) {
-            $row['name']   = $req->input('name');
-            $row['email']  = $req->input('email');
+        $this->updateItem('teachers', (int) $id, function ($row) use ($req) {
+            $row['name'] = $req->input('name');
+            $row['email'] = $req->input('email');
             $row['active'] = $req->boolean('active'); // on/true のとき true
             if ($req->filled('avatar')) {
                 $row['avatar'] = $req->input('avatar');
@@ -246,4 +265,26 @@ class AdminController extends Controller
 
         return redirect()->route('admin.teachers.index')->with('status', 'Teacher updated.');
     }
+    
+    // app/Http/Controllers/Admin/TeacherController.php（抜粋）
+    public function update(Request $r, Teacher $teacher)
+    {
+        $data = $r->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255'],
+            'avatar' => ['nullable', 'url'],
+            'active' => ['nullable'],
+        ]);
+        $data['active'] = $r->boolean('active');
+        $teacher->update($data);
+        return redirect()->route('admin.teachers.show', $teacher->id)->with('ok', 'Updated');
+    }
+
+    public function toggle(Teacher $teacher)
+    {
+        $teacher->active = !$teacher->active;
+        $teacher->save();
+        return back();
+    }
+
 }

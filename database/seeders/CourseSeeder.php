@@ -99,6 +99,7 @@ class CourseSeeder extends Seeder
             'image'       => 'jsbasic.jpg',
             'language'    => 'it',
             'level'       => 'basic',
+            
         ]);
 
         $jsIntro = Section::create(['course_id' => $js->id, 'title' => 'JavaScript入門']);
