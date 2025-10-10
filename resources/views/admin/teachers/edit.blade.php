@@ -1,34 +1,51 @@
-{{-- resources/views/admin/teachers/edit.blade.php --}}
-@extends('layouts.app')
-@section('title','Edit Teacher')
+@extends('layouts.admin')
+@section('title', 'Edit Teacher')
 
 @section('content')
-<div class="container py-3">
-  <h4 class="mb-3">Edit Teacher</h4>
+<h2 class="mb-4 fw-bold text-dark">Edit Teacher</h2>
 
-  <form method="POST" action="{{ route('admin.teachers.update', $t->id) }}">
-    @csrf
-    @method('PUT')
+<div class="card shadow-sm border-0">
+  <div class="card-body">
+    <form method="POST" action="{{ route('admin.teachers.update', $teacher->id) }}">
+      @csrf
+      @method('PUT')
 
-    <div class="mb-3">
-      <label class="form-label">Name</label>
-      <input type="text" name="name" value="{{ old('name',$t->name) }}" class="form-control">
-    </div>
+      {{-- Name --}}
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Name</label>
+        <input type="text" name="name" class="form-control"
+               value="{{ old('name', $teacher->name) }}" required>
+        @error('name') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+      </div>
 
-    <div class="mb-3">
-      <label class="form-label">Email</label>
-      <input type="email" name="email" value="{{ old('email',$t->email) }}" class="form-control">
-    </div>
+      {{-- Email --}}
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Email</label>
+        <input type="email" name="email" class="form-control"
+               value="{{ old('email', $teacher->email) }}" required>
+        @error('email') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+      </div>
 
-    <div class="form-check form-switch mb-4">
-      <input class="form-check-input" type="checkbox" role="switch" id="active" name="active" {{ $t->active ? 'checked' : '' }}>
-      <label class="form-check-label" for="active">Active</label>
-    </div>
+      {{-- Avatar URL --}}
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Avatar URL</label>
+        <input type="url" name="avatar" class="form-control"
+               value="{{ old('avatar', $teacher->avatar) }}" placeholder="https://…">
+        @error('avatar') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+      </div>
 
-    <div class="d-flex gap-2">
-      <a href="{{ route('admin.teachers.index') }}" class="btn btn-outline-secondary">Cancel</a>
-      <button class="btn btn-primary">Save</button>
-    </div>
-  </form>
+      {{-- Active --}}
+      <div class="form-check form-switch mb-4">
+        <input class="form-check-input" type="checkbox" id="activeSwitch" name="active"
+               {{ old('active', $teacher->active) ? 'checked' : '' }}>
+        <label class="form-check-label" for="activeSwitch">Active</label>
+      </div>
+
+      <div class="d-flex gap-2">
+        <a href="{{ route('admin.teachers.index') }}" class="btn btn-outline-secondary px-4">Cancel</a>
+        <button type="submit" class="btn px-4" style="background-color:#189AB4;color:#fff;">Update</button>
+      </div>
+    </form>
+  </div>
 </div>
 @endsection

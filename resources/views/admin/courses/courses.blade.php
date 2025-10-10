@@ -50,23 +50,32 @@
           <div class="accordion-body bg-white border-top">
             <div class="table-responsive">
               <table class="table align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th class="ps-4">Topic</th>
+                    <th>Status</th>
+                    <th class="text-end">Action</th>
+                  </tr>
+                </thead>
                 <tbody>
-                  @foreach (['Topic Name','Topic Name','Topic Name','Topic Name'] as $i => $topic)
-                    @php $topicActive = $i % 2 === 0; @endphp
+                  @foreach (['Topic A', 'Topic B', 'Topic C'] as $i => $topic)
+                    @php $isActive = $i % 2 === 0; @endphp
                     <tr>
                       <td class="ps-4 fw-semibold">{{ $topic }}</td>
                       <td>
-                        <div class="d-inline-flex align-items-center gap-2">
-                          @if ($topicActive)
-                            <span class="text-success">●</span><span>Active</span>
-                          @else
-                            <span class="text-secondary">●</span><span>Inactive</span>
-                          @endif
-                        </div>
+                        @if ($isActive)
+                          <span class="text-success fw-semibold">● Active</span>
+                        @else
+                          <span class="text-secondary fw-semibold">● Inactive</span>
+                        @endif
                       </td>
-                      <td class="text-end text-nowrap">
-                        
-                      </td>
+                      {{-- <td class="text-end">
+                        @if ($isActive)
+                          <button class="btn btn-sm px-3" style="background:#6c757d; color:white;">Inactivate</button>
+                        @else
+                          <button class="btn btn-sm px-3" style="background:#28a745; color:white;">Activate</button>
+                        @endif
+                      </td> --}}
                     </tr>
                   @endforeach
                 </tbody>

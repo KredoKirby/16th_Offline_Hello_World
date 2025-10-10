@@ -12,9 +12,9 @@ class CourseSeeder extends Seeder
     public function run(): void
     {
         /*
-        |-------------------------------------------------
+        |--------------------------------------------------------------------------
         | IT Courses
-        |-------------------------------------------------
+        |--------------------------------------------------------------------------
         */
 
         // ===== PHP Basic =====
@@ -27,65 +27,70 @@ class CourseSeeder extends Seeder
         ]);
 
         $phpIntro = Section::create(['course_id' => $php->id, 'title' => 'PHP入門']);
-        Lesson::insert([
-            [
-                'section_id' => $phpIntro->id,
-                'title'      => 'PHPとは？',
-                'content'    => 'PHPの歴史と特徴。',
-                'image'      => 'lesson_php_intro.jpg',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'section_id' => $phpIntro->id,
-                'title'      => '環境構築',
-                'content'    => 'XAMPP/MAMPで環境を整える。',
-                'image'      => 'lesson_php_setup.jpg',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+        Lesson::create([
+            'course_id'   => $php->id,
+            'section_id'  => $phpIntro->id,
+            'title'       => 'PHPとは？',
+            'content'     => 'PHPの歴史と特徴。',
+            'images'      => ['1_PHP.png','2_PHP.png','3_PHP.png'],
+            'video'       => 'LV1.mp4',
+            'pages'       => 3,
+            'duration'   => 125,
+        ]);
+        Lesson::create([
+            'course_id'   => $php->id,
+            'section_id'  => $phpIntro->id,
+            'title'       => '環境構築',
+            'content'     => 'XAMPP/MAMPで環境を整える。',
+            'images'      => ['4_PHP.png','5_PHP.png','6_PHP.png'],
+            'video'       => 'LV2.mp4',
+            'pages'       => 3,
+            'duration'   => 210,
         ]);
 
         $phpSyntax = Section::create(['course_id' => $php->id, 'title' => '基礎文法']);
-        Lesson::insert([
-            [
-                'section_id' => $phpSyntax->id,
-                'title'      => '変数と定数',
-                'content'    => '変数と定数の基本。',
-                'image'      => 'lesson_php_variable.jpg',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'section_id' => $phpSyntax->id,
-                'title'      => '条件分岐',
-                'content'    => 'if, switch文。',
-                'image'      => 'lesson_php_condition.jpg',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+        Lesson::create([
+            'course_id'   => $php->id,
+            'section_id'  => $phpSyntax->id,
+            'title'       => '変数と定数',
+            'content'     => '変数と定数の基本。',
+            'images'      => ['7_PHP.png','8_PHP.png','9_PHP.png'],
+            'video'       => 'LV3.mp4',
+            'pages'       => 3,
+            'duration'   => 180, 
+        ]);
+        Lesson::create([
+            'course_id'   => $php->id,
+            'section_id'  => $phpSyntax->id,
+            'title'       => '条件分岐',
+            'content'     => 'if, switch文。',
+            'images'      => ['10_PHP.png','11_PHP.png','12_PHP.png'],
+            'video'       => 'LV4.mp4',
+            'pages'       => 3,
+            'duration'   => 240, 
         ]);
 
         $phpPrac = Section::create(['course_id' => $php->id, 'title' => '実践']);
-        Lesson::insert([
-            [
-                'section_id' => $phpPrac->id,
-                'title'      => 'フォーム処理',
-                'content'    => 'ユーザー入力を処理する。',
-                'image'      => 'lesson_php_form.jpg',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'section_id' => $phpPrac->id,
-                'title'      => '掲示板アプリ',
-                'content'    => 'シンプルなアプリを作成。',
-                'image'      => 'lesson_php_app.jpg',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+        Lesson::create([
+            'course_id'   => $php->id,
+            'section_id'  => $phpPrac->id,
+            'title'       => 'フォーム処理',
+            'content'     => 'ユーザー入力を処理する。',
+            'images'      => ['13_PHP.png','14_PHP.png','15_PHP.png'],
+            'video'       => 'LV5.mp4',
+            'pages'       => 3,
+            'duration'   => 200, 
         ]);
-
+        Lesson::create([
+            'course_id'   => $php->id,
+            'section_id'  => $phpPrac->id,
+            'title'       => '掲示板アプリ',
+            'content'     => 'シンプルなアプリを作成。',
+            'images'      => ['16_PHP.png','17_PHP.png','18_PHP.png'],
+            'video'       => 'LV8.mp4',
+            'pages'       => 3,
+            'duration'   => 300,
+        ]);
 
         // ===== JavaScript Basic =====
         $js = Course::create([
@@ -94,68 +99,74 @@ class CourseSeeder extends Seeder
             'image'       => 'jsbasic.jpg',
             'language'    => 'it',
             'level'       => 'basic',
+            
         ]);
 
         $jsIntro = Section::create(['course_id' => $js->id, 'title' => 'JavaScript入門']);
-        Lesson::insert([
-            [
-                'section_id' => $jsIntro->id,
-                'title'      => 'JavaScriptとは？',
-                'content'    => 'ブラウザで動く言語。',
-                'image'      => 'lesson_js_intro.jpg',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'section_id' => $jsIntro->id,
-                'title'      => '環境準備',
-                'content'    => 'ブラウザとエディタを準備。',
-                'image'      => 'lesson_js_setup.jpg',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+        Lesson::create([
+            'course_id'   => $js->id,
+            'section_id'  => $jsIntro->id,
+            'title'       => 'JavaScriptとは？',
+            'content'     => 'ブラウザで動く言語。',
+            'images'      => ['1_JS.png','2_JS.png'],
+            'video'       => 'LV1.mp4',
+            'pages'       => 2,
+            'duration'   => 150,
+        ]);
+        Lesson::create([
+            'course_id'   => $js->id,
+            'section_id'  => $jsIntro->id,
+            'title'       => '環境準備',
+            'content'     => 'ブラウザとエディタを準備。',
+            'images'      => ['3_JS.png','4_JS.png','5_JS.png'],
+            'video'       => 'LV2.mp4',
+            'pages'       => 3,
+            'duration'   => 200,
         ]);
 
         $jsSyntax = Section::create(['course_id' => $js->id, 'title' => '文法基礎']);
-        Lesson::insert([
-            [
-                'section_id' => $jsSyntax->id,
-                'title'      => '変数と型',
-                'content'    => 'let, const, 型について。',
-                'image'      => 'lesson_js_variable.jpg',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'section_id' => $jsSyntax->id,
-                'title'      => '関数',
-                'content'    => '関数の定義と呼び出し。',
-                'image'      => 'lesson_js_function.jpg',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+        Lesson::create([
+            'course_id'   => $js->id,
+            'section_id'  => $jsSyntax->id,
+            'title'       => '変数と型',
+            'content'     => 'let, const, 型について。',
+            'images'      => ['6_JS.png','7_JS.png','8_JS.png'],
+            'video'       => 'LV3.mp4',
+            'pages'       => 3,
+            'duration'   => 180, 
+        ]);
+        Lesson::create([
+            'course_id'   => $js->id,
+            'section_id'  => $jsSyntax->id,
+            'title'       => '関数',
+            'content'     => '関数の定義と呼び出し。',
+            'images'      => ['9_JS.png','10_JS.png','11_JS.png'],
+            'video'       => 'LV4.mp4',
+            'pages'       => 3,
+            'duration'   => 240,
         ]);
 
         $jsDom = Section::create(['course_id' => $js->id, 'title' => 'DOM操作']);
-        Lesson::insert([
-            [
-                'section_id' => $jsDom->id,
-                'title'      => '要素の取得',
-                'content'    => 'getElementById, querySelector。',
-                'image'      => 'lesson_js_dom.jpg',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'section_id' => $jsDom->id,
-                'title'      => 'イベント処理',
-                'content'    => 'クリックイベントの設定。',
-                'image'      => 'lesson_js_event.jpg',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+        Lesson::create([
+            'course_id'   => $js->id,
+            'section_id'  => $jsDom->id,
+            'title'       => '要素の取得',
+            'content'     => 'getElementById, querySelector。',
+            'images'      => ['12_JS.png','13_JS.png','14_JS.png'],
+            'video'       => 'LV5.mp4',
+            'pages'       => 3,
+            'duration'   => 200,
         ]);
-
+        Lesson::create([
+            'course_id'   => $js->id,
+            'section_id'  => $jsDom->id,
+            'title'       => 'イベント処理',
+            'content'     => 'クリックイベントの設定。',
+            'images'      => ['15_JS.png','16_JS.png','17_JS.png'],
+            'video'       => 'LV7.mp4',
+            'pages'       => 3,
+            'duration'   => 220,
+        ]);
 
         // ===== Python Basic =====
         $py = Course::create([
@@ -167,73 +178,72 @@ class CourseSeeder extends Seeder
         ]);
 
         $pyIntro = Section::create(['course_id' => $py->id, 'title' => 'Python入門']);
-        Lesson::insert([
-            [
-                'section_id' => $pyIntro->id,
-                'title'      => 'Pythonとは？',
-                'content'    => 'AIやデータ分析に強い言語。',
-                'image'      => 'lesson_py_intro.jpg',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'section_id' => $pyIntro->id,
-                'title'      => '環境構築',
-                'content'    => 'PythonとIDEを準備。',
-                'image'      => 'lesson_py_setup.jpg',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+        Lesson::create([
+            'course_id'   => $py->id,
+            'section_id'  => $pyIntro->id,
+            'title'       => 'Pythonとは？',
+            'content'     => 'AIやデータ分析に強い言語。',
+            'images'      => ['1_Py.png','2_Py.png'],
+            'video'       => 'LV1.mp4',
+            'pages'       => 2,
+             'duration'   => 140,
+        ]);
+        Lesson::create([
+            'course_id'   => $py->id,
+            'section_id'  => $pyIntro->id,
+            'title'       => '環境構築',
+            'content'     => 'PythonとIDEを準備。',
+            'images'      => ['3_Py.png','4_Py.png','5_Py.png'],
+            'video'       => 'LV2.mp4',
+            'pages'       => 3,
+            'duration'   => 180,
         ]);
 
         $pySyntax = Section::create(['course_id' => $py->id, 'title' => '基礎文法']);
-        Lesson::insert([
-            [
-                'section_id' => $pySyntax->id,
-                'title'      => '変数と型',
-                'content'    => '動的型付けの仕組み。',
-                'image'      => 'lesson_py_variable.jpg',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'section_id' => $pySyntax->id,
-                'title'      => 'ループ',
-                'content'    => 'for, whileの使い方。',
-                'image'      => 'lesson_py_loop.jpg',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+        Lesson::create([
+            'course_id'   => $py->id,
+            'section_id'  => $pySyntax->id,
+            'title'       => '変数と型',
+            'content'     => '動的型付けの仕組み。',
+            'images'      => ['6_Py.png','7_Py.png','8_Py.png'],
+            'video'       => 'LV3.mp4',
+            'pages'       => 3,
+            'duration'   => 120,
+        ]);
+        Lesson::create([
+            'course_id'   => $py->id,
+            'section_id'  => $pySyntax->id,
+            'title'       => 'ループ',
+            'content'     => 'for, whileの使い方。',
+            'images'      => ['9_Py.png','10_Py.png','11_Py.png','12_Py.png'],
+            'video'       => 'LV4.mp4',
+            'pages'       => 4,
+            'duration'   => 220,
         ]);
 
         $pyData = Section::create(['course_id' => $py->id, 'title' => 'データ処理']);
-        Lesson::insert([
-            [
-                'section_id' => $pyData->id,
-                'title'      => 'リストと辞書',
-                'content'    => 'Pythonのデータ構造。',
-                'image'      => 'lesson_py_data.jpg',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'section_id' => $pyData->id,
-                'title'      => 'ファイル操作',
-                'content'    => 'ファイルの読み書き。',
-                'image'      => 'lesson_py_file.jpg',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+        Lesson::create([
+            'course_id'   => $py->id,
+            'section_id'  => $pyData->id,
+            'title'       => 'リストと辞書',
+            'content'     => 'Pythonのデータ構造。',
+            'images'      => ['13_Py.png'],
+            'video'       => 'LV5.mp4',
+            'pages'       => 1,
+            'duration'   => 170,
+        ]);
+        Lesson::create([
+            'course_id'   => $py->id,
+            'section_id'  => $pyData->id,
+            'title'       => 'ファイル操作',
+            'content'     => 'ファイルの読み書き。',
+            'images'      => ['14_Py.png','15_Py.png','16_Py.png'],
+            'video'       => 'LV6.mp4',
+            'pages'       => 3,
+            'duration'   => 140,
         ]);
 
-
-        /*
-        |-------------------------------------------------------------------
-        | English Courses
-        |-------------------------------------------------------------------
-        */
-
-        // ===== English Basic =====
+        // ===== English Courses =====
         $enBasic = Course::create([
             'title'       => 'English Basic',
             'description' => '日常会話の基礎を学ぶコースです。',
@@ -243,43 +253,47 @@ class CourseSeeder extends Seeder
         ]);
 
         $enBasicSec1 = Section::create(['course_id' => $enBasic->id, 'title' => 'Greetings']);
-        Lesson::insert([
-            [
-                'section_id' => $enBasicSec1->id,
-                'title'      => '挨拶',
-                'content'    => 'Hello, Good morning など。',
-                'image'      => 'lesson_en_greeting.jpg',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'section_id' => $enBasicSec1->id,
-                'title'      => '自己紹介',
-                'content'    => '名前や出身を伝える。',
-                'image'      => 'lesson_en_intro.jpg',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+        Lesson::create([
+            'course_id'   => $enBasic->id,
+            'section_id'  => $enBasicSec1->id,
+            'title'       => '挨拶',
+            'content'     => 'Hello, Good morning など。',
+            'images'      => ['1E.png','2E.png','3E.png'],
+            'video'       => 'LV2.mp4',
+            'pages'       => 3,
+            'duration'   => 180,
+        ]);
+        Lesson::create([
+            'course_id'   => $enBasic->id,
+            'section_id'  => $enBasicSec1->id,
+            'title'       => '自己紹介',
+            'content'     => '名前や出身を伝える。',
+            'images'      => ['4E.png','5E.png','6E.png'],
+            'video'       => 'LV3.mp4',
+            'pages'       => 3,
+            'duration'   => 200,
         ]);
 
         $enBasicSec2 = Section::create(['course_id' => $enBasic->id, 'title' => 'Shopping']);
-        Lesson::insert([
-            [
-                'section_id' => $enBasicSec2->id,
-                'title'      => '買い物の会話',
-                'content'    => 'お店で使える表現。',
-                'image'      => 'lesson_en_shopping.jpg',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'section_id' => $enBasicSec2->id,
-                'title'      => '値段を尋ねる',
-                'content'    => 'How much is this? の使い方。',
-                'image'      => 'lesson_en_price.jpg',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+        Lesson::create([
+            'course_id'   => $enBasic->id,
+            'section_id'  => $enBasicSec2->id,
+            'title'       => '買い物の会話',
+            'content'     => 'お店で使える表現。',
+            'images'      => ['7E.png','8E.png'],
+            'video'       => 'LV8.mp4',
+            'pages'       => 2,
+            'duration'   => 320,
+        ]);
+        Lesson::create([
+            'course_id'   => $enBasic->id,
+            'section_id'  => $enBasicSec2->id,
+            'title'       => '値段を尋ねる',
+            'content'     => 'How much is this? の使い方。',
+            'images'      => ['9E.png','10E.png'],
+            'video'       => 'LV6.mp4',
+            'pages'       => 2,
+            'duration'   => 180,
         ]);
     }
 }
