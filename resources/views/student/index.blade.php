@@ -41,12 +41,17 @@
                         <h2 class="h4 mb-3">Book a class</h2>
                         <form>
                             <div class="mb-3">
-                                <label class="form-label">Course</label>
-                                <select class="form-select">
-                                    <option selected>Select a course</option>
-                                    <option>Beginner Japanese</option>
-                                    <option>Business English</option>
-                                    <option>Web Development</option>
+                                <label for="course_id" class="form-label">Course</label>
+                                <select name="course_id" id="course_id" class="form-select" required>
+                                    <option value="" disabled selected>Choose a course</option>
+                                    @forelse($courses as $course)
+                                        <option value="{{ $course->id }}"
+                                            {{ old('course_id') == $course->id ? 'selected' : '' }}>
+                                            {{ $course->title }}
+                                        </option>
+                                    @empty
+                                        <option value="" disabled>No enrolled courses found.</option>
+                                    @endforelse
                                 </select>
                             </div>
 
