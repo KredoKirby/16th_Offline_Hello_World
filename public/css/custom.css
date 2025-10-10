@@ -1,7 +1,7 @@
 /* ====== Course Page Custom Style ====== */
 /* 左サイド全体 */
 .courses-col-md-3 {
-    background: #f5f5f5; /* スクショと同じ薄グレー */
+    background: #f5f5f5; 
     min-height: 100vh;
     padding: 20px;
 }
@@ -30,9 +30,8 @@ form.d-flex button {
     gap: 1rem;
 }
 
-
 .custom-tabs .nav-link {
-    color: #374151; 
+    color: #374151;
     font-weight: normal;
     border: none;
     border-bottom: 2px solid transparent;
@@ -49,18 +48,15 @@ form.d-flex button {
 
 /* アクティブタブ */
 .custom-tabs .nav-link.active {
-    color:  #374151;
+    color: #374151;
     font-weight: bold;
     border-bottom: 2px solid #374151;
-    background: none !important; 
+    background: none !important;
 }
-
-
-
 
 /* 言語フィルタボタン */
 .courses-col-md-3 .btn-outline-dark {
-    border: 2px solid #d1d5db; 
+    border: 2px solid #d1d5db;
     border-radius: 8px;
     font-weight: 500;
     font-size: 16px;
@@ -75,7 +71,7 @@ form.d-flex button {
 .courses-col-md-3 .btn-outline-dark:hover {
     border-color: #6b7280;
     color: #374151;
-    background: #f3f4f6; 
+    background: #f3f4f6;
 }
 
 /* アクティブ時*/
@@ -83,9 +79,8 @@ form.d-flex button {
     border-color: #374151 !important;
     color: #111827 !important;
     font-weight: 600 !important;
-    background: none !important; 
+    background: none !important;
 }
-
 
 /* コースカード */
 .courses-col-md-3 a {
@@ -112,7 +107,6 @@ form.d-flex button {
     margin-bottom: 4px;
 }
 
-
 /* プログレスバー */
 .courses-col-md-3 .progress {
     height: 8px;
@@ -129,18 +123,176 @@ form.d-flex button {
     color: #555;
 }
 
-
 /* コース画像 */
 .course-header-image {
     width: 100%;
-    height: 300px;          
-    object-fit: cover;      
+    height: 300px;
+    object-fit: cover;
     border-radius: 8px;
 }
 
-
 /* ====== Selflearning Page Custom Style ====== */
 
+.selflearning-back-btn {
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.9rem;
+}
+.selflearning-back-btn i {
+    font-size: 0.8rem;
+}
+
+
+/*  self learning Dashboard Page *****/
+
+
+/* 検索バー */
+.video-search-bar {
+    max-width: 250px; 
+}
+.video-search-bar .input-group {
+    border: 1px solid #ddd;
+    border-radius: 25px; 
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.video-search-bar .input-group-text {
+    background: #fff;
+    border: none;
+    color: #888;
+}
+
+.video-search-bar input {
+    border: none;
+    box-shadow: none !important;
+    font-size: 14px;
+    padding: 8px 12px;
+}
+
+/* Status カード */
+.dashboard-status-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+.dashboard-status-card h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+}
+.dashboard-status-enrolled {
+    background-color: #d4f8d4;
+}
+.dashboard-status-completed {
+    background-color: #ffd6d6;
+}
+.dashboard-status-hours {
+    background-color: #fff7cc;
+}
+
+/* Active / Completed タブ */
+.video-status-tabs {
+    display: flex;
+    gap: 10px;
+}
+
+.video-status-tabs button {
+    flex: 1;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    background: #f8f9fa;
+    color: #555;
+    font-size: 14px;
+    padding: 6px 12px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+/* hover */
+.video-status-tabs button:hover {
+    background: #e9ecef;
+    border-color: #bbb;
+    color: #000;
+}
+
+/* active */
+.video-status-tabs button.active {
+    background: #75E6DA; 
+    color: #fff;
+    border-color: #75E6DA;
+    font-weight: bold;
+}
+
+
+
+
+
+/* My Courses タブ */
+.dashboard-courses .nav-pills .nav-link {
+    font-weight: 600;
+    border-radius: 0;
+    color: #333;
+    padding: 6px 16px;
+}
+.dashboard-courses .nav-pills .nav-link.active {
+    border-bottom: 3px solid #0d6efd;
+    background: transparent;
+    color: #0d6efd;
+}
+
+/* コースカード */
+.dashboard-course-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    padding: 15px;
+    margin-bottom: 15px;
+    transition: transform 0.2s ease;
+}
+.dashboard-course-card:hover {
+    transform: translateY(-3px);
+}
+.dashboard-course-img {
+    width: 80px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+.dashboard-course-card .progress {
+    height: 8px;
+    border-radius: 5px;
+}
+
+/* サイドカード */
+.dashboard-side-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    padding: 15px;
+}
+
+/* Recommended Courses */
+.dashboard-recommend-item {
+    border-bottom: 1px solid #eee;
+    padding: 8px 0;
+    display: flex;
+    align-items: center;
+}
+.dashboard-recommend-item:last-child {
+    border-bottom: none;
+}
+.dashboard-recommend-img {
+    width: 60px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+
+/* showpage *****************/
 /* コースタイトルの下の情報 */
 .course-meta {
     font-size: 14px;
@@ -213,8 +365,631 @@ form.d-flex button {
 
 /* textボタン */
 .lesson-actions .btn-info {
-    border-radius: 20px;
-    padding: 4px 12px;
+    border-radius: 30px;          
+    padding: 6px 16px;              
     font-size: 13px;
     font-weight: 600;
+    background: linear-gradient(135deg, #4fc3f7, #0288d1); 
+    border: none;
+    color: #fff;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);          
+    transition: all 0.25s ease-in-out;
+}
+
+.lesson-actions .btn-info:hover {
+    background: linear-gradient(135deg, #03a9f4, #0277bd);
+    transform: translateY(-2px);                           
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+
+
+
+/* ---- lesson video page layout ---- */
+.video-player-header {
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+.video-container video {
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+/* 再生コントロール風UI */
+.video-controls {
+    background-color: #189AB4; 
+    color: white;
+    font-weight: 500;
+    padding: 8px 12px;
+    border-radius: 3px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* ボタンスタイル */
+.lesson-buttons {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.lesson-buttons .btn {
+    flex: 1;
+    font-weight: bold;
+    border-radius: 4px;
+    text-transform: lowercase;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+
+    
+}
+
+.lesson-buttons .btn-secondary {
+    background-color: #9CDBE2;
+    border: none;
+    color: #fff;
+}
+
+.lesson-buttons .btn-success {
+    background-color: #75E6DA;
+    border: none;
+    color: #fff;
+}
+
+.lesson-buttons .btn-primary {
+    background-color: #4aa8e3;
+    border: none;
+    color: #fff;
+}
+
+/* ---- video list ---- */
+.video-list {
+    background-color: #f7f7f7;
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 4px;
+}
+
+.video-list h5 {
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.video-list strong {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.video-list ul {
+    padding-left: 15px;
+}
+
+.video-list li {
+    margin-bottom: 5px;
+    font-size: 0.95rem;
+}
+
+.video-list li a {
+    text-decoration: none;
+    color: #333;
+}
+
+.video-list li a:hover {
+    text-decoration: underline;
+}
+
+.video-list li .fw-bold.text-dark {
+    color: #189AB4 !important; /* アクティブレッスン */
+}
+
+.video-list small {
+    color: #666;
+}
+
+.sidebar {
+    --sb-bg: #9cdbe2; /* 通常 背景色（薄い水色） */
+    --sb-bg-rgb: 156, 219, 226;
+
+    --sb-fg: #05445e; /* 通常 文字色（濃い青） */
+    --sb-fg-rgb: 5, 68, 94;
+
+    --sb-fg-2: color-mix(
+        in srgb,
+        var(--sb-fg) 92%,
+        black 8%
+    ); /* fgの少し濃いトーン */
+    background-color: var(--sb-bg);
+    color: var(--sb-fg);
+}
+
+/* ベース（Bootstrapの後に読み込むこと） */
+.sidebar .nav-link {
+    position: relative;
+    display: block;
+    padding: 0.6rem 0.9rem;
+    border-radius: 12px;
+    color: var(--sb-fg);
+    text-decoration: none;
+    transition: color 0.2s ease, background-color 0.2s ease,
+        box-shadow 0.2s ease, transform 0.08s ease;
+}
+
+/* ホバー（通常時） */
+.sidebar .nav-link:hover,
+.sidebar .nav-link:focus {
+    background: rgba(var(--sb-fg-rgb), 0.08);
+    color: var(--sb-fg-2);
+}
+
+/* =========================
+   反転アクティブ（“かっこよく”）
+   ========================= */
+/* 文字=背景色 / 背景=前景色 の反転 + グラデ/インナー枠/柔らかい影 */
+.sidebar .nav-link.active,
+.sidebar .nav-link[aria-current="page"] {
+    color: var(--sb-bg); /* 文字を薄水色に */
+    /* 濃い青を基調にした微グラデ（のっぺり回避） */
+    background: linear-gradient(180deg, var(--sb-fg-2) 0%, var(--sb-fg) 100%);
+    /* 外側はふんわり、内側は薄い縁取りで締める */
+    box-shadow: 0 6px 16px rgba(var(--sb-fg-rgb), 0.28),
+        inset 0 0 0 1px rgba(var(--sb-bg-rgb), 0.35);
+    font-weight: 700;
+}
+
+/* アクティブ時の“光の走査”エフェクト（控えめ） */
+.sidebar .nav-link.active::after,
+.sidebar .nav-link[aria-current="page"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    /* 斜めに走るハイライト */
+    background: linear-gradient(
+        120deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.25) 18%,
+        rgba(255, 255, 255, 0) 36%
+    );
+    transform: translateX(-120%);
+    transition: transform 0.5s ease;
+    pointer-events: none;
+}
+
+/* ホバーで光がスッと横切る */
+.sidebar .nav-link.active:hover::after,
+.sidebar .nav-link[aria-current="page"]:hover::after {
+    transform: translateX(120%);
+}
+
+/* アクティブ + ホバーでほんの少し濃く＆持ち上げる */
+.sidebar .nav-link.active:hover,
+.sidebar .nav-link[aria-current="page"]:hover {
+    background: color-mix(in srgb, var(--sb-fg) 92%, black 8%);
+    transform: translateY(-1px);
+}
+
+/* キーボード操作でも見失わないフォーカスリング */
+.sidebar .nav-link:focus-visible {
+    outline: 2px solid rgba(var(--sb-bg-rgb), 0.9);
+    outline-offset: 2px;
+}
+
+/* クリック時の“押し感” */
+.sidebar .nav-link:active {
+    transform: translateY(1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sidebar .nav-link,
+    .sidebar .nav-link::after {
+        transition: none;
+    }
+}
+
+/* ===== Design tokens ===== */
+:root {
+    --fg: #0a0a0a;
+    --fg-2: rgba(0, 0, 0, 0.62);
+    --fg-3: rgba(0, 0, 0, 0.42);
+    --bg: #ffffff;
+    --bg-subtle: #f7f7f7;
+    --border: 1px solid rgba(0, 0, 0, 0.08);
+    --border-strong: 1px solid rgba(0, 0, 0, 0.14);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 12px 28px rgba(0, 0, 0, 0.06);
+    --radius-lg: 20px;
+    --radius-md: 14px;
+    --accent: #0a84ff;
+}
+@media (prefers-color-scheme: dark) {
+    :root {
+        --fg: #f5f5f7;
+        --fg-2: rgba(255, 255, 255, 0.78);
+        --fg-3: rgba(255, 255, 255, 0.56);
+        --bg: #1c1c1e;
+        --bg-subtle: #2c2c2e;
+        --border: 1px solid rgba(255, 255, 255, 0.08);
+        --border-strong: 1px solid rgba(255, 255, 255, 0.14);
+        --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.45);
+    }
+}
+
+/* ===== Layout ===== */
+.layout-narrow {
+    max-width: 980px;
+}
+
+/* ===== Card ===== */
+.ui-card {
+    background: var(--bg);
+    border: var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+}
+
+/* ===== Avatar ===== */
+.avatar {
+    width: 220px;
+    aspect-ratio: 1/1;
+    border-radius: 24px;
+    overflow: hidden;
+    background: var(--bg-subtle);
+    border: var(--border);
+    transition: transform 0.25s ease, box-shadow 0.25s ease,
+        border-color 0.25s ease;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+.avatar:hover {
+    transform: translateY(-2px);
+}
+.avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* ===== Type ===== */
+.title {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        "Helvetica Neue", system-ui, Arial, "Noto Sans JP",
+        "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    font-size: clamp(1.25rem, 1.05rem + 1.1vw, 2rem);
+    color: var(--fg);
+}
+.subtitle {
+    font-weight: 700;
+    letter-spacing: -0.005em;
+    color: var(--fg);
+}
+.meta {
+    color: var(--fg-2);
+    margin-top: 0.25rem;
+}
+.section-label {
+    font-weight: 600;
+    color: var(--fg-2);
+    letter-spacing: 0.02em;
+}
+.body-text {
+    color: var(--fg);
+    line-height: 1.7;
+}
+
+/* ===== Divider ===== */
+.rule {
+    border: 0;
+    height: 1px;
+    background: linear-gradient(
+        to right,
+        transparent,
+        rgba(0, 0, 0, 0.14),
+        transparent
+    );
+}
+@media (prefers-color-scheme: dark) {
+    .rule {
+        background: linear-gradient(
+            to right,
+            transparent,
+            rgba(255, 255, 255, 0.14),
+            transparent
+        );
+    }
+}
+
+/* ===== Buttons ===== */
+.btn-primary-solid {
+    border: none;
+    border-radius: 12px;
+    padding: 0.6rem 1rem;
+    font-weight: 600;
+    color: #fff;
+    background: var(--fg);
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.18);
+    transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+.btn-primary-solid:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.22);
+}
+.btn-primary-solid:active {
+    transform: translateY(0);
+    background: #000;
+}
+
+.btn-ghost {
+    background: transparent;
+    border: var(--border-strong);
+    color: var(--fg-2);
+    border-radius: 999px;
+    font-weight: 600;
+    padding: 0.5rem 1.1rem;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease,
+        border-color 0.2s ease;
+}
+.btn-ghost:hover {
+    background: var(--bg-subtle);
+    color: var(--fg);
+    transform: translateY(-1px);
+}
+
+/* ===== Quiet link ===== */
+.link-quiet {
+    color: var(--fg-2);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+.link-quiet:hover {
+    color: var(--fg);
+    border-color: var(--fg-3);
+}
+
+/* ===== List / Items ===== */
+.list.bordered {
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: var(--border);
+}
+.list-item {
+    display: block;
+    padding: 1rem 1rem;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.2s ease, transform 0.12s ease;
+}
+.list-item:hover {
+    background: var(--bg-subtle);
+}
+.item-title {
+    color: var(--fg);
+}
+.item-meta {
+    color: var(--fg-3);
+}
+
+/* thumbs */
+.thumb {
+    width: 72px;
+    height: 72px;
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--bg-subtle);
+    border: var(--border);
+}
+.thumb-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* progress */
+.progress-soft {
+    width: 100%;
+    height: 10px;
+    border-radius: 999px;
+    background: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.06),
+        rgba(0, 0, 0, 0.04)
+    );
+    border: var(--border);
+    position: relative;
+    overflow: hidden;
+}
+.progress-soft-bar {
+    position: absolute;
+    inset: 0;
+    width: var(--val);
+    max-width: 100%;
+    background: linear-gradient(90deg, var(--accent), #66aaff);
+    border-right: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+    transform-origin: left center;
+    transition: width 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* ===== Focus ring subtle ===== */
+.btn-primary-solid:focus,
+.btn-ghost:focus,
+.link-quiet:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.18);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 767.98px) {
+    .avatar {
+        width: 200px;
+    }
+    .list-item {
+        padding: 0.9rem 0.9rem;
+    }
+}
+
+/* ===== Tokens（文字色・線・影だけ管理） ===== */
+:root {
+    --fg: #0a0a0a;
+    --fg-2: rgba(0, 0, 0, 0.8);
+    --fg-3: rgba(0, 0, 0, 0.65);
+    --hairline: 1px solid rgba(0, 0, 0, 0.1);
+    --hairline-strong: 1px solid rgba(0, 0, 0, 0.18);
+    --radius: 12px;
+    --accent: #0a84ff;
+    --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.06),
+        0 10px 24px rgba(0, 0, 0, 0.06);
+}
+
+/* サイドバーの背景は inline の #9CDBE2 を使用。ここでは指定しない */
+.sidebar-shell {
+    border-right: var(--hairline);
+    box-shadow: var(--shadow-soft);
+    gap: 0.25rem;
+}
+
+.brand-logo {
+    max-width: 150px;
+    height: auto;
+    display: block;
+}
+
+/* 既存のサイドバー用（背景は上書きしない） */
+.sidebar-shell {
+    border-right: var(--hairline);
+    box-shadow: var(--shadow-soft);
+    gap: 0.25rem;
+}
+
+/* そのほか（s-nav, s-link, s-menu など）は前回CSSのままでOK */
+@media (max-width: 767.98px) {
+    .brand-logo {
+        max-width: 120px;
+    }
+}
+/* ===== Nav links ===== */
+.s-nav .s-link {
+    color: var(--fg);
+    opacity: 0.95;
+    border-radius: 10px;
+    padding: 0.55rem 0.75rem;
+    transition: background 0.18s ease, color 0.18s ease, opacity 0.18s ease,
+        transform 0.1s ease;
+}
+
+/* 背景がティールでも見える“薄い白ハイライト” */
+.s-nav .s-link:hover {
+    background: rgba(255, 255, 255, 0.18);
+    opacity: 1;
+}
+
+/* アクティブは反転（濃い文字色＝黒を背景に） */
+.s-nav .s-link.active {
+    background: #0a0a0a;
+    color: #fff;
+    opacity: 1;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+}
+.s-nav .s-link.active:hover {
+    transform: translateY(-1px);
+}
+
+/* Focus ring */
+.s-link:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.24);
+}
+
+/* ===== Dropdown / Menu（読みやすさ重視で白地） ===== */
+.s-menu {
+    padding: 0.4rem;
+    border-radius: 12px;
+    background: #ffffff; /* 背景ティール上でも視認性を担保 */
+    border: var(--hairline);
+}
+.s-menu-item {
+    border-radius: 10px;
+    padding: 0.55rem 0.75rem;
+    font-weight: 600;
+    color: var(--fg-3);
+}
+.s-menu-item:hover {
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--fg);
+}
+.s-menu-item.active {
+    background: #0a0a0a;
+    color: #fff;
+}
+
+/* ===== Logout（控えめな赤） ===== */
+.s-link-danger {
+    color: #b42222 !important;
+}
+.s-link-danger:hover {
+    background: rgba(180, 34, 34, 0.1);
+}
+
+/* Utilities */
+.text-truncate {
+    max-width: 100%;
+}
+
+/* モバイル調整（任意） */
+@media (max-width: 767.98px) {
+    .brand-avatar {
+        width: 104px;
+        height: 104px;
+    }
+}
+
+/* ====== Lesson Navigation Buttons (Prev / Next) ====== */
+#prevPageBtn, #nextPageBtn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background-color: #189AB4 !important; /* メインカラー */
+    color: #fff !important;
+    padding: 0.375rem 0.75rem !important;
+    border-radius: 0.25rem !important;
+    cursor: pointer !important;
+    font-size: 1rem !important;
+    border: none !important;
+    font-weight: 500 !important;
+    transition: background-color 0.2s ease, transform 0.2s ease !important;
+}
+
+/* hover 時 */
+#prevPageBtn:hover:not(:disabled),
+#nextPageBtn:hover:not(:disabled) {
+    background-color: #1fa7c9 !important;
+    transform: translateY(-1px) !important;
+}
+
+/* disabled 時 */
+#prevPageBtn:disabled,
+#nextPageBtn:disabled {
+    background-color: #a0c4d1 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+}
+
+/* アイコン調整（左矢印・右矢印） */
+#prevPageBtn i,
+#nextPageBtn i {
+    margin: 0 4px;
+    font-size: 0.9rem;
+}
+
+/* レスポンシブ調整 */
+@media (max-width: 767.98px) {
+    #prevPageBtn, #nextPageBtn {
+        width: 48%;
+        font-size: 0.9rem;
+        padding: 0.35rem 0.6rem !important;
+    }
 }

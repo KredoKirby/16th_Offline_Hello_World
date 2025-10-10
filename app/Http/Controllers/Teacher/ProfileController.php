@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers\Teacher;
 
-use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class ProfileController extends Controller
 {
-    public function show()
+    public function show($user_id)
     {
-        return view('teacher.profile');
+        $user = User::findOrFail($user_id);
+        return view('student.profile', compact('user'));
     }
 }

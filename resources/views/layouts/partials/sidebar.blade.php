@@ -1,61 +1,163 @@
 @php
-    // あなたのDB仕様に合わせて調整してください
-    // 例: 1=student, 2=teacher, 3=admin
     $roleId = Auth::user()->role_id ?? null;
 
-    $isStudent = (string)$roleId === '1';
-    $isTeacher = (string)$roleId === '2';
-    $isAdmin   = (string)$roleId === '3';
+    $isAdmin = (string) $roleId === '1';
+    $isTeacher = (string) $roleId === '2';
+    $isStudent = (string) $roleId === '3';
 @endphp
 
-@if($isStudent)
-    {{-- 生徒用サイドバー（添付デザイン準拠） --}}
-    <div class="p-4 rounded-3 border border-primary shadow-sm" style="background:#B7E3E4;">
-        {{-- ロゴ --}}
-        <div class="text-center mb-4">
-            {{-- 画像を public/images/hello-world.png に配置してください --}}
-            <img src="{{ asset('images/hello-world.png') }}" alt="HELLO WORLD"
-                 class="img-fluid rounded-circle"
-                 style="width:140px;height:140px;object-fit:cover;">
+@if ($isAdmin)
+    <aside
+        class="col-12 col-md-3 col-lg-2 d-flex flex-column align-items-center py-4
+         vh-100 position-sticky top-0 sidebar-shell"
+        style="background-color:#9CDBE2;">
+
+        {{-- Brand / Logo（装飾なし） --}}
+        <div class="mb-4">
+            <img src="{{ asset('images/HELLO2.png') }}" alt="Hello World" class="brand-logo">
         </div>
 
-        {{-- メインメニュー --}}
-        <nav class="mb-5">
-            <ul class="list-unstyled fw-bold" style="font-size:1.6rem; line-height:1.9;">
-                {{-- ルート名は環境に合わせて差し替え（未定なら # のままでOK） --}}
-                <li class="mb-3"><a class="text-decoration-none text-dark" href="#">Home</a></li>
-                <li class="mb-3"><a class="text-decoration-none text-dark" href="#">Courses</a></li>
-                <li class="mb-3"><a class="text-decoration-none text-dark" href="#">Self-learning</a></li>
-                <li class="mb-3"><a class="text-decoration-none text-dark" href="#">Forum</a></li>
-            </ul>
+        {{-- Main nav --}}
+        <nav class="nav flex-column w-100 px-4 fw-semibold s-nav">
+            <a class="nav-link s-link mb-1 {{ request()->routeIs('admin.index') ? 'active' : '' }}"
+                href="{{ route('admin.index') }}">Home</a>
+            <a class="nav-link s-link mb-1 {{ request()->routeIs('admin.students.index') ? 'active' : '' }}"
+                href="{{ route('admin.students.index') }}">Students</a>
+            <a class="nav-link s-link mb-1 {{ request()->routeIs('admin.teachers.index') ? 'active' : '' }}"
+                href="{{ route('admin.teachers.index') }}">Teachers</a>
+            <a class="nav-link s-link mb-1 {{ request()->routeIs('admin.courses.index') ? 'active' : '' }}"
+                href="{{ route('admin.courses.index') }}">Courses</a>
+            <a class="nav-link s-link mb-1" href="#">Self-learning</a>
+            <a class="nav-link s-link" href="#">Forum</a>
         </nav>
 
-        {{-- ユーザー領域 --}}
-        <div class="mb-4">
-            <div class="h4 fw-bold mb-3">{{ Auth::user()->name ?? 'Username' }}</div>
-            <ul class="list-unstyled" style="font-size:1.35rem;">
-                <li class="mb-2"><a class="text-decoration-none text-dark" href="#">Profile</a></li>
-                <li class="mb-2"><a class="text-decoration-none text-dark" href="#">My learning</a></li>
-                <li class="mb-4"><a class="text-decoration-none text-dark" href="#">Lesson History</a></li>
-            </ul>
+        {{-- Footer / User --}}
+        <div class="mt-auto w-100">
+            <div class="nav flex-column w-100 px-4 fw-semibold">
+                <div>
+                    <a class="nav-link s-link d-flex align-items-center gap-2 p-0 bg-transparent text-start w-100"
+                        href="{{ route('teachers.profile', ['user_id' => Auth::id()]) }}">
+                        <i class="fa-solid fa-user-circle"></i>
+                        <span class="text-truncate">{{ Auth::user()->name }}</span>
+                    </a>
+                </div>
 
-            {{-- Logout（赤） --}}
-            <a href="{{ route('logout') }}"
-               class="fw-bold text-danger text-decoration-none"
-               style="font-size:1.6rem;"
-               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                Logout
-            </a>
-            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">@csrf</form>
+                <form method="POST" action="{{ route('logout') }}" class="mt-2">
+                    @csrf
+                    <button type="submit"
+                        class="nav-link s-link s-link-danger p-0 bg-transparent border-0 text-start w-100">
+                        <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
+                    </button>
+                </form>
+            </div>
         </div>
-    </div>
-
+    </aside>
 @elseif($isTeacher)
-    {{-- TODO: 先生用サイドバー（後で実装） --}}
+    <aside
+        class="col-12 col-md-3 col-lg-2 d-flex flex-column align-items-center py-4
+         vh-100 position-sticky top-0 sidebar-shell"
+        style="background-color:#9CDBE2;">
 
-@elseif($isAdmin)
-    {{-- TODO: 管理者用サイドバー（後で実装） --}}
+        {{-- Brand / Logo（装飾なし） --}}
+        <div class="mb-4">
+            <img src="{{ asset('images/HELLO2.png') }}" alt="Hello World" class="brand-logo">
+        </div>
 
+        {{-- Main nav --}}
+        <nav class="nav flex-column w-100 px-4 fw-semibold s-nav">
+            <a class="nav-link s-link mb-1 {{ request()->routeIs('teachers.index') ? 'active' : '' }}"
+                href="{{ route('teachers.index') }}">Schedule</a>
+            <a class="nav-link s-link mb-1 {{ request()->routeIs('courses.index') ? 'active' : '' }}"
+                href="{{ route('courses.index') }}">Courses</a>
+            <a class="nav-link s-link mb-1" href="#">Self-learning</a>
+            <a class="nav-link s-link" href="#">Forum</a>
+        </nav>
+
+        {{-- Footer / User --}}
+        <div class="mt-auto w-100">
+            <div class="nav flex-column w-100 px-4 fw-semibold">
+                <div>
+                    <a class="nav-link s-link d-flex align-items-center gap-2 p-0 bg-transparent text-start w-100"
+                        href="{{ route('teachers.profile', ['user_id' => Auth::id()]) }}">
+                        <i class="fa-solid fa-user-circle"></i>
+                        <span class="text-truncate">{{ Auth::user()->name }}</span>
+                    </a>
+                </div>
+
+                <form method="POST" action="{{ route('logout') }}" class="mt-2">
+                    @csrf
+                    <button type="submit"
+                        class="nav-link s-link s-link-danger p-0 bg-transparent border-0 text-start w-100">
+                        <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
+                    </button>
+                </form>
+            </div>
+        </div>
+    </aside>
+@elseif($isStudent)
+    <aside
+        class="col-12 col-md-3 col-lg-2 d-flex flex-column align-items-center py-4
+         vh-100 position-sticky top-0 sidebar-shell"
+        style="background-color:#9CDBE2;">
+
+        {{-- Brand / Logo（装飾なし） --}}
+        <div class="mb-4">
+            <img src="{{ asset('images/HELLO2.png') }}" alt="Hello World" class="brand-logo">
+        </div>
+
+        {{-- Main nav --}}
+        <nav class="nav flex-column w-100 px-4 fw-semibold s-nav">
+            <a class="nav-link s-link mb-1 {{ request()->routeIs('students.index') ? 'active' : '' }}"
+                href="{{ route('students.index') }}">Home</a>
+            <a class="nav-link s-link mb-1 {{ request()->routeIs('courses.index') ? 'active' : '' }}"
+                href="{{ route('courses.index') }}">Courses</a>
+            <a class="nav-link s-link mb-1" href="#">Self-learning</a>
+            <a class="nav-link s-link" href="#">Forum</a>
+        </nav>
+
+        {{-- Footer / User --}}
+        <div class="mt-auto w-100">
+            <div class="nav flex-column w-100 px-4 fw-semibold">
+                <div class="dropup">
+                    <button
+                        class="nav-link s-link d-flex align-items-center gap-2 dropdown-toggle p-0 bg-transparent border-0 text-start w-100 s-user-toggle"
+                        id="userMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fa-solid fa-user-circle"></i>
+                        <span class="text-truncate">{{ Auth::user()->name }}</span>
+                    </button>
+
+                    <ul class="dropdown-menu s-menu w-100 shadow border-0" aria-labelledby="userMenuButton">
+                        <li>
+                            <a class="dropdown-item s-menu-item {{ request()->routeIs('students.profile') ? 'active' : '' }}"
+                                href="{{ route('students.profile', ['user_id' => Auth::user()]) }}">
+                                <i class="fa-regular fa-user me-2"></i> Profile
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item s-menu-item {{ request()->routeIs('students.mylearning') ? 'active' : '' }}"
+                                href="{{ route('students.mylearning') }}">
+                                <i class="fa-solid fa-graduation-cap me-2"></i> My learning
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item s-menu-item {{ request()->routeIs('students.lessonhistory') ? 'active' : '' }}"
+                                href="{{ route('students.lessonhistory') }}">
+                                <i class="fa-solid fa-clock-rotate-left me-2"></i> Lesson history
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <form method="POST" action="{{ route('logout') }}" class="mt-2">
+                    @csrf
+                    <button type="submit"
+                        class="nav-link s-link s-link-danger p-0 bg-transparent border-0 text-start w-100">
+                        <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
+                    </button>
+                </form>
+            </div>
+        </div>
+    </aside>
 @else
     {{-- role不明時は何も表示しない（必要ならデフォルトを用意） --}}
 @endif
