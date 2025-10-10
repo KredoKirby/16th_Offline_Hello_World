@@ -42,10 +42,22 @@
                             <h2>{{ $completedCourses }}</h2>
                         </div>
                     </div>
+
+                    {{-- ✅ Study Time（フォーマット済） --}}
+                    @php
+                        $hours = floor($hoursLearned / 3600);
+                        $minutes = floor(($hoursLearned % 3600) / 60);
+                        $seconds = $hoursLearned % 60;
+
+                        $formattedTime = '';
+                        if ($hours > 0) $formattedTime .= $hours . 'h ';
+                        if ($minutes > 0 || $hours > 0) $formattedTime .= $minutes . 'm ';
+                        $formattedTime .= $seconds . 's';
+                    @endphp
                     <div class="col-md-4 col-12">
                         <div class="dashboard-status-card dashboard-status-hours">
-                            <p class="mb-1">Hours Learned</p>
-                            <h2>{{ $hoursLearned }}</h2>
+                            <p class="mb-1">Study time</p>
+                            <h2>{{ $formattedTime }}</h2>
                         </div>
                     </div>
                 </div>

@@ -66,7 +66,8 @@
         <p class="course-meta">
             {{ $course->sections->count() }} sections ・
             {{ $course->sections->sum(fn($s) => $s->lessons->count()) }} lectures ・
-            {{ gmdate('H', $course->sections->sum(fn($s) => $s->lessons->sum('duration')) * 60) }} hours
+            {{ $course->sections->sum(fn($s) => $s->lessons->sum('pages')) }} pages ・
+            {{ gmdate('H', $course->sections->sum(fn($s) => $s->lessons->sum('duration')) * 60) }} minutes
         </p>
     </div>
 
@@ -78,10 +79,22 @@
                     <button class="accordion-button {{ $index > 0 ? 'collapsed' : '' }}" type="button"
                         data-bs-toggle="collapse" data-bs-target="#collapse{{ $index }}">
                         <span class="fw-bold">{{ $section->title }}</span>
-                        <span class="ms-auto section-meta">
-                            {{ $section->lessons->count() }} lectures ・
-                            {{ $section->lessons->sum('duration') }} min
-                        </span>
+                      @php
+                        // 各sectionの全lessonのduration合計（秒）
+                        $totalSeconds = $section->lessons->sum('duration');
+                        $minutes = floor($totalSeconds / 60);
+                        $seconds = $totalSeconds % 60;
+                        $formattedDuration = sprintf('%02d:%02d', $minutes, $seconds);
+                    @endphp
+
+                    <span class="ms-auto section-meta text-muted small">
+                        {{ $section->lessons->count() }} lectures ・
+                        {{ $section->lessons->sum('pages') }} pages ・
+                        {{ $formattedDuration }}
+                    </span>
+
+
+
                     </button>
                 </h2>
                 <div id="collapse{{ $index }}"
@@ -96,7 +109,6 @@
                                     {{ $lesson->title }}
                                 </span>
                                 <div class="lesson-actions align-items-center">
-                                    <span class="lesson-duration">{{ $lesson->duration }} min</span>
                                     <a href="{{ route('selflearning.lessonVideo', ['courseId' => $course->id, 'lessonId' => $lesson->id]) }}" 
                                        class="btn btn-outline-primary shadow-sm ms-2">
                                         <i class="fa-solid fa-play"></i>

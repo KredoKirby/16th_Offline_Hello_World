@@ -6,6 +6,8 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'App\\Console\\Commands\\GenerateLessonThumbnails' => $baseDir . '/app/Console/Commands/GenerateLessonThumbnails.php',
+    'App\\Console\\Commands\\ResizeLessonImages' => $baseDir . '/app/Console/Commands/ResizeLessonImages.php',
     'App\\Http\\Controllers\\Admin\\AdminController' => $baseDir . '/app/Http/Controllers/Admin/AdminController.php',
     'App\\Http\\Controllers\\Admin\\AdminDashboardController' => $baseDir . '/app/Http/Controllers/Admin/AdminDashboardController.php',
     'App\\Http\\Controllers\\AuthController' => $baseDir . '/app/Http/Controllers/AuthController.php',

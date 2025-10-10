@@ -554,6 +554,8 @@ class ComposerStaticInit563e6a48514cd716a329c1ae3022e336
     );
 
     public static $classMap = array (
+        'App\\Console\\Commands\\GenerateLessonThumbnails' => __DIR__ . '/../..' . '/app/Console/Commands/GenerateLessonThumbnails.php',
+        'App\\Console\\Commands\\ResizeLessonImages' => __DIR__ . '/../..' . '/app/Console/Commands/ResizeLessonImages.php',
         'App\\Http\\Controllers\\Admin\\AdminController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/AdminController.php',
         'App\\Http\\Controllers\\Admin\\AdminDashboardController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/AdminDashboardController.php',
         'App\\Http\\Controllers\\AuthController' => __DIR__ . '/../..' . '/app/Http/Controllers/AuthController.php',

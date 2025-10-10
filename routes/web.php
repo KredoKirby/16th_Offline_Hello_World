@@ -115,6 +115,9 @@ Route::middleware('auth')->group(function () {
         ->name('selflearning.lesson.text');
     Route::post('/{courseId}/lesson/{lessonId}/toggle', [SelfLearningController::class, 'toggleLesson'])       
         ->name('selflearning.lesson.toggle');
+    Route::post('/update-time', [SelfLearningController::class, 'updateStudyTime'])
+        ->name('selflearning.updateTime');
+
 
 
 });
