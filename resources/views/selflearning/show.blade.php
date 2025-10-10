@@ -1,11 +1,59 @@
 @extends('layouts.app')
 
+@push('styles')
+<style>
+.course-header-image {
+    width: 100%;
+    max-height: 300px;
+    object-fit: cover;
+}
+
+.course-meta {
+    color: #6c757d;
+}
+
+.lesson-item {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.lesson-title {
+    display: flex;
+    align-items: center;
+    flex: 1 1 auto;
+    min-width: 200px;
+    margin-bottom: 0.5rem;
+}
+
+.lesson-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.lesson-duration {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+@media (min-width: 768px) {
+    .lesson-title {
+        margin-bottom: 0;
+    }
+}
+</style>
+@endpush
+
 @section('content')
 <div class="container">
 
     {{-- 戻るボタン --}}
     <div class="mb-3">
-        <a href="{{ route('selflearning.index') }}" class="btn btn-outline-secondary btn-sm  selflearning-back-btn">
+        <a href="{{ route('selflearning.index') }}" class="btn btn-outline-secondary btn-sm selflearning-back-btn">
             <i class="fa-solid fa-arrow-left me-1"></i> Back
         </a>
     </div>
@@ -18,7 +66,8 @@
         <p class="course-meta">
             {{ $course->sections->count() }} sections ・
             {{ $course->sections->sum(fn($s) => $s->lessons->count()) }} lectures ・
-            {{ gmdate('H', $course->sections->sum(fn($s) => $s->lessons->sum('duration')) * 60) }} hours
+            {{ $course->sections->sum(fn($s) => $s->lessons->sum('pages')) }} pages ・
+            {{ gmdate('H', $course->sections->sum(fn($s) => $s->lessons->sum('duration')) * 60) }} minutes
         </p>
     </div>
 
@@ -30,10 +79,22 @@
                     <button class="accordion-button {{ $index > 0 ? 'collapsed' : '' }}" type="button"
                         data-bs-toggle="collapse" data-bs-target="#collapse{{ $index }}">
                         <span class="fw-bold">{{ $section->title }}</span>
-                        <span class="ms-auto section-meta">
-                            {{ $section->lessons->count() }} lectures ・
-                            {{ $section->lessons->sum('duration') }} min
-                        </span>
+                      @php
+                        // 各sectionの全lessonのduration合計（秒）
+                        $totalSeconds = $section->lessons->sum('duration');
+                        $minutes = floor($totalSeconds / 60);
+                        $seconds = $totalSeconds % 60;
+                        $formattedDuration = sprintf('%02d:%02d', $minutes, $seconds);
+                    @endphp
+
+                    <span class="ms-auto section-meta text-muted small">
+                        {{ $section->lessons->count() }} lectures ・
+                        {{ $section->lessons->sum('pages') }} pages ・
+                        {{ $formattedDuration }}
+                    </span>
+
+
+
                     </button>
                 </h2>
                 <div id="collapse{{ $index }}"
@@ -41,25 +102,19 @@
                      data-bs-parent="#courseAccordion">
                     <div class="accordion-body">
                         @foreach($section->lessons as $lesson)
-                            <div class="lesson-item d-flex justify-content-between align-items-center">
+                            <div class="lesson-item">
                                 <span class="lesson-title">
-                                    {{-- 🎥 動画アイコン + 📖 テキストアイコン 両方表示 --}}
-                                        <i class="fa-solid fa-video me-2 text-dark"></i>
-                                        <i class="fa-solid fa-book me-2 text-dark"></i>
-                                        {{ $lesson->title }}
-                                    </span>
-                                    <div class="lesson-actions d-flex align-items-center">
-                                        <span class="lesson-duration">{{ $lesson->duration }} min</span>
-
-                                    {{-- ▶ 再生ボタン --}}
+                                    <i class="fa-solid fa-video me-2 text-dark"></i>
+                                    <i class="fa-solid fa-book me-2 text-dark"></i>
+                                    {{ $lesson->title }}
+                                </span>
+                                <div class="lesson-actions align-items-center">
                                     <a href="{{ route('selflearning.lessonVideo', ['courseId' => $course->id, 'lessonId' => $lesson->id]) }}" 
                                        class="btn btn-outline-primary shadow-sm ms-2">
                                         <i class="fa-solid fa-play"></i>
                                     </a>
-
-                                    {{-- 📖 テキストボタン --}}
                                     <a href="{{ route('selflearning.lesson.text', ['courseId' => $course->id, 'lessonId' => $lesson->id]) }}" 
-                                       class="btn btn-outline-info btn-info  shadow-sm ms-2">
+                                       class="btn btn-outline-info shadow-sm ms-2">
                                         Text
                                     </a>
                                 </div>

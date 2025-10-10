@@ -946,3 +946,50 @@ form.d-flex button {
         height: 104px;
     }
 }
+
+/* ====== Lesson Navigation Buttons (Prev / Next) ====== */
+#prevPageBtn, #nextPageBtn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background-color: #189AB4 !important; /* メインカラー */
+    color: #fff !important;
+    padding: 0.375rem 0.75rem !important;
+    border-radius: 0.25rem !important;
+    cursor: pointer !important;
+    font-size: 1rem !important;
+    border: none !important;
+    font-weight: 500 !important;
+    transition: background-color 0.2s ease, transform 0.2s ease !important;
+}
+
+/* hover 時 */
+#prevPageBtn:hover:not(:disabled),
+#nextPageBtn:hover:not(:disabled) {
+    background-color: #1fa7c9 !important;
+    transform: translateY(-1px) !important;
+}
+
+/* disabled 時 */
+#prevPageBtn:disabled,
+#nextPageBtn:disabled {
+    background-color: #a0c4d1 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+}
+
+/* アイコン調整（左矢印・右矢印） */
+#prevPageBtn i,
+#nextPageBtn i {
+    margin: 0 4px;
+    font-size: 0.9rem;
+}
+
+/* レスポンシブ調整 */
+@media (max-width: 767.98px) {
+    #prevPageBtn, #nextPageBtn {
+        width: 48%;
+        font-size: 0.9rem;
+        padding: 0.35rem 0.6rem !important;
+    }
+}

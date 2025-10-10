@@ -14,32 +14,45 @@ class Course extends Model
     }
 
  
-    public function enrollments()
-    {
-        return $this->hasMany(Enrollment::class);
-    }
+   // App\Models\Course.php
+
+public function enrollments()
+{
+    return $this->hasMany(Enrollment::class);
+}
+
+public function enrolledUsers()
+{
+    return $this->belongsToMany(User::class, 'enrollments')
+                ->withPivot('status', 'progress')
+                ->withTimestamps();
+}
+
    
 
      public function sections()
     {
         return $this->hasMany(Section::class);
     }
-    public function users()
-{
-    return $this->belongsToMany(User::class, 'course_user')->withTimestamps();
-}
 
-    // app/Models/Course.php
+    public function users() {
+        return $this->belongsToMany(User::class, 'enrollments', 'course_id', 'user_id')
+                ->withPivot(['status','enrollment_date'])
+                ->withTimestamps();
+    }
+
+    
 public function completionRate($userId)
 {
     $totalLessons = $this->sections->flatMap->lessons->count();
-    $completedLessons = \DB::table('lesson_user')
-        ->where('user_id', $userId)
+
+    $completedLessons = User::find($userId)
+        ->completedLessons()
         ->whereIn('lesson_id', $this->sections->flatMap->lessons->pluck('id'))
-        ->where('is_completed', 1)
         ->count();
 
     return $totalLessons > 0 ? round(($completedLessons / $totalLessons) * 100) : 0;
 }
+
 
 }
