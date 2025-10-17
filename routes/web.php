@@ -31,6 +31,7 @@ Route::middleware('auth')->group(function () {
     // all
     Route::get('/', function () {
         $role = Auth::user()->role_id;
+        
         return match ($role) {
             1 => redirect()->route('admin.dashboard'),   // admin
             2 => redirect()->route('teacher.home'),      // teacher
