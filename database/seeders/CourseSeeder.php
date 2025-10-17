@@ -24,6 +24,7 @@ class CourseSeeder extends Seeder
             'image'       => 'phpbasic.jpg',
             'language'    => 'it',
             'level'       => 'basic',
+             'price'       => 3900.00, 
         ]);
 
         $phpIntro = Section::create(['course_id' => $php->id, 'title' => 'PHP入門']);
@@ -99,7 +100,7 @@ class CourseSeeder extends Seeder
             'image'       => 'jsbasic.jpg',
             'language'    => 'it',
             'level'       => 'basic',
-            
+            'price'       => 7500.00,
         ]);
 
         $jsIntro = Section::create(['course_id' => $js->id, 'title' => 'JavaScript入門']);
@@ -175,6 +176,7 @@ class CourseSeeder extends Seeder
             'image'       => 'pythonbasic.jpg',
             'language'    => 'it',
             'level'       => 'basic',
+            'price'       => 6000.00,
         ]);
 
         $pyIntro = Section::create(['course_id' => $py->id, 'title' => 'Python入門']);
@@ -250,6 +252,7 @@ class CourseSeeder extends Seeder
             'image'       => 'englishbasic.jpg',
             'language'    => 'english',
             'level'       => 'basic',
+             'price'       => 9000.00,
         ]);
 
         $enBasicSec1 = Section::create(['course_id' => $enBasic->id, 'title' => 'Greetings']);
