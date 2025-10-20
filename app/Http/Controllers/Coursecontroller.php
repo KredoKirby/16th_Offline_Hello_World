@@ -145,14 +145,14 @@ class CourseController extends Controller
     }
 
     try {
-        // ✅ PayPalClient のインスタンスを生成
+        //  PayPalClient のインスタンスを生成
         $provider = new PayPalClient;
         $provider->setApiCredentials(config('paypal')); // ← setEnvironmentではなくこれ！
 
-        // ✅ アクセストークンを取得
+        //  アクセストークンを取得
         $paypalToken = $provider->getAccessToken();
 
-        // ✅ 注文作成
+        // 注文作成
         $data = [
             'intent' => 'CAPTURE',
             'purchase_units' => [
@@ -212,11 +212,11 @@ class CourseController extends Controller
         $provider->setApiCredentials(config('paypal'));
         $paypalToken = $provider->getAccessToken();
 
-        // ✅ 注文詳細の取得
+        // 注文詳細の取得
         $order = $provider->showOrderDetails($token);
         $orderId = $order['id'] ?? null;
 
-        // ✅ 支払いキャプチャ
+        // 支払いキャプチャ
         $response = $provider->capturePaymentOrder($orderId);
 
         if (isset($response['status']) && $response['status'] === 'COMPLETED') {
