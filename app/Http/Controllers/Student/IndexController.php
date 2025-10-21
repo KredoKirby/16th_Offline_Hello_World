@@ -10,15 +10,15 @@ class IndexController extends Controller
 {
     public function index()
     {
-         /** @var \App\Models\User $user */
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        // enrollments を pivot にした多対多から取得
-        $courses = $user->courses()                 // User::courses() は belongsToMany(...)
-            ->select('courses.id', 'courses.title') // 必要な列だけ
-            // ->wherePivot('status', 'active')     // 必要なら受講中のみ
-            ->orderBy('courses.title')
-            ->get();
+        $courses = $user->courses()
+        ->select('courses.id', 'courses.title')
+        ->with(['topics:id,course_id,name'])
+        // ->wherePivot('status', 'active')
+        ->orderBy('courses.title')
+        ->get();
 
         return view('student.index', compact('courses'));
     }
