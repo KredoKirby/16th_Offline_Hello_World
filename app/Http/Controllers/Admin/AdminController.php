@@ -119,20 +119,42 @@ class AdminController extends Controller
         return view('admin.courses.create');
     }
 
-    public function courseAdd(Request $req)
-    {
-        $req->validate(['name' => 'required']);
+   public function courseAdd(Request $req)
+{
+    $req->validate([
+        'title' => 'required|string|max:255',
+        'price' => 'nullable|numeric|min:0',
+        'description' => 'nullable|string',
+        'category' => 'nullable|string|max:255',
+        'language' => 'nullable|string|max:10',
+        'level' => 'nullable|string|max:50',
+        'image' => 'nullable|string', // base64文字列
+    ]);
 
-        $data = $this->data();
-        $maxId = collect($data['courses'])->max('id');
-        $nextId = ($maxId ?? 0) + 1;
+    $data = $this->data();
+    $maxId = collect($data['courses'])->max('id');
+    $nextId = ($maxId ?? 0) + 1;
 
-        $data['courses'][] = ['id' => $nextId, 'name' => $req->name, 'active' => true];
-        $this->save($data);
+    // Base64が空ならデフォルト画像にする
+    $defaultImage = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/default-course.jpg')));
 
-        // ✅ resourceルートに合わせて .index へ
-        return redirect()->route('admin.courses.index')->with('status', 'Course added.');
-    }
+    $data['courses'][] = [
+        'id' => $nextId,
+        'name' => $req->input('title'),
+        'price' => $req->input('price', 5000),
+        'description' => $req->input('description'),
+        'category' => $req->input('category'),
+        'language' => $req->input('language', 'en'),
+        'level' => $req->input('level', 'basic'),
+        'image' => $req->input('image') ?: $defaultImage,
+        'active' => true,
+    ];
+
+    $this->save($data);
+
+    return redirect()->route('admin.courses.index')->with('status', 'Course added successfully.');
+}
+
 
     /** 詳細（/admin/courses/{id}） */
     public function courseShow($id)
