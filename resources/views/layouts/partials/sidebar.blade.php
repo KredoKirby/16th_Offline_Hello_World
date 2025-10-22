@@ -27,7 +27,7 @@
                 href="{{ route('admin.teachers.index') }}">Teachers</a>
             <a class="nav-link s-link mb-1 {{ request()->routeIs('admin.courses.index') ? 'active' : '' }}"
                 href="{{ route('admin.courses.index') }}">Courses</a>
-            <a class="nav-link s-link mb-1" href="#">Self-learning</a>
+            <a class="nav-link s-link mb-1" href="{{ route('admin.selflearning.index') }}">Self-learning</a>
             <a class="nav-link s-link" href="#">Forum</a>
         </nav>
 
@@ -69,7 +69,7 @@
                 href="{{ route('teachers.index') }}">Schedule</a>
             <a class="nav-link s-link mb-1 {{ request()->routeIs('courses.index') ? 'active' : '' }}"
                 href="{{ route('courses.index') }}">Courses</a>
-            <a class="nav-link s-link mb-1" href="#">Self-learning</a>
+            <a class="nav-link s-link mb-1" href="{{ route('selflearning.index') }}">Self-learning</a>
             <a class="nav-link s-link" href="#">Forum</a>
         </nav>
 
@@ -111,7 +111,7 @@
                 href="{{ route('students.index') }}">Home</a>
             <a class="nav-link s-link mb-1 {{ request()->routeIs('courses.index') ? 'active' : '' }}"
                 href="{{ route('courses.index') }}">Courses</a>
-            <a class="nav-link s-link mb-1" href="#">Self-learning</a>
+            <a class="nav-link s-link mb-1" href="{{ route('selflearning.index') }}">Self-learning</a>
             <a class="nav-link s-link" href="#">Forum</a>
         </nav>
 

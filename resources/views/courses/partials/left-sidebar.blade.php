@@ -86,3 +86,4 @@ unset($allQuery['status']);
         </div>
     </a>
 @endforeach
+

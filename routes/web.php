@@ -32,10 +32,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/', function () {
         $role = Auth::user()->role_id;
         return match ($role) {
-            1 => redirect()->route('admin.index'), // admin
-            2 => redirect()->route('teachers.index'), // teacher
-            3 => redirect()->route('students.index'), // student
-            4 => redirect()->route('courses.index'), // basic_user
+            1 => redirect()->route('admin.dashboard'),   // admin
+            2 => redirect()->route('teachers.index'),      // teacher
+            3 => redirect()->route('students.index'),      // student
+            4 => redirect()->route('courses.index'),     // user
         };
     })->name('home');
 
@@ -100,21 +100,27 @@ Route::middleware('auth')->group(function () {
             ->name('lessons.toggle');
     });
 
-    //  Self-learning
-   Route::prefix('selflearning')->group(function () {
-        Route::get('/', [SelfLearningController::class, 'index'])->name('selflearning.index');
-        Route::get('/{id}', [SelfLearningController::class, 'show'])->name('selflearning.show');
-        Route::get('/{courseId}/lesson/{lessonId}', [SelfLearningController::class, 'lessonVideo'])
-            ->name('selflearning.lessonVideo');
-        Route::post('/{courseId}/lesson/{lessonId}/done', [SelfLearningController::class, 'lessonDone'])
-            ->name('selflearning.lesson.done');
-        Route::get('/{courseId}/lesson/{lessonId}/text', [SelfLearningController::class, 'lessonText'])
-            ->name('selflearning.lesson.text');
-        Route::post('/{courseId}/lesson/{lessonId}/toggle', [SelfLearningController::class, 'toggleLesson'])       
-            ->name('selflearning.lesson.toggle');
-        Route::post('/update-time', [SelfLearningController::class, 'updateStudyTime'])
-            ->name('selflearning.updateTime');
+     /* PayPal 支払い処理 */
+    Route::prefix('payment')->middleware('auth')->name('payment.')->group(function () {
+        Route::get('/success', [CourseController::class, 'paymentSuccess'])->name('success');
+        Route::get('/cancel', [CourseController::class, 'paymentCancel'])->name('cancel');
     });
+
+   // Self-learning
+Route::prefix('selflearning')->group(function () {
+    Route::get('/', [SelfLearningController::class, 'index'])->name('selflearning.index');
+    Route::get('/{courseId}/lesson/{lessonId}', [SelfLearningController::class, 'lessonVideo'])
+        ->name('selflearning.lessonVideo');
+    Route::get('/{courseId}/lesson/{lessonId}/text', [SelfLearningController::class, 'lessonText'])
+        ->name('selflearning.lesson.text');
+    Route::post('/{courseId}/lesson/{lessonId}/done', [SelfLearningController::class, 'lessonDone'])
+        ->name('selflearning.lesson.done');
+    Route::post('/{courseId}/lesson/{lessonId}/toggle', [SelfLearningController::class, 'toggleLesson'])
+        ->name('selflearning.lesson.toggle');
+    Route::post('/update-time', [SelfLearningController::class, 'updateStudyTime'])
+        ->name('selflearning.updateTime');
+    Route::get('/{id}', [SelfLearningController::class, 'show'])->name('selflearning.show');
+});
 
     /* ------------------- Student area ------------------- */
     Route::prefix('students')->middleware('can:students')->name('students.')->group(function () {
