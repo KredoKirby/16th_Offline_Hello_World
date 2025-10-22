@@ -42,7 +42,7 @@ Route::middleware('auth')->group(function () {
     /* ------------------- Admin ------------------- */
     Route::prefix('admin')->middleware('can:admin')->name('admin.')->group(function () {
         // ダッシュボード
-        Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/', [AdminDashboardController::class, 'index'])->name('index');
 
         // 一覧・CRUD
         Route::resource('students', AdminStudentController::class)->names('students');
