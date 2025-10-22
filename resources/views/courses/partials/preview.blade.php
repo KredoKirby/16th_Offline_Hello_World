@@ -16,16 +16,28 @@
 
     </div>
 
-    {{-- タイトル & Enroll ボタン --}}
-    <div class="d-flex justify-content-between align-items-center mb-2">
-        <h3 class="fw-bold mb-0">{{ $course->title }}</h3>
-        <form action="{{ route('courses.enroll', $course->id) }}" method="POST">
-            @csrf
-            <button type="submit" class="btn btn-info text-white fw-bold px-4 rounded-pill">
-                Enroll a course
-            </button>
-        </form>
-    </div>
+   <div class="d-flex justify-content-between align-items-center mb-2">
+    <h3 class="fw-bold mb-0">{{ $course->title }}</h3>
+
+    @auth
+        @if(!in_array($course->id, $enrolledCourseIds ?? []))
+            <form action="{{ route('courses.enroll', $course->id) }}" method="POST">
+                @csrf
+                <button type="submit" class="btn btn-success fw-bold px-4 rounded-pill">
+                    Enroll Now (¥{{ number_format($course->price) }})
+                </button>
+            </form>
+        @endif
+
+    @else
+        {{-- 状態 3: 未ログインの場合 --}}
+        <a href="{{ route('login') }}" class="btn btn-secondary fw-bold px-4 rounded-pill">
+            Login to Enroll
+        </a>
+    @endauth
+</div>
+
+
 
     {{-- 説明文 --}}
     <p class="text-muted">{{ $course->description ?? 'No description available.' }}</p>
@@ -53,3 +65,4 @@
     </div>
 
 </div>
+

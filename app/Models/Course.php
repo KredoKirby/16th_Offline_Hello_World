@@ -6,53 +6,57 @@ use Illuminate\Database\Eloquent\Model;
 
 class Course extends Model
 {
-     protected $fillable = ['title', 'description'];
+   //変更
+    protected $table = 'courses';
+    protected $fillable = ['title', 'description', 'image_url', 'language', 'level', 'image', 'category'];
+
     // コースに紐づくレッスン
     public function lessons()
     {
         return $this->hasMany(Lesson::class);
     }
 
- 
-   // App\Models\Course.php
 
-public function enrollments()
-{
-    return $this->hasMany(Enrollment::class);
-}
+    // App\Models\Course.php
 
-public function enrolledUsers()
-{
-    return $this->belongsToMany(User::class, 'enrollments')
-                ->withPivot('status', 'progress')
-                ->withTimestamps();
-}
+    public function enrollments()
+    {
+        return $this->hasMany(Enrollment::class);
+    }
 
-   
+    public function enrolledUsers()
+    {
+        return $this->belongsToMany(User::class, 'enrollments')
+            ->withPivot('status', 'progress')
+            ->withTimestamps();
+    }
 
-     public function sections()
+
+
+    public function sections()
     {
         return $this->hasMany(Section::class);
     }
 
-    public function users() {
+    public function users()
+    {
         return $this->belongsToMany(User::class, 'enrollments', 'course_id', 'user_id')
-                ->withPivot(['status','enrollment_date'])
-                ->withTimestamps();
+            ->withPivot(['status', 'enrollment_date'])
+            ->withTimestamps();
     }
 
-    
-public function completionRate($userId)
-{
-    $totalLessons = $this->sections->flatMap->lessons->count();
 
-    $completedLessons = User::find($userId)
-        ->completedLessons()
-        ->whereIn('lesson_id', $this->sections->flatMap->lessons->pluck('id'))
-        ->count();
+    public function completionRate($userId)
+    {
+        $totalLessons = $this->sections->flatMap->lessons->count();
 
-    return $totalLessons > 0 ? round(($completedLessons / $totalLessons) * 100) : 0;
-}
+        $completedLessons = User::find($userId)
+            ->completedLessons()
+            ->whereIn('lesson_id', $this->sections->flatMap->lessons->pluck('id'))
+            ->count();
+
+        return $totalLessons > 0 ? round(($completedLessons / $totalLessons) * 100) : 0;
+    }
 
 
 }
