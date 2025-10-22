@@ -52,7 +52,10 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         
+=======
+>>>>>>> 364a08fe377692faf8084469851a764f3db8a496
 =======
 >>>>>>> 364a08fe377692faf8084469851a764f3db8a496
 =======
@@ -65,6 +68,7 @@
                     <ul class="list-group list-group-flush">
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                         @forelse($latestCourses as $course)
                             <li class="list-group-item d-flex justify-content-between align-items-center fw-semibold border-0"
                                 style="background-color:#ECF0FF;">
@@ -72,11 +76,16 @@
 =======
 =======
 >>>>>>> 364a08fe377692faf8084469851a764f3db8a496
+=======
+>>>>>>> 364a08fe377692faf8084469851a764f3db8a496
                         @forelse(collect($latestCourses ?? [])->take(5) as $c)
                             <li class="list-group-item d-flex justify-content-between align-items-center fw-semibold border-0"
                                 style="background-color:#ECF0FF;">
                                 {{ $c['name'] ?? 'Course Name' }}
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> 364a08fe377692faf8084469851a764f3db8a496
+=======
 >>>>>>> 364a08fe377692faf8084469851a764f3db8a496
 =======
 >>>>>>> 364a08fe377692faf8084469851a764f3db8a496
@@ -92,6 +101,7 @@
                 </div>
             </div>
         </div>
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 
@@ -149,6 +159,8 @@
 =======
 =======
 >>>>>>> 364a08fe377692faf8084469851a764f3db8a496
+=======
+>>>>>>> 364a08fe377692faf8084469851a764f3db8a496
     </div>
 
     {{-- 下段：Forums --}}
@@ -201,6 +213,10 @@
         </div>
     </div>
 <<<<<<< HEAD
+<<<<<<< HEAD
+@endsection
+>>>>>>> 364a08fe377692faf8084469851a764f3db8a496
+=======
 @endsection
 >>>>>>> 364a08fe377692faf8084469851a764f3db8a496
 =======

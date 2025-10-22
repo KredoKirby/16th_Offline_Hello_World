@@ -50,8 +50,12 @@ Route::middleware('auth')->group(function () {
     // Route::get('/courses', [AdminDashboardController::class, 'courses'])->name('courses');
         // ダッシュボード
         Route::get('/', [AdminDashboardController::class, 'index'])->name('index');
+<<<<<<< HEAD
         // Route::get('/courses', [AdminDashboardController::class, 'courses'])->name('courses');
         // Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('index');
+=======
+
+>>>>>>> 364a08fe377692faf8084469851a764f3db8a496
         // 一覧・CRUD
         Route::resource('students', AdminStudentController::class)->names('students');
         Route::resource('teachers', AdminTeacherController::class)->names('teachers');
@@ -108,6 +112,7 @@ Route::middleware('auth')->group(function () {
             ->name('lessons.toggle');
     });
 
+<<<<<<< HEAD
     //  Self-learning
     Route::prefix('selflearning')->group(function () {
         Route::get('/', [SelfLearningController::class, 'index'])->name('selflearning.index');
@@ -123,6 +128,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/update-time', [SelfLearningController::class, 'updateStudyTime'])
             ->name('selflearning.updateTime');
 
+=======
+>>>>>>> 364a08fe377692faf8084469851a764f3db8a496
      /* PayPal 支払い処理 */
     Route::prefix('payment')->middleware('auth')->name('payment.')->group(function () {
         Route::get('/success', [CourseController::class, 'paymentSuccess'])->name('success');
@@ -146,11 +153,19 @@ Route::prefix('selflearning')->group(function () {
 });
 
     /* ------------------- Student area ------------------- */
+<<<<<<< HEAD
     Route::prefix('students')->middleware('can:students')->name('student.')->group(function () {
         Route::get('/', [StudentIndexController::class, 'index'])->name('home');
         Route::get('mylearning', [MylearningController::class, 'show'])->name('mylearning');
         Route::get('lesson_history', [LessonhistoryController::class, 'show'])->name('lessonhistory');
         Route::get('profile', [StudentProfileController::class, 'show'])->name('profile');
+=======
+    Route::prefix('students')->middleware('can:students')->name('students.')->group(function () {
+        Route::get('/', [StudentIndexController::class, 'index'])->name('index');
+        Route::get('mylearning',      [MylearningController::class, 'show'])->name('mylearning');
+        Route::get('lesson_history',  [LessonhistoryController::class, 'show'])->name('lessonhistory');
+        Route::get('profile',         [StudentProfileController::class, 'show'])->name('profile');
+>>>>>>> 364a08fe377692faf8084469851a764f3db8a496
     });
 
     /* ------------------- Teacher area ------------------- */
