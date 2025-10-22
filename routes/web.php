@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\SelfLearningController;
 
 // Front/controllers
+use App\Http\Controllers\Student\CourseInitApiController;
 use App\Http\Controllers\Student\MylearningController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Student\LessonhistoryController;
@@ -21,10 +22,9 @@ use App\Http\Controllers\Admin\StudentController as AdminStudentController;
 use App\Http\Controllers\Admin\TeacherController as AdminTeacherController;
 use App\Http\Controllers\Student\IndexController  as StudentIndexController;
 use App\Http\Controllers\Teacher\IndexController  as TeacherIndexController;
+use App\Http\Controllers\Student\BookingController as StudentBookingController;
 use App\Http\Controllers\Student\ProfileController as StudentProfileController;
 use App\Http\Controllers\Teacher\ProfileController as TeacherProfileController;
-use App\Http\Controllers\Student\BookingController as StudentBookingController;
-use App\Http\Controllers\Student\TopicApiController;
 
 Auth::routes();
 
@@ -127,18 +127,15 @@ Route::middleware('auth')->group(function () {
         Route::get('profile',         [StudentProfileController::class, 'show'])->name('profile');
 
         // 予約フォーム表示 / 保存（既存）
-        Route::get('/bookings/create', [StudentBookingController::class, 'create'])
-            ->name('bookings.create');
+        // Route::get('/bookings/create', [StudentBookingController::class, 'create'])
+        //     ->name('bookings.create');
         Route::post('/bookings', [StudentBookingController::class, 'store'])
             ->name('bookings.store');
 
         // Ajax: 指定コースのトピック一覧 + 「次のTopic」候補（JSON）
-        // Route::get('/api/courses/{course}/topics', [TopicApiController::class, 'byCourse'])
-        //     ->name('api.topics.byCourse');
-
-        Route::get(
-        '/api/courses/{course}/topics', [TopicApiController::class, 'byCourse'])->name('api.topics.byCourse');
-        });
+        Route::get('/api/courses/{course}/init', [CourseInitApiController::class, 'show'])
+        ->name('api.courses.init');
+    });
 
     /* ------------------- Teacher area ------------------- */
     Route::prefix('teachers')->middleware('can:teachers')->name('teachers.')->group(function () {

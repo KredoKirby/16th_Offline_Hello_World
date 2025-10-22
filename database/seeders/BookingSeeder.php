@@ -4,100 +4,89 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Carbon;
+use Carbon\Carbon;
 
 class BookingSeeder extends Seeder
 {
     public function run(): void
     {
-        // Preload IDs to avoid N+1 queries
-        $userIds   = DB::table('users')->pluck('id')->toArray();
-        $courseIds = DB::table('courses')->pluck('id')->toArray();
+           DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+    DB::table('bookings')->truncate();
+    DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+    
+        // ===== 事前に既存のIDを取得（存在しない場合は適宜用意してください） =====
+        $teacherId = DB::table('users')->where('role_id', 2)->value('id'); // teacher
+        $studentId = DB::table('users')->where('role_id', 3)->value('id'); // student
+        $courseId  = DB::table('courses')->value('id');
+        // そのコースに属するトピック（最初の一つ）
+        $topicId   = DB::table('topics')->where('course_id', $courseId)->value('id');
 
-        if (empty($userIds) || empty($courseIds)) {
-            $this->command->warn('No users or courses found. Seed them first.');
+        if (!$teacherId || !$courseId) {
+            $this->command->warn('BookingSeeder: teacher or course is missing. Seed users/courses/topics first.');
             return;
         }
 
-        // Helper map: course_id => [topic_id, ...]
-        $topicsByCourse = DB::table('topics')
-            ->select('id', 'course_id')
-            ->get()
-            ->groupBy('course_id')
-            ->map(fn($rows) => $rows->pluck('id')->toArray())
-            ->toArray();
+        $now = Carbon::now();
 
-        if (empty($topicsByCourse)) {
-            $this->command->warn('No topics found. Seed topics first.');
-            return;
-        }
+        // 時刻を分離（DBはdateとtimeで持つ前提）
+        $pastDate  = $now->copy()->subDay()->toDateString();        // 昨日
+        $futureDate= $now->copy()->addDay()->toDateString();        // 明日
 
-        $count = 40; // number of bookings to generate
+        // 時刻（:00:00に丸め）
+        $hNow      = (int) $now->format('H');
+        $pastTime  = Carbon::createFromTime(max(0, $hNow - 2), 0, 0)->format('H:i:s');
+        $pastTime2 = Carbon::createFromTime(max(0, $hNow - 1), 0, 0)->format('H:i:s');
+        $futureTime= Carbon::createFromTime(min(23, $hNow + 2), 0, 0)->format('H:i:s');
+        $futureTime2=Carbon::createFromTime(min(23, $hNow + 3), 0, 0)->format('H:i:s');
 
-        for ($i = 0; $i < $count; $i++) {
-            // Pick distinct teacher and student
-            $teacherId = $userIds[array_rand($userIds)];
-            do {
-                $studentId = $userIds[array_rand($userIds)];
-            } while ($studentId === $teacherId);
+        $nowTs     = $now->toDateTimeString();
 
-            // Pick a course with at least 1 topic
-            $courseId = null;
-            $topicId  = null;
-
-            // Try a few times to find a course that has topics
-            for ($try = 0; $try < 5; $try++) {
-                $tmpCourseId = $courseIds[array_rand($courseIds)];
-                if (!empty($topicsByCourse[$tmpCourseId])) {
-                    $courseId = $tmpCourseId;
-                    $topicId  = $topicsByCourse[$courseId][array_rand($topicsByCourse[$courseId])];
-                    break;
-                }
-            }
-
-            if (!$courseId || !$topicId) {
-                // Skip if no valid (course, topic) combination
-                continue;
-            }
-
-            // Random future date within next 30 days
-            $date = Carbon::today()->addDays(rand(1, 30))->toDateString();
-            // Random hour (00:00 ~ 23:00)
-            $time = sprintf('%02d:00:00', rand(0, 23));
-
-            // Try insert; if unique constraint fails, skip or tweak time
-            try {
-                DB::table('bookings')->insert([
-                    'teacher_id' => $teacherId,
-                    'student_id' => $studentId,
-                    'date'       => $date,
-                    'time'       => $time,
-                    'topic_id'   => $topicId,
-                    'course_id'  => $courseId,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-            } catch (\Throwable $e) {
-                // If unique constraints (teacher/student + date/time) collide, try once with another time
-                $time = sprintf('%02d:00:00', rand(0, 23));
-                try {
-                    DB::table('bookings')->insert([
-                        'teacher_id' => $teacherId,
-                        'student_id' => $studentId,
-                        'date'       => $date,
-                        'time'       => $time,
-                        'topic_id'   => $topicId,
-                        'course_id'  => $courseId,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
-                } catch (\Throwable $e2) {
-                    // Give up on this iteration to keep seeder simple
-                    continue;
-                }
-            }
-        }
-
-        $this->command->info('Bookings table seeded successfully.');
+        DB::table('bookings')->insert([
+            // 1) 過去の「空き枠」：student_id, course_id, topic_id, updated_at = null
+            [
+                'teacher_id' => $teacherId,
+                'student_id' => null,
+                'course_id'  => null,
+                'topic_id'   => null,
+                'date'       => $pastDate,
+                'time'       => $pastTime,
+                'created_at' => $nowTs,
+                'updated_at' => null,         // ★ null 明示
+            ],
+            // 2) 過去の「予約済み」：student/course/topic あり、updated_at あり
+            [
+                'teacher_id' => $teacherId,
+                'student_id' => $studentId,
+                'course_id'  => $courseId,
+                'topic_id'   => $topicId,
+                'date'       => $pastDate,
+                'time'       => $pastTime2,
+                'created_at' => $nowTs,
+                'updated_at' => $nowTs,       // ★ あり
+            ],
+            // 3) 未来の「空き枠」：student/course/topic なし、updated_at = null
+            [
+                'teacher_id' => $teacherId,
+                'student_id' => null,
+                'course_id'  => null,
+                'topic_id'   => null,
+                'date'       => $futureDate,
+                'time'       => $futureTime,
+                'created_at' => $nowTs,
+                'updated_at' => null,         // ★ null 明示
+            ],
+            // 4) 未来の「予約済み」：student/course/topic あり、updated_at あり
+            //    （将来の予約を既に確定しているパターン）
+            [
+                'teacher_id' => $teacherId,
+                'student_id' => $studentId,
+                'course_id'  => $courseId,
+                'topic_id'   => $topicId,
+                'date'       => $futureDate,
+                'time'       => $futureTime2,
+                'created_at' => $nowTs,
+                'updated_at' => $nowTs,       // ★ あり
+            ],
+        ]);
     }
 }

@@ -39,217 +39,331 @@
                 <div class="card h-100 shadow-sm">
                     <div class="card-body">
                         <h2 class="h4 mb-3">Book a class</h2>
-                        <form method="POST" action="{{ route('students.bookings.store') }}">
+                        <form method="POST" action="{{ route('students.bookings.store') }}" id="bookingForm">
                             @csrf
 
-                            {{-- Course --}}
-                            <div class="mb-3">
-                                <label for="course_id" class="form-label">Course</label>
-                                <select name="course_id" id="course_id" class="form-select" required>
-                                    <option value="" disabled {{ old('course_id') ? '' : 'selected' }}>Choose a course
-                                    </option>
-                                    @forelse($courses as $course)
-                                        <option value="{{ $course->id }}"
-                                            {{ old('course_id') == $course->id ? 'selected' : '' }}>
-                                            {{ $course->title }}
+                            <div class="row">
+                                {{-- Course --}}
+                                <div class="mb-3 col-6">
+                                    <label for="course_id" class="form-label">Course</label>
+                                    <select name="course_id" id="course_id" class="form-select" required>
+                                        <option value="" disabled {{ old('course_id') ? '' : 'selected' }}>Choose a
+                                            course
                                         </option>
-                                    @empty
-                                        <option value="" disabled>No enrolled courses found.</option>
-                                    @endforelse
-                                </select>
-                            </div>
-
-                            {{-- Topic (dependent on Course) --}}
-                            <div class="mb-3">
-                                <label for="topic_id" class="form-label">Topic</label>
-                                <select class="form-select" name="topic_id" id="topic_id"
-                                    {{ old('course_id') ? '' : 'disabled' }} required>
-                                    <option value="" disabled {{ old('topic_id') ? '' : 'selected' }}>Select a topic
-                                    </option>
-                                    {{-- Ajax でコース選択後に埋める --}}
-                                </select>
-                                <div id="topicHelp" class="form-text d-none">The next topic has been automatically selected.
-                                </div>
-                            </div>
-
-                            <div class="row g-2">
-                                <div class="col-6">
-                                    <label class="form-label">Date</label>
-                                    <input type="date" class="form-control" id="date" name="date"
-                                        value="{{ old('date') }}" required>
-                                </div>
-                                <div class="col-6">
-                                    <label class="form-label">Time</label>
-                                    <select class="form-select" id="time" name="time" required>
-                                        @for ($h = 0; $h < 24; $h++)
-                                            @php $t = sprintf('%02d:00', $h); @endphp
-                                            <option value="{{ $t }}" {{ old('time') === $t ? 'selected' : '' }}>
-                                                {{ $t }}
+                                        @foreach ($courses as $course)
+                                            <option value="{{ $course->id }}"
+                                                {{ old('course_id') == $course->id ? 'selected' : '' }}>
+                                                {{ $course->title }}
                                             </option>
-                                        @endfor
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                {{-- Topic --}}
+                                <div class="mb-3 col-6">
+                                    <label for="topic_id" class="form-label">Topic</label>
+                                    <select class="form-select" name="topic_id" id="topic_id" required disabled>
+                                        <option value="" disabled selected>Select a topic</option>
+                                    </select>
+                                    <div id="topicHelp" class="form-text d-none">Next topic set automatically.
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                            {{-- Date（空きスロットの日付） --}}
+                            <div class="row">
+                                <div class="col-6 mb-3">
+                                    <label for="date" class="form-label">Date</label>
+                                    <select class="form-select" id="date" required disabled>
+                                        <option value="" disabled selected>Select a date</option>
+                                    </select>
+                                    {{-- ▼ 空きスロットが無い場合のメッセージ --}}
+                                    <div id="noSlotMessage" class="form-text text-danger d-none fw-semibold">
+                                        No available slots for this course.
+                                    </div>
+                                </div>
+
+                                {{-- Time（選んだ日付のスロット + 教師名） --}}
+                                <div class="col-6 mb-3">
+                                    <label for="time" class="form-label">Time</label>
+                                    <select class="form-select" id="time" required disabled>
+                                        <option value="" disabled selected>Select a time</option>
                                     </select>
                                 </div>
                             </div>
+                            {{-- ▼ 先生選択アクション（Timeの下に追加） --}}
+                            <div id="teacherActions" class="d-none mt-2">
+                                <div class="d-flex gap-2">
+                                    <button type="button" id="btnRandom" class="btn btn-outline-primary btn-sm">
+                                        Random assign
+                                    </button>
+                                    <button type="button" id="btnChoose" class="btn btn-outline-secondary btn-sm"
+                                        data-bs-toggle="modal" data-bs-target="#teacherModal">
+                                        Choose a teacher <span class="badge text-bg-secondary" id="teacherCount">0</span>
+                                    </button>
+                                </div>
+                            </div>
+                            {{-- 空き先生ゼロのときの赤文字 --}}
+                            <div id="noTeacherMsg" class="form-text text-danger d-none fw-semibold">
+                                No teacher is available for that date/time.
+                            </div>
 
-                            <button type="submit" class="btn btn-primary w-100 mt-5">
-                                Book a class
-                            </button>
+                            {{-- ▼ 先生一覧モーダル（Bootstrap） --}}
+                            <div class="modal fade" id="teacherModal" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-scrollable">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            {{-- タイトルに選択中のDate/Timeを反映します --}}
+                                            <h5 class="modal-title">
+                                                Choose a teacher
+                                                <small class="text-muted d-block" id="modalSubtitle"></small>
+                                            </h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <ul id="teacherList" class="list-group">
+                                                {{-- JS で <li> を注入 --}}
+                                            </ul>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <small class="text-muted">Select a teacher to confirm your slot.</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- 送信するのは booking_id / course_id / topic_id --}}
+                            <input type="hidden" name="booking_id" id="booking_id">
+
+                            <button type="submit" class="btn btn-primary w-100 mt-4">Book a class</button>
                         </form>
 
-                        {{-- === Ajax: dependent dropdown === --}}
-                        {{-- APIは /students/api/courses/{course}/topics （TopicApiController@byCourse） --}}
-                        <meta name="csrf-token" content="{{ csrf_token() }}">
                         <script>
                             (function() {
-                                const courseSelect = document.getElementById('course_id');
-                                const topicSelect = document.getElementById('topic_id');
+                                const courseSel = document.getElementById('course_id');
+                                const topicSel = document.getElementById('topic_id');
                                 const topicHelp = document.getElementById('topicHelp');
-                                const csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                                const oldCourseId = "{{ old('course_id') }}";
-                                const oldTopicId = "{{ old('topic_id') }}";
+                                const dateSel = document.getElementById('date');
+                                const timeSel = document.getElementById('time');
+                                const bidInput = document.getElementById('booking_id');
 
-                                // 選択肢を初期化
-                                function resetTopicSelect(placeholder = 'Select a topic') {
-                                    topicSelect.innerHTML = '';
+                                // ▼ 追加：先生関連UI
+                                const teacherActions = document.getElementById('teacherActions');
+                                const teacherCountEl = document.getElementById('teacherCount');
+                                const btnRandom = document.getElementById('btnRandom');
+                                const btnChoose = document.getElementById('btnChoose');
+                                const noTeacherMsg = document.getElementById('noTeacherMsg');
+                                const teacherList = document.getElementById('teacherList');
+                                const modalSubtitle = document.getElementById('modalSubtitle');
+
+                                let slots = []; // APIから来る [{booking_id,date,time,teacher_id,teacher_name},...]
+                                let currentTeachers = []; // 選択中date/timeで空いている先生スロット
+
+                                function resetSelect(sel, ph) {
+                                    sel.innerHTML = '';
                                     const opt = document.createElement('option');
                                     opt.value = '';
-                                    opt.textContent = placeholder;
+                                    opt.textContent = ph;
                                     opt.disabled = true;
                                     opt.selected = true;
-                                    topicSelect.appendChild(opt);
+                                    sel.appendChild(opt);
+                                    sel.disabled = true;
                                 }
 
-                                // リストから option を作成
-                                function populateTopics(list) {
-                                    resetTopicSelect();
-                                    if (!Array.isArray(list) || list.length === 0) {
-                                        const none = document.createElement('option');
-                                        none.value = '';
-                                        none.textContent = 'No topics available for this course.';
-                                        none.disabled = true;
-                                        topicSelect.appendChild(none);
-                                        topicSelect.disabled = true;
-                                        return;
-                                    }
+                                function enable(sel) {
+                                    sel.disabled = false;
+                                }
+
+                                // ▼ モーダルの先生一覧を描画
+                                function renderTeacherList(list) {
+                                    teacherList.innerHTML = '';
                                     list.forEach(item => {
-                                        const opt = document.createElement('option');
-                                        opt.value = item.id;
-                                        // API は {id, name} を返す想定（titleならここを item.title に）
-                                        opt.textContent = item.name;
-                                        topicSelect.appendChild(opt);
+                                        const li = document.createElement('li');
+                                        li.className = 'list-group-item d-flex align-items-center justify-content-between';
+                                        li.innerHTML = `
+        <div>
+          <div class="fw-semibold">${item.teacher_name}</div>
+          <div class="small text-muted">${item.date} ${item.time}</div>
+        </div>
+        <button type="button" class="btn btn-sm btn-primary">Select</button>
+      `;
+                                        // Select クリック → booking_id をセット → モーダルを閉じる
+                                        li.querySelector('button').addEventListener('click', function() {
+                                            bidInput.value = item.booking_id;
+                                            const modalEl = document.getElementById('teacherModal');
+                                            const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(
+                                                modalEl);
+                                            modal.hide();
+                                        });
+                                        teacherList.appendChild(li);
                                     });
-                                    topicSelect.disabled = false;
                                 }
 
-                                // 指定IDを選択
-                                function selectTopicById(id) {
-                                    const found = Array.from(topicSelect.options).find(o => Number(o.value) === Number(id));
-                                    if (found) found.selected = true;
-                                }
-
-                                // コース変更でAPI呼び出し
-                                courseSelect.addEventListener('change', async function() {
-                                    const cid = this.value;
-                                    topicHelp.classList.add('d-none');
-                                    if (!cid) {
-                                        topicSelect.disabled = true;
-                                        resetTopicSelect();
+                                // ▼ Random assign
+                                btnRandom?.addEventListener('click', function() {
+                                    if (!currentTeachers.length) {
+                                        noTeacherMsg.classList.remove('d-none');
                                         return;
                                     }
+                                    const pick = currentTeachers[Math.floor(Math.random() * currentTeachers.length)];
+                                    bidInput.value = pick.booking_id;
 
-                                    try {
-                                        const res = await fetch(`/students/api/courses/${cid}/topics`, {
-                                            headers: {
-                                                'X-CSRF-TOKEN': csrf,
-                                                'Accept': 'application/json'
-                                            }
-                                        });
-                                        if (!res.ok) throw new Error('Failed to load topics');
-                                        const data = await res.json(); // { topics: [{id,name}], suggested: <id|null> }
-
-                                        populateTopics(data.topics);
-
-                                        // 優先順位: old('topic_id') → suggested → （そのまま）
-                                        if (oldTopicId) {
-                                            selectTopicById(oldTopicId);
-                                        } else if (data.suggested) {
-                                            selectTopicById(data.suggested);
-                                            topicHelp.classList.remove('d-none');
-                                        }
-                                    } catch (e) {
-                                        console.error(e);
-                                        resetTopicSelect('Failed to load topics');
-                                        topicSelect.disabled = true;
-                                    }
+                                    // 軽いフィードバック
+                                    btnRandom.classList.add('disabled');
+                                    setTimeout(() => btnRandom.classList.remove('disabled'), 400);
                                 });
 
-                                // 初期表示：old('course_id') があれば自動ロード
-                                if (oldCourseId) {
-                                    courseSelect.value = oldCourseId;
-                                    const evt = new Event('change');
-                                    courseSelect.dispatchEvent(evt);
-                                } else {
-                                    topicSelect.disabled = true;
-                                    resetTopicSelect();
-                                }
+                                // ▼ コース変更： topics / suggested / slots をまとめて取得
+                                courseSel.addEventListener('change', async function() {
+                                    resetSelect(topicSel, 'Select a topic');
+                                    resetSelect(dateSel, 'Select a date');
+                                    resetSelect(timeSel, 'Select a time');
+                                    bidInput.value = '';
+                                    topicHelp.classList.add('d-none');
 
-                                // コース未選択でトピックを開くのを防止
-                                topicSelect.addEventListener('mousedown', function(e) {
-                                    if (!courseSelect.value) {
+                                    teacherActions.classList.add('d-none');
+                                    noTeacherMsg.classList.add('d-none');
+                                    teacherList.innerHTML = '';
+                                    teacherCountEl.textContent = '0';
+
+                                    const cid = this.value;
+                                    if (!cid) return;
+
+                                    const resp = await fetch(`/students/api/courses/${cid}/init`, {
+                                        headers: {
+                                            'Accept': 'application/json'
+                                        }
+                                    });
+                                    if (!resp.ok) {
+                                        resetSelect(topicSel, 'Failed to load');
+                                        return;
+                                    }
+                                    const data = await resp.json();
+
+                                    // 1) Topic を反映
+                                    if (Array.isArray(data.topics)) {
+                                        data.topics.forEach(t => {
+                                            const o = document.createElement('option');
+                                            o.value = t.id;
+                                            o.textContent = t.name; // titleなら t.title
+                                            topicSel.appendChild(o);
+                                        });
+                                        enable(topicSel);
+                                    }
+                                    if (data.suggested) {
+                                        const found = [...topicSel.options].find(o => Number(o.value) === Number(data
+                                            .suggested));
+                                        if (found) {
+                                            found.selected = true;
+                                            topicHelp.classList.remove('d-none');
+                                        }
+                                    }
+
+                                    // 2) スロット（= teacher_course の先生に限定済み）
+                                    slots = Array.isArray(data.slots) ? data.slots : [];
+
+                                    // unique 日付
+                                    const dates = [...new Set(slots.map(s => s.date))];
+
+                                    // まず非表示に戻す
+                                    document.getElementById('noSlotMessage').classList.add('d-none'); // ★ 追加
+
+                                    // ★ 空きスロットが1件もない → 赤メッセージ表示して終了
+                                    if (dates.length === 0) { // ★ 追加
+                                        document.getElementById('noSlotMessage').classList.remove('d-none'); // ★ 追加
+                                        return; // ★ 追加
+                                    }
+
+                                    dates.forEach(d => {
+                                        const o = document.createElement('option');
+                                        o.value = d;
+                                        o.textContent = d;
+                                        dateSel.appendChild(o);
+                                    });
+                                    if (dates.length) enable(dateSel);
+                                    else {
+                                        // 空なら Date/Time は使えない＆注意表示（必要なら出す）
+                                        // ここでは特に何も出さず、time選択時のガードに任せます
+                                    }
+
+                                    // 日付選択でその日の time を展開
+                                    dateSel.addEventListener('change', function() {
+                                        resetSelect(timeSel, 'Select a time');
+                                        bidInput.value = '';
+
+                                        teacherActions.classList.add('d-none');
+                                        noTeacherMsg.classList.add('d-none');
+                                        teacherList.innerHTML = '';
+                                        teacherCountEl.textContent = '0';
+
+                                        const list = slots.filter(s => s.date === this.value);
+                                        list.forEach(s => {
+                                            const o = document.createElement('option');
+                                            o.value = s.booking_id; // value は booking_id
+                                            o.textContent = `${s.time}`; // 表示は HH:MM（教師名は先生選択で表示）
+                                            timeSel.appendChild(o);
+                                        });
+                                        if (list.length) enable(timeSel);
+                                    }, {
+                                        once: true
+                                    });
+                                });
+
+                                // ▼ Time 選択で：該当 date/time の空き先生を集計→ボタン表示→モーダル準備
+timeSel.addEventListener('change', function() {
+    // 1) booking_id を hidden に（既存挙動）
+    bidInput.value = this.value || '';
+
+    // 2) 選択中 date/time
+    const selectedDate = dateSel.value;
+    const selectedTimeText = this.options[this.selectedIndex]?.textContent?.trim(); // "HH:MM"
+
+    // 3) teacher_course 由来の slots の中から date/time 完全一致の空き先生だけを抽出
+    currentTeachers = slots.filter(s => s.date === selectedDate && s.time === selectedTimeText);
+
+    // 4) モーダルのサブタイトルに反映
+    modalSubtitle.textContent = `${selectedDate} ${selectedTimeText}`;
+
+    // 5) UI 出し分け
+    if (currentTeachers.length > 0) {
+        teacherCountEl.textContent = String(currentTeachers.length);
+        noTeacherMsg.classList.add('d-none');
+        teacherActions.classList.remove('d-none');
+        renderTeacherList(currentTeachers);
+
+        // ★ デフォルトで random assign を自動実行（最初に選択状態にする）
+        const pick = currentTeachers[Math.floor(Math.random() * currentTeachers.length)];
+        bidInput.value = pick.booking_id;
+
+        // Time セレクトの該当 option も選択済みにする
+        const timeOptions = Array.from(timeSel.options);
+        const targetOption = timeOptions.find(o => Number(o.value) === Number(pick.booking_id));
+        if (targetOption) {
+            targetOption.selected = true;
+        }
+
+        // Random assign ボタンの見た目を変更（"Assigned ✓"）
+        btnRandom.classList.add('btn-success', 'text-white');
+        btnRandom.textContent = 'Automatically assigned';
+    } else {
+        teacherActions.classList.add('d-none');
+        teacherCountEl.textContent = '0';
+        noTeacherMsg.classList.remove('d-none');
+        teacherList.innerHTML = '';
+    }
+});
+
+                                // 送信前チェック（booking_idが入っているか）
+                                document.getElementById('bookingForm').addEventListener('submit', function(e) {
+                                    if (!bidInput.value) {
                                         e.preventDefault();
-                                        alert('Please select a course first.');
+                                        alert('Please select a date and time slot.');
                                     }
                                 });
                             })();
-
-                            // dateとtimeを現在の日時より前のものは選択できないようにする。
-                            document.addEventListener('DOMContentLoaded', function() {
-                                const dateInput = document.getElementById('date');
-                                const timeSelect = document.getElementById('time');
-
-                                const now = new Date();
-                                const today = now.toISOString().split('T')[0];
-                                dateInput.min = today;
-
-                                // 現在時刻＋1時間を計算
-                                let nextHour = now.getHours() + 1;
-                                let defaultDate = today;
-
-                                if (nextHour >= 24) {
-                                    // 23時台なら翌日の00:00に
-                                    nextHour = 0;
-                                    const tomorrow = new Date(now);
-                                    tomorrow.setDate(now.getDate() + 1);
-                                    defaultDate = tomorrow.toISOString().split('T')[0];
-                                }
-
-                                // 日付をデフォルト値に設定
-                                dateInput.value = defaultDate;
-
-                                // 時間を"HH:00"にフォーマットして初期選択
-                                const formatted = ('0' + nextHour).slice(-2) + ':00';
-                                Array.from(timeSelect.options).forEach(opt => {
-                                    opt.selected = (opt.value === formatted);
-                                });
-
-                                // === 今日の日付のとき、現在+1時間より前の時間を選択不可にする ===
-                                function updateTimeOptions() {
-                                    const selectedDate = new Date(dateInput.value);
-                                    const isToday = selectedDate.toDateString() === now.toDateString();
-                                    const currentHour = now.getHours() + 1;
-
-                                    Array.from(timeSelect.options).forEach(opt => {
-                                        const hour = parseInt(opt.value.split(':')[0], 10);
-                                        opt.disabled = isToday && hour < currentHour;
-                                    });
-                                }
-
-                                // 初期化時に実行
-                                updateTimeOptions();
-
-                                // 日付変更時に再評価
-                                dateInput.addEventListener('change', updateTimeOptions);
-                            });
                         </script>
                     </div>
                 </div>
