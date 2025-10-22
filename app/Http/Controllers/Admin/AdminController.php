@@ -24,7 +24,7 @@ class AdminController extends Controller
         $latestCourses = array_slice($d['courses'], 0, 5);
         $latestForums = array_slice($d['forums'], 0, 4);
 
-        return view('admin.index', compact(
+        return view('admin.dashboard', compact(
             'studentsCount',
             'teachersCount',
             'coursesCount',

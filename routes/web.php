@@ -8,8 +8,8 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\TeacherController as AdminTeacherController;
 use App\Http\Controllers\Admin\StudentController as AdminStudentController;
-use App\Http\Controllers\Admin\CourseController  as AdminCourseController;
-use App\Http\Controllers\Admin\ForumController   as AdminForumController;
+use App\Http\Controllers\Admin\CourseController as AdminCourseController;
+use App\Http\Controllers\Admin\ForumController as AdminForumController;
 
 // Front/controllers
 use App\Http\Controllers\AuthController;
@@ -17,8 +17,8 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\Student\MylearningController;
 use App\Http\Controllers\Student\LessonhistoryController;
-use App\Http\Controllers\Student\IndexController  as StudentIndexController;
-use App\Http\Controllers\Teacher\IndexController  as TeacherIndexController;
+use App\Http\Controllers\Student\IndexController as StudentIndexController;
+use App\Http\Controllers\Teacher\IndexController as TeacherIndexController;
 use App\Http\Controllers\Student\ProfileController as StudentProfileController;
 use App\Http\Controllers\Teacher\ProfileController as TeacherProfileController;
 use App\Http\Controllers\SelfLearningController;
@@ -31,7 +31,7 @@ Route::middleware('auth')->group(function () {
     // all
     Route::get('/', function () {
         $role = Auth::user()->role_id;
-        
+
         return match ($role) {
             1 => redirect()->route('admin.dashboard'),   // admin
             2 => redirect()->route('teacher.home'),      // teacher
@@ -42,14 +42,20 @@ Route::middleware('auth')->group(function () {
 
     /* ------------------- Admin ------------------- */
     Route::prefix('admin')->middleware('can:admin')->name('admin.')->group(function () {
-        // ダッシュボード
-        Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+       // ダッシュボード
+    Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');   // ← 1つ目
+     Route::get('/dashboard', fn () => redirect()->route('admin.dashboard'))->name('index');
+    // Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('index');       // ← 2つ目（別URLでもOK）
+    // Coursesページ
+    // Route::get('/courses', [AdminDashboardController::class, 'courses'])->name('courses');
 
+        // Route::get('/courses', [AdminDashboardController::class, 'courses'])->name('courses');
+        // Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('index');
         // 一覧・CRUD
         Route::resource('students', AdminStudentController::class)->names('students');
         Route::resource('teachers', AdminTeacherController::class)->names('teachers');
-        Route::resource('courses',  AdminCourseController::class )->names('courses');
-        Route::resource('forums',   AdminForumController::class  )->names('forums');
+        Route::resource('courses', AdminCourseController::class)->names('courses');
+        Route::resource('forums', AdminForumController::class)->names('forums');
 
         // ── Teachers（明示ルートに統一） ─────
         Route::get('/teachers', [AdminController::class, 'teachers'])->name('teachers.index');
@@ -60,12 +66,12 @@ Route::middleware('auth')->group(function () {
         Route::put('/teachers/{id}', [AdminController::class, 'teacherUpdate'])->name('teachers.update');
 
         // ── Courses（show/edit/update あり） ─
-        Route::get('/courses', [AdminController::class, 'courses'])->name('courses.index');           
-        Route::get('/courses/create', [AdminController::class, 'courseAddForm'])->name('courses.create'); 
-        Route::post('/courses', [AdminController::class, 'courseAdd'])->name('courses.store');           
-        Route::get('/courses/{id}', [AdminController::class, 'courseShow'])->name('courses.show');        
-        Route::get('/courses/{id}/edit', [AdminController::class, 'courseEdit'])->name('courses.edit');  
-        Route::put('/courses/{id}', [AdminController::class, 'courseUpdate'])->name('courses.update');   
+        Route::get('/courses', [AdminController::class, 'courses'])->name('courses.index');
+        Route::get('/courses/create', [AdminController::class, 'courseAddForm'])->name('courses.create');
+        Route::post('/courses', [AdminController::class, 'courseAdd'])->name('courses.store');
+        Route::get('/courses/{id}', [AdminController::class, 'courseShow'])->name('courses.show');
+        Route::get('/courses/{id}/edit', [AdminController::class, 'courseEdit'])->name('courses.edit');
+        Route::put('/courses/{id}', [AdminController::class, 'courseUpdate'])->name('courses.update');
         Route::post('/courses/{id}/toggle', [AdminController::class, 'courseToggle'])->name('courses.toggle');
 
         // 追加フォーム表示 & 保存 course
@@ -102,7 +108,7 @@ Route::middleware('auth')->group(function () {
     });
 
     //  Self-learning
-   Route::prefix('selflearning')->group(function () {
+    Route::prefix('selflearning')->group(function () {
         Route::get('/', [SelfLearningController::class, 'index'])->name('selflearning.index');
         Route::get('/{id}', [SelfLearningController::class, 'show'])->name('selflearning.show');
         Route::get('/{courseId}/lesson/{lessonId}', [SelfLearningController::class, 'lessonVideo'])
@@ -111,7 +117,7 @@ Route::middleware('auth')->group(function () {
             ->name('selflearning.lesson.done');
         Route::get('/{courseId}/lesson/{lessonId}/text', [SelfLearningController::class, 'lessonText'])
             ->name('selflearning.lesson.text');
-        Route::post('/{courseId}/lesson/{lessonId}/toggle', [SelfLearningController::class, 'toggleLesson'])       
+        Route::post('/{courseId}/lesson/{lessonId}/toggle', [SelfLearningController::class, 'toggleLesson'])
             ->name('selflearning.lesson.toggle');
         Route::post('/update-time', [SelfLearningController::class, 'updateStudyTime'])
             ->name('selflearning.updateTime');
@@ -120,13 +126,13 @@ Route::middleware('auth')->group(function () {
     /* ------------------- Student area ------------------- */
     Route::prefix('students')->middleware('can:students')->name('student.')->group(function () {
         Route::get('/', [StudentIndexController::class, 'index'])->name('home');
-        Route::get('mylearning',      [MylearningController::class, 'show'])->name('mylearning');
-        Route::get('lesson_history',  [LessonhistoryController::class, 'show'])->name('lessonhistory');
-        Route::get('profile',         [StudentProfileController::class, 'show'])->name('profile');
+        Route::get('mylearning', [MylearningController::class, 'show'])->name('mylearning');
+        Route::get('lesson_history', [LessonhistoryController::class, 'show'])->name('lessonhistory');
+        Route::get('profile', [StudentProfileController::class, 'show'])->name('profile');
     });
 
     /* ------------------- Teacher area ------------------- */
-    Route::prefix('teachers')->middleware('can:teachers')->name('teacher.')->group(function () {
+    Route::prefix('teachers')->middleware('can:teachers')->name('teachers.')->group(function () {
         Route::get('/', [TeacherIndexController::class, 'index'])->name('home');
         Route::get('profile', [TeacherProfileController::class, 'show'])->name('profile');
     });
