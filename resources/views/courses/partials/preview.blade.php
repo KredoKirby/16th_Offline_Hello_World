@@ -1,17 +1,12 @@
 <div class="course-preview">
 
-    {{-- コース画像 --}}
+   {{-- コース画像 --}}
 <div class="mb-3">
-    @if($course->image)
-        <img src="{{ asset('images/courses/' . $course->image) }}" 
-             class="course-header-image rounded"
-             alt="{{ $course->title }}">
-    @else
-        <div class="bg-secondary text-white text-center p-5 rounded">
-            No Image
-        </div>
-    @endif
+    <img src="{{ $course->display_image }}"
+         class="course-header-image rounded"
+         alt="{{ $course->title }}">
 </div>
+
 
 
     </div>
@@ -54,10 +49,11 @@
         @foreach($course->sections as $section)
             @foreach($section->lessons as $lesson)
                 <div class="d-flex align-items-center mb-2 p-2 border rounded bg-white shadow-sm">
-                       <img src="{{ asset('images/courses/' . $course->image) }}" 
-                         alt="Lesson thumbnail" 
-                         class="rounded me-3" 
-                         style="width:60px;height:60px;object-fit:cover;">
+                      <img src="{{ $course->display_image }}"
+                        alt="Lesson thumbnail"
+                        class="rounded me-3"
+                        style="width:60px;height:60px;object-fit:cover;">
+
                     <span class="fw-semibold">{{ $lesson->title }}</span>
                 </div>
             @endforeach

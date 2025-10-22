@@ -54,5 +54,36 @@ public function completionRate($userId)
     return $totalLessons > 0 ? round(($completedLessons / $totalLessons) * 100) : 0;
 }
 
+public function getDisplayImageAttribute()
+{
+    // Base64ならそのまま返す
+    if ($this->image && str_starts_with($this->image, 'data:image')) {
+        return $this->image;
+    }
+
+    // 通常のファイルパスならasset()で返す
+    if ($this->image && file_exists(public_path('images/courses/' . $this->image))) {
+        return asset('images/courses/' . $this->image);
+    }
+
+    // どちらもない場合はデフォルト画像
+    return asset('images/default-course.jpg');
+}
+
+ public function getImagePathAttribute()
+    {
+        if ($this->image && str_starts_with($this->image, 'data:image')) {
+            // base64文字列そのまま返す
+            return $this->image;
+        }
+
+        if ($this->image) {
+            // 通常ファイルパス
+            return asset('images/courses/' . $this->image);
+        }
+
+        // デフォルト画像
+        return asset('images/courses/sample.jpg');
+    }
 
 }

@@ -60,7 +60,7 @@
 
     {{-- コースヘッダー --}}
     <div class="mb-4">
-        <img src="{{ asset('images/courses/' . ($course->image ?? 'sample.jpg')) }}"
+        <img src="{{ $course->image_path }}" 
              class="course-header-image rounded mb-3">
         <h2 class="fw-bold">{{ $course->title }}</h2>
         <p class="course-meta">
