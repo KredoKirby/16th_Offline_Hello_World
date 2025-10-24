@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Topic;
 use Illuminate\Database\Eloquent\Model;
 
 class Course extends Model
@@ -57,6 +58,17 @@ class Course extends Model
 
         return $totalLessons > 0 ? round(($completedLessons / $totalLessons) * 100) : 0;
     }
+
+public function topics()
+{
+    return $this->hasMany(Topic::class);
+}
+
+public function teachers()
+{
+    // 第2引数: テーブル名, 第3引数: 現在モデル側FK（course_id）, 第4引数: 相手側FK（teacher_id）
+    return $this->belongsToMany(User::class, 'teacher_course', 'course_id', 'teacher_id');
+}
 
 
 }
