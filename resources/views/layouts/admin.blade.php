@@ -11,6 +11,7 @@
     <title>@yield('title', 'Admin')</title>
 </head>
 
+
 <body>
     <div class="container-fluid p-0">
         <div class="row g-0">
@@ -27,7 +28,7 @@
 
                 <nav class="nav flex-column w-100 px-4 fw-bold">
                     {{-- Home --}}
-                    <a class="nav-link text-dark" href="{{ route('admin.index') }}">Home</a>
+                    <a class="nav-link text-dark" href="{{ route('admin.dashboard') }}">Home</a>
 
                     {{-- Students --}}
                     <a class="nav-link text-dark" href="{{ route('admin.students.index') }}">Students</a>

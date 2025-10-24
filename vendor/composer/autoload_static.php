@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit563e6a48514cd716a329c1ae3022e336
+class ComposerStaticInit527c605b05d43e36d645b765b960c8be
 {
     public static $files = array (
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
@@ -12,16 +12,16 @@ class ComposerStaticInit563e6a48514cd716a329c1ae3022e336
         'e69f7f6ee287b969198c3c9d6777bd38' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/bootstrap.php',
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
         '8825ede83f2f289127722d4e842cf7e8' => __DIR__ . '/..' . '/symfony/polyfill-intl-grapheme/bootstrap.php',
-        'b6b991a57620e2fb6b2f66f03fe9ddc2' => __DIR__ . '/..' . '/symfony/string/Resources/functions.php',
         '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
+        'b6b991a57620e2fb6b2f66f03fe9ddc2' => __DIR__ . '/..' . '/symfony/string/Resources/functions.php',
         '662a729f963d39afe703c9d9b7ab4a8c' => __DIR__ . '/..' . '/symfony/polyfill-php83/bootstrap.php',
         'f598d06aa772fa33d905e87be6398fb1' => __DIR__ . '/..' . '/symfony/polyfill-intl-idn/bootstrap.php',
         '667aeda72477189d0494fecd327c3641' => __DIR__ . '/..' . '/symfony/var-dumper/Resources/functions/dump.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
-        '35a6ad97d21e794e7e22a17d806652e4' => __DIR__ . '/..' . '/nunomaduro/termwind/src/Functions.php',
         '2203a247e6fda86070a5e4e07aed533a' => __DIR__ . '/..' . '/symfony/clock/Resources/now.php',
         'a1105708a18b76903365ca1c4aa61b02' => __DIR__ . '/..' . '/symfony/translation/Resources/functions.php',
+        '35a6ad97d21e794e7e22a17d806652e4' => __DIR__ . '/..' . '/nunomaduro/termwind/src/Functions.php',
         '1f87db08236948d07391152dccb70f04' => __DIR__ . '/..' . '/google/apiclient-services/autoload.php',
         'decc78cc4436b1292c6c0d151b19445c' => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib/bootstrap.php',
         '09f6b20656683369174dd6fa83b7e5fb' => __DIR__ . '/..' . '/symfony/polyfill-uuid/bootstrap.php',
@@ -99,6 +99,7 @@ class ComposerStaticInit563e6a48514cd716a329c1ae3022e336
             'Symfony\\Component\\CssSelector\\' => 30,
             'Symfony\\Component\\Console\\' => 26,
             'Symfony\\Component\\Clock\\' => 24,
+            'Srmklive\\PayPal\\' => 16,
             'Spatie\\GoogleCalendar\\' => 22,
         ),
         'R' => 
@@ -350,6 +351,10 @@ class ComposerStaticInit563e6a48514cd716a329c1ae3022e336
         array (
             0 => __DIR__ . '/..' . '/symfony/clock',
         ),
+        'Srmklive\\PayPal\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/srmklive/paypal/src',
+        ),
         'Spatie\\GoogleCalendar\\' => 
         array (
             0 => __DIR__ . '/..' . '/spatie/laravel-google-calendar/src',
@@ -600,23 +605,49 @@ class ComposerStaticInit563e6a48514cd716a329c1ae3022e336
     );
 
     public static $classMap = array (
+        'App\\Console\\Commands\\GenerateLessonThumbnails' => __DIR__ . '/../..' . '/app/Console/Commands/GenerateLessonThumbnails.php',
+        'App\\Console\\Commands\\ResizeLessonImages' => __DIR__ . '/../..' . '/app/Console/Commands/ResizeLessonImages.php',
+        'App\\Http\\Controllers\\Admin\\AdminController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/AdminController.php',
+        'App\\Http\\Controllers\\Admin\\AdminDashboardController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/AdminDashboardController.php',
+        'App\\Http\\Controllers\\Admin\\TeacherController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/TeacherController.php',
+        'App\\Http\\Controllers\\AuthController' => __DIR__ . '/../..' . '/app/Http/Controllers/AuthController.php',
+        'App\\Http\\Controllers\\Auth\\ConfirmPasswordController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/ConfirmPasswordController.php',
+        'App\\Http\\Controllers\\Auth\\ForgotPasswordController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/ForgotPasswordController.php',
+        'App\\Http\\Controllers\\Auth\\LoginController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/LoginController.php',
+        'App\\Http\\Controllers\\Auth\\RegisterController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/RegisterController.php',
+        'App\\Http\\Controllers\\Auth\\ResetPasswordController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/ResetPasswordController.php',
+        'App\\Http\\Controllers\\Auth\\VerificationController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/VerificationController.php',
+<<<<<<< HEAD
+=======
+        'App\\Http\\Controllers\\BookingController' => __DIR__ . '/../..' . '/app/Http/Controllers/BookingController.php',
+>>>>>>> origin/students
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
         'App\\Http\\Controllers\\Enrollmentcontroller' => __DIR__ . '/../..' . '/app/Http/Controllers/Enrollmentcontroller.php',
         'App\\Http\\Controllers\\HomeController' => __DIR__ . '/../..' . '/app/Http/Controllers/HomeController.php',
         'App\\Http\\Controllers\\LessonController' => __DIR__ . '/../..' . '/app/Http/Controllers/LessonController.php',
         'App\\Http\\Controllers\\LessonProgressController' => __DIR__ . '/../..' . '/app/Http/Controllers/LessonProgressController.php',
         'App\\Http\\Controllers\\SelfLearningController' => __DIR__ . '/../..' . '/app/Http/Controllers/SelfLearningController.php',
+        'App\\Http\\Controllers\\Student\\BookingController' => __DIR__ . '/../..' . '/app/Http/Controllers/Student/BookingController.php',
         'App\\Http\\Controllers\\Student\\IndexController' => __DIR__ . '/../..' . '/app/Http/Controllers/Student/IndexController.php',
         'App\\Http\\Controllers\\Student\\LessonhistoryController' => __DIR__ . '/../..' . '/app/Http/Controllers/Student/LessonhistoryController.php',
         'App\\Http\\Controllers\\Student\\MylearningController' => __DIR__ . '/../..' . '/app/Http/Controllers/Student/MylearningController.php',
         'App\\Http\\Controllers\\Student\\ProfileController' => __DIR__ . '/../..' . '/app/Http/Controllers/Student/ProfileController.php',
+        'App\\Http\\Controllers\\Student\\TopicApiController' => __DIR__ . '/../..' . '/app/Http/Controllers/Student/TopicApiController.php',
         'App\\Http\\Controllers\\Teacher\\IndexController' => __DIR__ . '/../..' . '/app/Http/Controllers/Teacher/IndexController.php',
         'App\\Http\\Controllers\\Teacher\\ProfileController' => __DIR__ . '/../..' . '/app/Http/Controllers/Teacher/ProfileController.php',
+        'App\\Models\\Booking' => __DIR__ . '/../..' . '/app/Models/Booking.php',
         'App\\Models\\Course' => __DIR__ . '/../..' . '/app/Models/Course.php',
         'App\\Models\\Enrollment' => __DIR__ . '/../..' . '/app/Models/Enrollment.php',
         'App\\Models\\Lesson' => __DIR__ . '/../..' . '/app/Models/Lesson.php',
         'App\\Models\\Progress' => __DIR__ . '/../..' . '/app/Models/Progress.php',
+        'App\\Models\\Report' => __DIR__ . '/../..' . '/app/Models/Report.php',
         'App\\Models\\Section' => __DIR__ . '/../..' . '/app/Models/Section.php',
+        'App\\Models\\Student' => __DIR__ . '/../..' . '/app/Models/Student.php',
+        'App\\Models\\Teacher' => __DIR__ . '/../..' . '/app/Models/Teacher.php',
+<<<<<<< HEAD
+=======
+        'App\\Models\\Topic' => __DIR__ . '/../..' . '/app/Models/Topic.php',
+>>>>>>> origin/students
         'App\\Models\\User' => __DIR__ . '/../..' . '/app/Models/User.php',
         'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
         'Brick\\Math\\BigDecimal' => __DIR__ . '/..' . '/brick/math/src/BigDecimal.php',
@@ -737,9 +768,12 @@ class ComposerStaticInit563e6a48514cd716a329c1ae3022e336
         'Cron\\MinutesField' => __DIR__ . '/..' . '/dragonmantank/cron-expression/src/Cron/MinutesField.php',
         'Cron\\MonthField' => __DIR__ . '/..' . '/dragonmantank/cron-expression/src/Cron/MonthField.php',
         'Database\\Factories\\UserFactory' => __DIR__ . '/../..' . '/database/factories/UserFactory.php',
+        'Database\\Seeders\\BookingSeeder' => __DIR__ . '/../..' . '/database/seeders/BookingSeeder.php',
         'Database\\Seeders\\CourseSeeder' => __DIR__ . '/../..' . '/database/seeders/CourseSeeder.php',
         'Database\\Seeders\\DatabaseSeeder' => __DIR__ . '/../..' . '/database/seeders/DatabaseSeeder.php',
+        'Database\\Seeders\\EnrollmentSeeder' => __DIR__ . '/../..' . '/database/seeders/EnrollmentSeeder.php',
         'Database\\Seeders\\LessonSeeder' => __DIR__ . '/../..' . '/database/seeders/LessonSeeder.php',
+        'Database\\Seeders\\TopicSeeder' => __DIR__ . '/../..' . '/database/seeders/TopicSeeder.php',
         'Database\\Seeders\\UserSeeder' => __DIR__ . '/../..' . '/database/seeders/UserSeeder.php',
         'DateError' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/DateError.php',
         'DateException' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/DateException.php',
@@ -36759,6 +36793,45 @@ class ComposerStaticInit563e6a48514cd716a329c1ae3022e336
         'Spatie\\GoogleCalendar\\GoogleCalendarFacade' => __DIR__ . '/..' . '/spatie/laravel-google-calendar/src/GoogleCalendarFacade.php',
         'Spatie\\GoogleCalendar\\GoogleCalendarFactory' => __DIR__ . '/..' . '/spatie/laravel-google-calendar/src/GoogleCalendarFactory.php',
         'Spatie\\GoogleCalendar\\GoogleCalendarServiceProvider' => __DIR__ . '/..' . '/spatie/laravel-google-calendar/src/GoogleCalendarServiceProvider.php',
+        'Srmklive\\PayPal\\Facades\\PayPal' => __DIR__ . '/..' . '/srmklive/paypal/src/Facades/PayPal.php',
+        'Srmklive\\PayPal\\PayPalFacadeAccessor' => __DIR__ . '/..' . '/srmklive/paypal/src/PayPalFacadeAccessor.php',
+        'Srmklive\\PayPal\\Providers\\PayPalServiceProvider' => __DIR__ . '/..' . '/srmklive/paypal/src/Providers/PayPalServiceProvider.php',
+        'Srmklive\\PayPal\\Services\\PayPal' => __DIR__ . '/..' . '/srmklive/paypal/src/Services/PayPal.php',
+        'Srmklive\\PayPal\\Services\\Str' => __DIR__ . '/..' . '/srmklive/paypal/src/Services/Str.php',
+        'Srmklive\\PayPal\\Services\\VerifyDocuments' => __DIR__ . '/..' . '/srmklive/paypal/src/Services/VerifyDocuments.php',
+        'Srmklive\\PayPal\\Traits\\PayPalAPI' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalAPI.php',
+        'Srmklive\\PayPal\\Traits\\PayPalAPI\\BillingPlans' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalAPI/BillingPlans.php',
+        'Srmklive\\PayPal\\Traits\\PayPalAPI\\BillingPlans\\PricingSchemes' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalAPI/BillingPlans/PricingSchemes.php',
+        'Srmklive\\PayPal\\Traits\\PayPalAPI\\CatalogProducts' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalAPI/CatalogProducts.php',
+        'Srmklive\\PayPal\\Traits\\PayPalAPI\\Disputes' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalAPI/Disputes.php',
+        'Srmklive\\PayPal\\Traits\\PayPalAPI\\DisputesActions' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalAPI/DisputesActions.php',
+        'Srmklive\\PayPal\\Traits\\PayPalAPI\\Identity' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalAPI/Identity.php',
+        'Srmklive\\PayPal\\Traits\\PayPalAPI\\InvoiceSearch\\Filters' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalAPI/InvoiceSearch/Filters.php',
+        'Srmklive\\PayPal\\Traits\\PayPalAPI\\Invoices' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalAPI/Invoices.php',
+        'Srmklive\\PayPal\\Traits\\PayPalAPI\\InvoicesSearch' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalAPI/InvoicesSearch.php',
+        'Srmklive\\PayPal\\Traits\\PayPalAPI\\InvoicesTemplates' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalAPI/InvoicesTemplates.php',
+        'Srmklive\\PayPal\\Traits\\PayPalAPI\\Orders' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalAPI/Orders.php',
+        'Srmklive\\PayPal\\Traits\\PayPalAPI\\Orders\\Helpers' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalAPI/Orders/Helpers.php',
+        'Srmklive\\PayPal\\Traits\\PayPalAPI\\PartnerReferrals' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalAPI/PartnerReferrals.php',
+        'Srmklive\\PayPal\\Traits\\PayPalAPI\\PaymentAuthorizations' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalAPI/PaymentAuthorizations.php',
+        'Srmklive\\PayPal\\Traits\\PayPalAPI\\PaymentCaptures' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalAPI/PaymentCaptures.php',
+        'Srmklive\\PayPal\\Traits\\PayPalAPI\\PaymentExperienceWebProfiles' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalAPI/PaymentExperienceWebProfiles.php',
+        'Srmklive\\PayPal\\Traits\\PayPalAPI\\PaymentMethodsTokens' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalAPI/PaymentMethodsTokens.php',
+        'Srmklive\\PayPal\\Traits\\PayPalAPI\\PaymentMethodsTokens\\Helpers' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalAPI/PaymentMethodsTokens/Helpers.php',
+        'Srmklive\\PayPal\\Traits\\PayPalAPI\\PaymentRefunds' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalAPI/PaymentRefunds.php',
+        'Srmklive\\PayPal\\Traits\\PayPalAPI\\Payouts' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalAPI/Payouts.php',
+        'Srmklive\\PayPal\\Traits\\PayPalAPI\\ReferencedPayouts' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalAPI/ReferencedPayouts.php',
+        'Srmklive\\PayPal\\Traits\\PayPalAPI\\Reporting' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalAPI/Reporting.php',
+        'Srmklive\\PayPal\\Traits\\PayPalAPI\\Subscriptions' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalAPI/Subscriptions.php',
+        'Srmklive\\PayPal\\Traits\\PayPalAPI\\Subscriptions\\Helpers' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalAPI/Subscriptions/Helpers.php',
+        'Srmklive\\PayPal\\Traits\\PayPalAPI\\Trackers' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalAPI/Trackers.php',
+        'Srmklive\\PayPal\\Traits\\PayPalAPI\\WebHooks' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalAPI/WebHooks.php',
+        'Srmklive\\PayPal\\Traits\\PayPalAPI\\WebHooksEvents' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalAPI/WebHooksEvents.php',
+        'Srmklive\\PayPal\\Traits\\PayPalAPI\\WebHooksVerification' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalAPI/WebHooksVerification.php',
+        'Srmklive\\PayPal\\Traits\\PayPalExperienceContext' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalExperienceContext.php',
+        'Srmklive\\PayPal\\Traits\\PayPalHttpClient' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalHttpClient.php',
+        'Srmklive\\PayPal\\Traits\\PayPalRequest' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalRequest.php',
+        'Srmklive\\PayPal\\Traits\\PayPalVerifyIPN' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalVerifyIPN.php',
         'Stringable' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Stringable.php',
         'Symfony\\Component\\Clock\\Clock' => __DIR__ . '/..' . '/symfony/clock/Clock.php',
         'Symfony\\Component\\Clock\\ClockAwareTrait' => __DIR__ . '/..' . '/symfony/clock/ClockAwareTrait.php',
@@ -38184,9 +38257,9 @@ class ComposerStaticInit563e6a48514cd716a329c1ae3022e336
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit563e6a48514cd716a329c1ae3022e336::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit563e6a48514cd716a329c1ae3022e336::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit563e6a48514cd716a329c1ae3022e336::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit527c605b05d43e36d645b765b960c8be::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit527c605b05d43e36d645b765b960c8be::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit527c605b05d43e36d645b765b960c8be::$classMap;
 
         }, null, ClassLoader::class);
     }

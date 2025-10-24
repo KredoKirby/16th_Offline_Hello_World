@@ -12,9 +12,9 @@ class Lesson extends Model
         'section_id',
         'title',
         'content',
-        'video',       // 動画ファイル名
-        'images',      // ページ画像
-        'thumbs',      // サムネイル
+        'video',       
+        'images',     
+        'thumbs',    
         'pages',
         'video'
     ];

@@ -6,21 +6,32 @@
     <section class="container py-4">
 
         {{-- 上部フォーム --}}
-        <form class="row g-3 align-items-end mb-4">
+        <form class="row g-3 align-items-end mb-4" method="POST" action="{{ route('teachers.bookings.store') }}">
+            @csrf
             <div class="col-12 col-sm-4 col-md-3">
-                <label class="form-label fw-semibold">Date</label>
-                <input type="date" class="form-control">
+                <label class="form-label fw-semibold" for="date">Date</label>
+                <input type="date" class="form-control @error('date') is-invalid @enderror" id="date" name="date"
+                    required>
+                @error('date')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
+
             <div class="col-12 col-sm-4 col-md-3">
-                <label class="form-label fw-semibold">Time</label>
-                <select class="form-select" name="time" required>
+                <label class="form-label fw-semibold" for="time">Time</label>
+                <select class="form-select @error('time') is-invalid @enderror" id="time" name="time" required>
                     @for ($h = 0; $h < 24; $h++)
-                        <option value="{{ sprintf('%02d:00', $h) }}">{{ sprintf('%02d:00', $h) }}</option>
+                        @php $t = sprintf('%02d:00', $h); @endphp
+                        <option value="{{ $t }}">{{ $t }}</option>
                     @endfor
                 </select>
+                @error('time')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
+
             <div class="col-12 col-sm-4 col-md-3">
-                <button type="button" class="btn btn-primary w-100">Add schedule</button>
+                <button type="submit" class="btn btn-primary w-100">Add schedule</button>
             </div>
         </form>
 

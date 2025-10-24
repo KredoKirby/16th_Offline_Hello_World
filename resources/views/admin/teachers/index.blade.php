@@ -1,126 +1,105 @@
 @extends('layouts.app')
-@section('title', 'Hello World')
+@section('title', 'Teachers')
 
 @section('content')
-    {{-- 上段：3カード --}}
-    <div class="row g-3">
-        {{-- Students --}}
-        <div class="col-md-4">
-            <div class="card shadow rounded-1 h-100 border-0" style="background-color:#FFF5F5;">
-                <div class="card-body">
-                    <h4 class="card-title fw-bold mb-3">{{ $studentsCount }} Students</h4>
-                    <ul class="list-group list-group-flush">
-                        @forelse(collect($latestStudents ?? [])->take(5) as $s)
-                            <li class="list-group-item d-flex justify-content-between align-items-center fw-semibold border-0"
-                                style="background-color:#FFF5F5;">
-                                {{ $s['name'] ?? 'User Name' }}
-                                <span class="fw-bold">…</span>
-                            </li>
-                        @empty
-                            <li class="list-group-item text-muted text-center border-0" style="background-color:#FFF5F5;">
-                                No students yet
-                            </li>
-                        @endforelse
-                    </ul>
-                    <a href="{{ route('admin.students.index') }}" class="d-block text-center mt-2 fw-bold">View More</a>
-                </div>
-            </div>
-        </div>
+<div class="container-fluid py-3">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="fw-bold m-0">Teachers</h3>
+    <a href="{{ route('admin.teachers.create') }}"
+       class="btn rounded-3 fw-semibold px-3 text-white"
+       style="background-color:#05445E; border-color:#05445E;">
+      + Add
+    </a>
+  </div>
 
-        {{-- Teachers --}}
-        <div class="col-md-4">
-            <div class="card shadow rounded-1 h-100 border-0" style="background-color:#F0FFF7;">
-                <div class="card-body">
-                    <h4 class="card-title fw-bold mb-3">{{ $teachersCount }} Teachers</h4>
-                    <ul class="list-group list-group-flush">
-                        @forelse(collect($latestTeachers ?? [])->take(5) as $t)
-                            <li class="list-group-item d-flex justify-content-between align-items-center fw-semibold border-0"
-                                style="background-color:#F0FFF7;">
-                                {{ $t['name'] ?? 'User Name' }}
-                                <span class="fw-bold">…</span>
-                            </li>
-                        @empty
-                            <li class="list-group-item text-muted text-center border-0" style="background-color:#F0FFF7;">
-                                No teachers yet
-                            </li>
-                        @endforelse
-                    </ul>
-                    <a href="{{ route('admin.teachers.index') }}" class="d-block text-center mt-2 fw-bold">View More</a>
-                </div>
-            </div>
-        </div>
+  @if (session('status'))
+    <div class="alert alert-success py-2">{{ session('status') }}</div>
+  @endif
 
-        {{-- Courses --}}
-        <div class="col-md-4">
-            <div class="card shadow rounded-1 h-100 border-0" style="background-color:#ECF0FF;">
-                <div class="card-body">
-                    <h4 class="card-title fw-bold mb-3">{{ $coursesCount }} Courses</h4>
-                    <ul class="list-group list-group-flush">
-                        @forelse(collect($latestCourses ?? [])->take(5) as $c)
-                            <li class="list-group-item d-flex justify-content-between align-items-center fw-semibold border-0"
-                                style="background-color:#ECF0FF;">
-                                {{ $c['name'] ?? 'Course Name' }}
-                                <span class="fw-bold">…</span>
-                            </li>
-                        @empty
-                            <li class="list-group-item text-muted text-center border-0" style="background-color:#ECF0FF;">
-                                No courses yet
-                            </li>
-                        @endforelse
-                    </ul>
-                    <a href="{{ route('admin.courses.index') }}" class="d-block text-center mt-2 fw-bold">View More</a>
-                </div>
-            </div>
-        </div>
+  <div class="card shadow-sm rounded-4">
+    <div class="table-responsive">
+      <table class="table align-middle mb-0 table-hover">
+        <thead class="fw-bold text-uppercase" style="background-color:#7EEAFF;">
+          <tr>
+            <th style="background-color:#7EEAFF;">Name</th>
+            <th style="background-color:#7EEAFF;">Email</th>
+            <th style="background-color:#7EEAFF;">Created At</th>
+            <th style="background-color:#7EEAFF;">Status</th>
+            <th class="text-end" style="background-color:#7EEAFF;"></th>
+          </tr>
+        </thead>
+        <tbody>
+        @forelse ($teachers as $t)
+          @php
+            $avatar = $t->avatar
+              ? asset('storage/'.$t->avatar)   // storageに保存している想定
+              : asset('images/avatar1.jpg');   // デフォルト画像
+            $isActive = (bool)($t->active ?? $t->is_active ?? false);
+          @endphp
+          <tr>
+            {{-- NAME + AVATAR --}}
+            <td>
+              <div class="d-flex align-items-center gap-3">
+                <img src="{{ $avatar }}" class="rounded-circle" width="40" height="40" alt="avatar">
+                <span class="fw-medium">{{ $t->name }}</span>
+              </div>
+            </td>
+
+            {{-- EMAIL --}}
+            <td class="text-muted">{{ $t->email }}</td>
+
+            {{-- CREATED --}}
+            <td class="text-muted">{{ optional($t->created_at)->format('Y-m-d') ?? '-' }}</td>
+
+            {{-- STATUS --}}
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <span class="rounded-circle d-inline-block {{ $isActive ? 'bg-success' : 'bg-secondary' }}"
+                      style="width:12px; height:12px;"></span>
+                <span class="{{ $isActive ? '' : 'text-muted' }}">
+                  {{ $isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </div>
+            </td>
+
+            {{-- ACTION --}}
+            <td class="text-end">
+              <div class="dropdown">
+                <button class="btn p-0 m-0 text-dark fs-4 lh-1 d-flex justify-content-center align-items-center"
+                        data-bs-toggle="dropdown" aria-expanded="false">…</button>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                  <li>
+                    <a class="dropdown-item" href="{{ route('admin.teachers.edit', $t->id) }}">Edit</a>
+                  </li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li>
+                    <form method="POST" action="{{ route('admin.teachers.toggle', $t->id) }}">
+                      @csrf
+                      @method('PATCH') {{-- ← 重要：toggle ルートは PATCH --}}
+                      <button class="dropdown-item" type="submit">
+                        {{ $isActive ? 'Inactivate' : 'Activate' }}
+                      </button>
+                    </form>
+                  </li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+        @empty
+          <tr>
+            <td colspan="5" class="text-center text-muted py-4">No teachers yet</td>
+          </tr>
+        @endforelse
+        </tbody>
+      </table>
     </div>
+  </div>
 
-    {{-- 下段：Forums --}}
-    <div class="col-12 mt-4">
-        <div class="card shadow rounded-1">
-            <div class="card-body">
-                <h4 class="card-title fw-bold mb-3">{{ $forumsCount }} Forums</h4>
-
-                {{-- ヘッダー行 --}}
-                <div class="row g-2 align-items-center mb-2">
-                    <div class="col-12 col-lg-4">
-                        <div class="bg-secondary-subtle rounded-3 px-3 py-2 fw-bold fs-6">Question</div>
-                    </div>
-                    <div class="col-6 col-lg-4">
-                        <div class="bg-secondary-subtle rounded-3 px-3 py-2 fw-bold fs-6">Course</div>
-                    </div>
-                    <div class="col-5 col-lg-3">
-                        <div class="bg-secondary-subtle rounded-3 px-3 py-2 fw-bold fs-6">Username</div>
-                    </div>
-                    <div class="col-1 d-none d-lg-flex justify-content-center align-items-center fw-bold fs-5">…</div>
-                </div>
-
-                {{-- データ行 --}}
-                @forelse(collect($latestForums ?? [])->take(4) as $f)
-                    <div class="row g-2 align-items-center mb-2">
-                        <div class="col-12 col-lg-4">
-                            <div class="bg-secondary-subtle rounded-3 px-3 py-2 fw-semibold">
-                                {{ $f['question'] ?? 'Question' }}
-                            </div>
-                        </div>
-                        <div class="col-6 col-lg-4">
-                            <div class="bg-secondary-subtle rounded-3 px-3 py-2 fw-semibold">
-                                {{ $f['course'] ?? 'Course' }}
-                            </div>
-                        </div>
-                        <div class="col-5 col-lg-3">
-                            <div class="bg-secondary-subtle rounded-3 px-3 py-2 fw-semibold">
-                                {{ $f['username'] ?? 'Username' }}
-                            </div>
-                        </div>
-                        <div class="col-1 d-none d-lg-flex justify-content-center align-items-center fw-bold fs-5">…</div>
-
-                    </div>
-                @empty
-                    <div class="text-center text-muted py-3">No forums yet</div>
-                @endforelse
-
-                <a href="" class="d-block text-center mt-2 fw-bold">View More</a>
-            </div>
-        </div>
+  {{-- ページネーション（Controllerで paginate() を使っている場合） --}}
+  @if(method_exists($teachers, 'links'))
+    <div class="mt-3">
+      {{ $teachers->links() }}
     </div>
+  @endif
+</div>
 @endsection
