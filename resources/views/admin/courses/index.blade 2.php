@@ -23,29 +23,31 @@
 
   {{-- 本体 --}}
   <div class="accordion" id="coursesAccordion">
-    @foreach ($items as $row)
+    @forelse ($courses as $course)
       @php $isOpen = $loop->first; @endphp
 
       <div class="accordion-item border rounded-3 shadow-sm mb-3">
-        <h2 class="accordion-header" id="heading-{{ $row['id'] }}">
+        <h2 class="accordion-header" id="heading-{{ $course->id }}">
           <button class="accordion-button {{ $isOpen ? '' : 'collapsed' }}" type="button"
-                  data-bs-toggle="collapse" data-bs-target="#collapse-{{ $row['id'] }}"
-                  aria-expanded="{{ $isOpen ? 'true' : 'false' }}" aria-controls="collapse-{{ $row['id'] }}"
+                  data-bs-toggle="collapse" data-bs-target="#collapse-{{ $course->id }}"
+                  aria-expanded="{{ $isOpen ? 'true' : 'false' }}" aria-controls="collapse-{{ $course->id }}"
                   style="background-color:white;">
             <div class="d-flex align-items-center w-100 gap-3">
               @php
-                $src = !empty($row['image']) ? asset('storage/' . $row['image']) : asset('images/default-course.png');
+                $src = $course->image
+                      ? asset('storage/' . $course->image)
+                      : asset('images/default-course.png');
               @endphp
-              <img src="{{ $src }}" alt="{{ $row['name'] }}"
+              <img src="{{ $src }}" alt="{{ $course->name }}"
                    class="rounded-circle border shadow-sm" width="48" height="48">
-              <span class="fw-semibold text-dark">{{ $row['name'] }}</span>
+              <span class="fw-semibold text-dark">{{ $course->name }}</span>
             </div>
           </button>
         </h2>
 
-        <div id="collapse-{{ $row['id'] }}" 
+        <div id="collapse-{{ $course->id }}" 
              class="accordion-collapse collapse {{ $isOpen ? 'show' : '' }}"
-             aria-labelledby="heading-{{ $row['id'] }}" data-bs-parent="#coursesAccordion">
+             aria-labelledby="heading-{{ $course->id }}" data-bs-parent="#coursesAccordion">
 
           <div class="accordion-body bg-white border-top">
             <div class="table-responsive">
@@ -69,13 +71,6 @@
                           <span class="text-secondary fw-semibold">● Inactive</span>
                         @endif
                       </td>
-                      {{-- <td class="text-end">
-                        @if ($isActive)
-                          <button class="btn btn-sm px-3" style="background:#6c757d; color:white;">Inactivate</button>
-                        @else
-                          <button class="btn btn-sm px-3" style="background:#28a745; color:white;">Activate</button>
-                        @endif
-                      </td> --}}
                     </tr>
                   @endforeach
                 </tbody>
@@ -92,7 +87,11 @@
           </div>
         </div>
       </div>
-    @endforeach
+    @empty
+      <div class="alert alert-light border text-center py-4">
+        No courses yet.
+      </div>
+    @endforelse
   </div>
 </div>
 @endsection

@@ -5,81 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use App\Http\Seeder; //Seeder database 3
 
 class AdminController extends Controller
 {
-    /** 初期データ（配列） */
-    private function seed()
-    {
-        return [
-            'students' => [
-                ['id' => 1, 'name' => 'David', 'email' => 'david@gmail.com', 'created_at' => '2025-08-22 06:52:47', 'active' => true, 'avatar' => '/images/avatar1.jpg'],
-                ['id' => 2, 'name' => 'Emma', 'email' => 'emma@gmail.com', 'created_at' => '2025-08-22 06:52:47', 'active' => false, 'avatar' => '/images/avatar2.jpg'],
-                ['id' => 3, 'name' => 'Liam', 'email' => 'liam@gmail.com', 'created_at' => '2025-08-22 06:52:47', 'active' => true, 'avatar' => '/images/avatar3.jpg'],
-                ['id' => 4, 'name' => 'Mia', 'email' => 'mia@gmail.com', 'created_at' => '2025-08-22 06:52:47', 'active' => true, 'avatar' => '/images/avatar4.jpg'],
-            ],
-            'teachers' => [
-                ['id' => 1, 'name' => 'David', 'email' => 'david@gmail.com', 'created_at' => '2025-08-22 06:52:47', 'active' => true, 'avatar' => '/images/avatar1.jpg'],
-                ['id' => 2, 'name' => 'Sara', 'email' => 'sara@gmail.com', 'created_at' => '2025-08-22 06:52:47', 'active' => false, 'avatar' => '/images/avatar2.jpg'],
-                ['id' => 3, 'name' => 'Ken', 'email' => 'ken@gmail.com', 'created_at' => '2025-08-22 06:52:47', 'active' => true, 'avatar' => '/images/avatar3.jpg'],
-                ['id' => 4, 'name' => 'Aya', 'email' => 'aya@gmail.com', 'created_at' => '2025-08-22 06:52:47', 'active' => true, 'avatar' => '/images/avatar4.jpg'],
-            ],
-            'courses' => [
-                ['id' => 1, 'name' => 'PHP', 'active' => true],
-                ['id' => 2, 'name' => 'HTML', 'active' => false],
-                ['id' => 3, 'name' => 'Laravel', 'active' => true],
-            ],
-            'forums' => [
-                ['question' => 'How to install Laravel?', 'course' => 'Laravel Basics', 'username' => 'Alice'],
-                ['question' => 'What is MVC?', 'course' => 'PHP 101', 'username' => 'Bob'],
-            ],
-        ];
-    }
-
-    private function ensureBootstrapped()
-    {
-        if (!Session::has('admin_data')) {
-            Session::put('admin_data', $this->seed());
-        }
-    }
-
-    public function bootstrap()
-    {
-        Session::put('admin_data', $this->seed());
-        return redirect()->route('admin.index');
-    }
-
-    private function data()
-    {
-        $this->ensureBootstrapped();
-        return Session::get('admin_data');
-    }
-    private function save($data)
-    {
-        Session::put('admin_data', $data);
-    }
-
-    private function findItem(string $type, int $id): ?array
-    {
-        $d = $this->data();
-        foreach ($d[$type] as $row) {
-            if (($row['id'] ?? null) === $id)
-                return $row;
-        }
-        return null;
-    }
-    private function updateItem(string $type, int $id, callable $mutator): void
-    {
-        $d = $this->data();
-        foreach ($d[$type] as $i => $row) {
-            if (($row['id'] ?? null) === $id) {
-                $d[$type][$i] = $mutator($row);
-                break;
-            }
-        }
-        $this->save($d);
-    }
-
     // ── 画面表示 ────────────────────────────
     public function index()
     {
@@ -95,7 +24,7 @@ class AdminController extends Controller
         $latestCourses = array_slice($d['courses'], 0, 5);
         $latestForums = array_slice($d['forums'], 0, 4);
 
-        return view('admin.index', compact(
+        return view('admin.dashboard', compact(
             'studentsCount',
             'teachersCount',
             'coursesCount',
