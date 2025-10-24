@@ -87,5 +87,10 @@ public function enrolledCourses()
                 ->withTimestamps();
 }
 
+public function coursesTaught()
+{
+    // 第3引数: 現在モデル側FK（teacher_id）, 第4引数: 相手側FK（course_id）
+    return $this->belongsToMany(Course::class, 'teacher_course', 'teacher_id', 'course_id');
+}
 
 }

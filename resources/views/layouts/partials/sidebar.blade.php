@@ -27,7 +27,6 @@
                 href="{{ route('admin.teachers.index') }}">Teachers</a>
             <a class="nav-link s-link mb-1 {{ request()->routeIs('admin.courses.index') ? 'active' : '' }}"
                 href="{{ route('admin.courses.index') }}">Courses</a>
-            <a class="nav-link s-link mb-1" href="{{ route('admin.selflearning.index') }}">Self-learning</a>
             <a class="nav-link s-link" href="#">Forum</a>
         </nav>
 
