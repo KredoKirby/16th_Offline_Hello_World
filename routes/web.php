@@ -4,12 +4,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 // Admin controllers
-use App\Http\Controllers\Admin\AdminController;
+//use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\TeacherController as AdminTeacherController;
 use App\Http\Controllers\Admin\StudentController as AdminStudentController;
 use App\Http\Controllers\Admin\CourseController as AdminCourseController;
-use App\Http\Controllers\Admin\ForumController as AdminForumController;
+//use App\Http\Controllers\Admin\ForumController as AdminForumController;
 
 // Front/controllers
 use App\Http\Controllers\AuthController;
@@ -39,79 +39,79 @@ Route::middleware('auth')->group(function () {
             4 => redirect()->route('courses.index'), // basic_user
         };
     })->name('home');
+});
 
-    /* ------------------- Admin ------------------- */
-    Route::prefix('admin')->middleware('can:admin')->name('admin.')->group(function () {
-       // ダッシュボード
+/* ------------------- Admin ------------------- */
+Route::prefix('admin')->middleware('can:admin')->name('admin.')->group(function () {
+    // ダッシュボード
     Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');   // ← 1つ目
-    Route::get('/dashboard', fn () => redirect()->route('admin.dashboard'))->name('index');
-    // Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('index');       // ← 2つ目（別URLでもOK）
-    // Coursesページ
-    // Route::get('/courses', [AdminDashboardController::class, 'courses'])->name('courses');
+    Route::get('/dashboard', fn() => redirect()->route('admin.dashboard'))->name('index');
 
-        // 一覧・CRUD
-        Route::resource('students', AdminStudentController::class)->names('students');
-        Route::resource('teachers', AdminTeacherController::class)->names('teachers');
-        Route::resource('courses', AdminCourseController::class)->names('courses');
-        Route::resource('forums', AdminForumController::class)->names('forums');
+    // 一覧・CRUD
+    Route::resource('students', AdminStudentController::class)->names('students');
+    Route::resource('teachers', AdminTeacherController::class)->names('teachers');
+    Route::resource('courses', AdminCourseController::class)->names('courses');
+    // Route::resource('forums', AdminForumController::class)->names('forums');
 
-        // ── Teachers（明示ルートに統一） ─────
-        Route::get('/teachers', [AdminController::class, 'teachers'])->name('teachers.index');
-        Route::get('/teachers/create', [AdminController::class, 'teacherAddForm'])->name('teachers.create');
-        Route::post('/teachers', [AdminController::class, 'teacherAdd'])->name('teachers.store');
-        Route::post('/teachers/{id}/toggle', [AdminController::class, 'teacherToggle'])->name('teachers.toggle');
-        Route::get('/teachers/{id}/edit', [AdminController::class, 'teacherEdit'])->name('teachers.edit');
-        Route::put('/teachers/{id}', [AdminController::class, 'teacherUpdate'])->name('teachers.update');
+    // ── Teachers（明示ルートに統一） ─────
+    // Route::get('/teachers', [AdminController::class, 'teachers'])->name('teachers.index');
+    // Route::get('/teachers/create', [AdminController::class, 'teacherAddForm'])->name('teachers.create');
+    // Route::post('/teachers', [AdminController::class, 'teacherAdd'])->name('teachers.store');
+    // Route::post('/teachers/{id}/toggle', [AdminController::class, 'teacherToggle'])->name('teachers.toggle');
+    // Route::get('/teachers/{id}/edit', [AdminController::class, 'teacherEdit'])->name('teachers.edit');
+    // Route::put('/teachers/{id}', [AdminController::class, 'teacherUpdate'])->name('teachers.update');
 
-        // ── Courses（show/edit/update あり） ─
-        Route::get('/courses', [AdminController::class, 'courses'])->name('courses.index');
-        Route::get('/courses/create', [AdminController::class, 'courseAddForm'])->name('courses.create');
-        Route::post('/courses', [AdminController::class, 'courseAdd'])->name('courses.store');
-        Route::get('/courses/{id}', [AdminController::class, 'courseShow'])->name('courses.show');
-        Route::get('/courses/{id}/edit', [AdminController::class, 'courseEdit'])->name('courses.edit');
-        Route::put('/courses/{id}', [AdminController::class, 'courseUpdate'])->name('courses.update');
-        Route::post('/courses/{id}/toggle', [AdminController::class, 'courseToggle'])->name('courses.toggle');
+    // ── Courses（show/edit/update あり） ─
+    // Route::get('/courses', [AdminController::class, 'courses'])->name('courses.index');
+    // Route::get('/courses/create', [AdminController::class, 'courseAddForm'])->name('courses.create');
+    // Route::post('/courses', [AdminController::class, 'courseAdd'])->name('courses.store');
+    // Route::get('/courses/{id}', [AdminController::class, 'courseShow'])->name('courses.show');
+    // Route::get('/courses/{id}/edit', [AdminController::class, 'courseEdit'])->name('courses.edit');
+    // Route::put('/courses/{id}', [AdminController::class, 'courseUpdate'])->name('courses.update');
+    // Route::post('/courses/{id}/toggle', [AdminController::class, 'courseToggle'])->name('courses.toggle');
 
-        // 追加フォーム表示 & 保存 course
-        Route::get('/courses/create', [AdminController::class, 'courseAddForm'])->name('courses.create');
-        Route::post('/courses', [AdminController::class, 'courseAdd'])->name('courses.store');
+    // 追加フォーム表示 & 保存 course
+    // Route::get('/courses/create', [AdminController::class, 'courseAddForm'])->name('courses.create');
+    // Route::post('/courses', [AdminController::class, 'courseAdd'])->name('courses.store');
 
-        Route::get('/forums', [AdminController::class, 'forums'])->name('forums');
+    // Route::get('/forums', [AdminController::class, 'forums'])->name('forums');
 
-        // Teachers: Add 追加フォーム & 保存
-        Route::get('/teachers/add', [AdminController::class, 'teacherAddForm'])->name('teachers.add.form');
-        Route::post('/teachers/add', [AdminController::class, 'teacherAdd'])->name('teachers.add');
+    // Teachers: Add 追加フォーム & 保存
+    // Route::get('/teachers/add', [AdminController::class, 'teacherAddForm'])->name('teachers.add.form');
+    // Route::post('/teachers/add', [AdminController::class, 'teacherAdd'])->name('teachers.add');
 
-        // Courses: Add 追加フォーム & 保存
-        Route::get('/courses/create', [AdminController::class, 'courseAddForm'])->name('courses.create');
-        Route::post('/courses', [AdminController::class, 'courseAdd'])->name('courses.store');
+    // Courses: Add 追加フォーム & 保存
+    // Route::get('/courses/create', [AdminController::class, 'courseAddForm'])->name('courses.create');
+    // Route::post('/courses', [AdminController::class, 'courseAdd'])->name('courses.store');
 
-        // 追加のアクション
-        Route::patch('teachers/{teacher}/toggle', [AdminTeacherController::class, 'toggle'])
-            ->name('teachers.toggle');
-        Route::patch('courses/{course}/toggle', [AdminCourseController::class, 'toggle'])
-            ->name('courses.toggle');
-    });
+    // 追加のアクション
+    Route::patch('teachers/{teacher}/toggle', [AdminTeacherController::class, 'toggle'])->name('teachers.toggle');
+    Route::patch('courses/{course}/toggle', [AdminCourseController::class, 'toggle'])->name('courses.toggle');
+    Route::patch('students/{student}/toggle', [AdminStudentController::class, 'toggle'])->name('students.toggle');
+    //couses->index.php
+    // Route::middleware(['auth', 'can:admin'])->prefix('admin')->name('admin.')->group(function () {
+    // Route::get('/courses', [AdminCourseController::class, 'index'])->name('courses.index');
+});
 
-    // Courses
-    Route::prefix('courses')->group(function () {
-        Route::get('/', [CourseController::class, 'index'])->name('courses.index');
-        Route::get('/{course}', [CourseController::class, 'show'])->name('courses.show');
-        Route::post('/{course}/enroll', [CourseController::class, 'enroll'])->name('courses.enroll');
-        Route::delete('/{course}/unenroll', [CourseController::class, 'unenroll'])->name('courses.unenroll');
-        Route::post('/{course}/lessons/{lesson}/progress', [LessonController::class, 'updateProgress'])
-            ->name('lessons.updateProgress');
-        Route::post('/{course}/lessons/{lesson}/toggle', [LessonController::class, 'toggle'])
-            ->name('lessons.toggle');
-    });
+// Courses
+Route::prefix('courses')->group(function () {
+    Route::get('/', [CourseController::class, 'index'])->name('courses.index');
+    Route::get('/{course}', [CourseController::class, 'show'])->name('courses.show');
+    Route::post('/{course}/enroll', [CourseController::class, 'enroll'])->name('courses.enroll');
+    Route::delete('/{course}/unenroll', [CourseController::class, 'unenroll'])->name('courses.unenroll');
+    Route::post('/{course}/lessons/{lesson}/progress', [LessonController::class, 'updateProgress'])
+        ->name('lessons.updateProgress');
+    Route::post('/{course}/lessons/{lesson}/toggle', [LessonController::class, 'toggle'])
+        ->name('lessons.toggle');
+});
 
-     /* PayPal 支払い処理 */
-    Route::prefix('payment')->middleware('auth')->name('payment.')->group(function () {
-        Route::get('/success', [CourseController::class, 'paymentSuccess'])->name('success');
-        Route::get('/cancel', [CourseController::class, 'paymentCancel'])->name('cancel');
-    });
+/* PayPal 支払い処理 */
+Route::prefix('payment')->middleware('auth')->name('payment.')->group(function () {
+    Route::get('/success', [CourseController::class, 'paymentSuccess'])->name('success');
+    Route::get('/cancel', [CourseController::class, 'paymentCancel'])->name('cancel');
+});
 
-   // Self-learning
+// Self-learning
 Route::prefix('selflearning')->group(function () {
     Route::get('/', [SelfLearningController::class, 'index'])->name('selflearning.index');
     Route::get('/{courseId}/lesson/{lessonId}', [SelfLearningController::class, 'lessonVideo'])
@@ -127,17 +127,16 @@ Route::prefix('selflearning')->group(function () {
     Route::get('/{id}', [SelfLearningController::class, 'show'])->name('selflearning.show');
 });
 
-    /* ------------------- Student area ------------------- */
-    Route::prefix('students')->middleware('can:students')->name('student.')->group(function () {
-        Route::get('/', [StudentIndexController::class, 'index'])->name('home');
-        Route::get('mylearning', [MylearningController::class, 'show'])->name('mylearning');
-        Route::get('lesson_history', [LessonhistoryController::class, 'show'])->name('lessonhistory');
-        Route::get('profile', [StudentProfileController::class, 'show'])->name('profile');
-    });
+/* ------------------- Student area ------------------- */
+Route::prefix('students')->middleware('can:students')->name('student.')->group(function () {
+    Route::get('/', [StudentIndexController::class, 'index'])->name('home');
+    Route::get('mylearning', [MylearningController::class, 'show'])->name('mylearning');
+    Route::get('lesson_history', [LessonhistoryController::class, 'show'])->name('lessonhistory');
+    Route::get('profile', [StudentProfileController::class, 'show'])->name('profile');
+});
 
-    /* ------------------- Teacher area ------------------- */
-    Route::prefix('teachers')->middleware('can:teachers')->name('teachers.')->group(function () {
-        Route::get('/', [TeacherIndexController::class, 'index'])->name('index');
-        Route::get('profile', [TeacherProfileController::class, 'show'])->name('profile');
-    });
+/* ------------------- Teacher area ------------------- */
+Route::prefix('teachers')->middleware('can:teachers')->name('teachers.')->group(function () {
+    Route::get('/', [TeacherIndexController::class, 'index'])->name('index');
+    Route::get('profile', [TeacherProfileController::class, 'show'])->name('profile');
 });
