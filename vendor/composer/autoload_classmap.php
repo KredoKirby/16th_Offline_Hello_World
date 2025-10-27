@@ -42,10 +42,7 @@ return array(
     'App\\Models\\Section' => $baseDir . '/app/Models/Section.php',
     'App\\Models\\Student' => $baseDir . '/app/Models/Student.php',
     'App\\Models\\Teacher' => $baseDir . '/app/Models/Teacher.php',
-<<<<<<< HEAD
-=======
     'App\\Models\\Topic' => $baseDir . '/app/Models/Topic.php',
->>>>>>> origin/students
     'App\\Models\\User' => $baseDir . '/app/Models/User.php',
     'Attribute' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
     'Brick\\Math\\BigDecimal' => $vendorDir . '/brick/math/src/BigDecimal.php',
