@@ -1,12 +1,15 @@
 <?php
-
+// app/Models/Enrollment.php
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Enrollment extends Model
 {
-   protected $fillable = ['user_id', 'course_id', 'status', 'progress'];
+    use HasFactory;
+
+    protected $fillable = ['user_id', 'course_id', 'status'];
 
     public function course()
     {
