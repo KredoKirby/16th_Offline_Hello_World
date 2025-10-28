@@ -11,8 +11,12 @@ class Booking extends Model
     // const UPDATED_AT = null;
 
     protected $fillable = [
-        'teacher_id', 'date', 'time',
-        // 明示しない限り student_id / topic_id / course_id は NULL のまま
+        'teacher_id',
+        'student_id',
+        'course_id',
+        'topic_id',
+        'date',
+        'time',
     ];
 
     /** Relationship: booking belongs to a teacher (User) */
