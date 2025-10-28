@@ -35,7 +35,7 @@ class AdminController extends Controller
             'latestForums'
         ));
     }
-
+    
     public function students()
     {
         return view('admin.students.students', ['items' => $this->data()['students']]);
