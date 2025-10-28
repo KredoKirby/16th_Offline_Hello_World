@@ -3,40 +3,140 @@
 @section('title', 'Home')
 
 @section('content')
+    {{-- ===== Up next (date & time unified) ===== --}}
     <section class="container py-4">
-        <h1 class="h4 mb-3">Up next</h1>
+        <h2 class="h4 mb-3">Up next</h2>
 
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <div
-                    class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-3"
-                            style="width:56px;height:56px;">
-                            <i class="fa-solid fa-code fa-lg text-secondary"></i>
-                        </div>
-                        <div>
-                            <div class="text-muted small">
-                                Course Name, <span class="ms-1">Topic Name</span>
+        @if ($upNext)
+            @php
+                // 明示的にアプリのタイムゾーンで「その時刻がJSTの◯時」を作る（変換ではなく“解釈”）
+                $tz = config('app.timezone', 'Asia/Tokyo');
+                $dt = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $upNext->date . ' ' . $upNext->time, $tz);
+
+                $duration = $upNext->duration_minutes ?? 50;
+                $end = (clone $dt)->addMinutes($duration);
+
+                $course = $upNext->course->title ?? 'Course Name';
+                $topic = $upNext->topic->name ?? 'Topic Name';
+                $teacher = $upNext->teacher->name ?? 'Teacher';
+                $iconUrl = $upNext->course->icon_url ?? asset('images/placeholder-course.png');
+
+                $whenStr = $dt->format('D, M j H:i') . '–' . $end->format('H:i');
+                $isToday = $dt->isToday();
+
+                // JSに渡すのはUNIXエポック（ms）
+                $startTsMs = $dt->getTimestamp() * 1000; // Carbon 2なら $dt->valueOf() でもOK
+            @endphp
+
+            <div class="card">
+                <div class="card-body py-3 px-3">
+                    <div class="d-flex align-items-center gap-3 flex-wrap">
+
+                        {{-- 左：アイコン --}}
+                        <img src="{{ $iconUrl }}" alt="" class="rounded-3 border flex-shrink-0"
+                            style="width:48px;height:48px;object-fit:cover;">
+
+                        {{-- 中央：タイトル（1行）＋メタ（1行） --}}
+                        <div class="min-w-0 flex-grow-1">
+                            <div class="fw-semibold fs-5 text-truncate">
+                                {{ $course }} <span class="text-body-secondary">・</span> {{ $topic }}
                             </div>
-                            <div class="fw-semibold">
-                                Sep 22 (Mon) 13:00~
+
+                            <div class="d-flex align-items-center flex-wrap gap-2 mt-1 text-secondary small">
+                                {{-- とき（日時を一体化） --}}
+                                <span class="d-inline-flex align-items-center">
+                                    <i class="fa-regular fa-calendar me-1"></i>{{ $whenStr }}
+                                    @if ($isToday)
+                                        <span class="badge text-bg-success ms-2">Today</span>
+                                    @endif
+                                </span>
+
+                                <span>•</span>
+
+                                {{-- Teacher --}}
+                                <span>with <span class="text-body">{{ $teacher }}</span></span>
+
+                                <span>•</span>
+
+                                {{-- カウントダウン --}}
+                                <span id="upnext-countdown" class="badge text-bg-secondary" aria-live="polite"
+                                    data-start-ts="{{ $startTsMs }}"></span>
                             </div>
                         </div>
+
+                        {{-- Right: actions --}}
+                        <div class="d-flex gap-2 ms-auto">
+                            <button type="button" class="btn btn-primary btn-sm px-3">Enter</button>
+
+                            {{-- Cancel (DELETE with confirmation) --}}
+                            <form method="POST" action="{{ route('students.bookings.cancel', $upNext->id) }}"
+                                onsubmit="return confirm('Cancel this booking?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-outline-danger btn-sm px-3">Cancel</button>
+                            </form>
+                        </div>
+
                     </div>
-
-                    <a href="#" class="btn btn-primary">
-                        Enter classroom
-                    </a>
                 </div>
             </div>
-        </div>
+        @else
+            <div class="alert alert-light border d-flex align-items-center justify-content-between py-2 px-3 mb-0">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fa-regular fa-calendar-plus text-secondary"></i>
+                    <span>No upcoming bookings</span>
+                </div>
+            </div>
+        @endif
     </section>
+
+    @push('scripts')
+        <script>
+            (function() {
+                const el = document.getElementById('upnext-countdown');
+                if (!el) return;
+
+                // ← 文字列ISOではなく、ミリ秒の数値を使う
+                const startAtMs = Number(el.dataset.startTs);
+
+                function render() {
+                    const diff = startAtMs - Date.now(); // どのTZでも正しい差分になる
+
+                    if (diff <= -60 * 1000) {
+                        el.textContent = 'Live';
+                        el.classList.remove('text-bg-secondary');
+                        el.classList.add('text-bg-danger');
+                        return;
+                    }
+                    if (diff <= 0) {
+                        el.textContent = 'Starting';
+                        el.classList.remove('text-bg-secondary');
+                        el.classList.add('text-bg-warning');
+                        return;
+                    }
+
+                    const sec = Math.floor(diff / 1000);
+                    const d = Math.floor(sec / 86400);
+                    const h = Math.floor((sec % 86400) / 3600);
+                    const m = Math.floor((sec % 3600) / 60);
+
+                    let txt = 'in ';
+                    if (d) txt += d + 'd ';
+                    if (h) txt += h + 'h ';
+                    txt += m + 'm';
+                    el.textContent = txt.trim();
+                }
+
+                render();
+                setInterval(render, 60 * 1000);
+            })();
+        </script>
+    @endpush
     <section class="container py-4">
         <div class="row g-3">
             <!-- Book a class -->
             <div class="col-lg-6">
-                <div class="card h-100 shadow-sm">
+                <div class="card h-100">
                     <div class="card-body">
                         <h2 class="h4 mb-3">Book a class</h2>
                         <form method="POST" action="{{ route('students.bookings.store') }}" id="bookingForm">
@@ -446,7 +546,7 @@
 
             <!-- Calendar (frame only) -->
             <div class="col-lg-6">
-                <div class="card h-100 shadow-sm">
+                <div class="card h-100">
                     <div class="card-body d-flex flex-column">
                         <div class="d-flex align-items-center justify-content-between mb-3">
                             <h2 class="h4 mb-0">Calendar</h2>
@@ -469,38 +569,185 @@
             </div>
         </div>
     </section>
+    {{-- ===== Lesson history (line-card with Details modal) ===== --}}
     <section class="container py-4">
         <h2 class="h4 mb-3">Lesson history</h2>
 
         <div class="vstack gap-3">
-            @for ($i = 1; $i <= 3; $i++)
-                <div class="card shadow-sm">
-                    <div
-                        class="card-body d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-3"
-                                style="width:48px;height:48px;">
-                                <i class="fa-solid fa-book-open text-secondary"></i>
-                            </div>
-                            <div>
-                                <div class="text-muted small">
-                                    Course Name {{ $i }}, <span class="ms-1">Topic Name
-                                        {{ $i }}</span>
+            @forelse ($history as $b)
+                @php
+                    $dt = \Carbon\Carbon::parse($b->date . ' ' . $b->time)->timezone(config('app.timezone'));
+                    $duration = $b->duration_minutes ?? 50;
+                    $end = (clone $dt)->addMinutes($duration);
+
+                    $course = $b->course->title ?? 'Course';
+                    $topic = $b->topic->name ?? 'Topic';
+                    $teacher = $b->teacher->name ?? 'Teacher';
+                    $iconUrl = $b->course->icon_url ?? asset('images/placeholder-course.png');
+
+                    // Unified date & time (e.g., Wed, Oct 29 18:00–18:50)
+                    $whenStr = $dt->format('D, M j H:i') . '–' . $end->format('H:i');
+
+                    // Report fields (optional)
+                    $status = $b->report->status ?? null;
+                    $nextTop = $b->report->next_topic ?? '—';
+
+                    // Badge color by status
+                    $statusClass = match (strtolower((string) $status)) {
+                        'done', 'completed' => 'text-bg-success',
+                        'pending', 'todo' => 'text-bg-warning',
+                        'missed', 'absent' => 'text-bg-danger',
+                        default => 'text-bg-secondary',
+                    };
+                @endphp
+
+                <div class="card">
+                    <div class="card-body py-3 px-3">
+                        <div class="d-flex align-items-center gap-3 flex-wrap">
+
+                            {{-- Left: course icon --}}
+                            <img src="{{ $iconUrl }}" alt="Course icon" class="rounded-3 border flex-shrink-0"
+                                style="width:48px;height:48px;object-fit:cover;">
+
+                            {{-- Middle: title + meta --}}
+                            <div class="min-w-0 flex-grow-1">
+                                <div class="fw-semibold fs-5 text-truncate">
+                                    {{ $course }} <span class="text-body-secondary">·</span> {{ $topic }}
                                 </div>
-                                <div class="fw-semibold">
-                                    Sep 10 11:00–12:00 （i: {{ $i }}）
+                                <div class="d-flex align-items-center flex-wrap gap-2 mt-1 text-secondary small">
+                                    <span class="d-inline-flex align-items-center">
+                                        <i class="fa-regular fa-calendar me-1"></i>{{ $whenStr }}
+                                    </span>
+                                    <span>•</span>
+                                    <span>with <span class="text-body">{{ $teacher }}</span></span>
                                 </div>
                             </div>
+
+                            {{-- Right: Details button (opens modal) --}}
+                            <div class="d-flex gap-2 ms-auto">
+                                <button type="button" class="btn btn-outline-secondary btn-sm px-3"
+                                    data-bs-toggle="modal" data-bs-target="#bookingDetails-{{ $b->id }}">
+                                    Details
+                                </button>
+                            </div>
+
                         </div>
-                        <a href="#" class="btn btn-outline-primary">View Details {{ $i }}</a>
                     </div>
                 </div>
-            @endfor
+
+                {{-- Modal (one per item) --}}
+                <div class="modal fade" id="bookingDetails-{{ $b->id }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Lesson details</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+
+                            <div class="modal-body">
+                                {{-- Booking --}}
+                                <div class="mb-3">
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <i class="fa-regular fa-calendar-check text-primary"></i>
+                                        <span class="text-uppercase text-muted small fw-semibold">Booking</span>
+                                    </div>
+
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item px-0">
+                                            <div class="row g-2 align-items-center">
+                                                <div class="col-6 text-secondary small d-flex align-items-center gap-2">
+                                                    <i class="fa-regular fa-clone"></i><span>Course</span>
+                                                </div>
+                                                <div class="col-6 fw-semibold text-end text-truncate"
+                                                    title="{{ $course }}">{{ $course }}</div>
+                                            </div>
+                                        </li>
+
+                                        <li class="list-group-item px-0">
+                                            <div class="row g-2 align-items-center">
+                                                <div class="col-6 text-secondary small d-flex align-items-center gap-2">
+                                                    <i class="fa-regular fa-bookmark"></i><span>Topic</span>
+                                                </div>
+                                                <div class="col-6 fw-semibold text-end text-truncate"
+                                                    title="{{ $topic }}">{{ $topic }}</div>
+                                            </div>
+                                        </li>
+
+                                        <li class="list-group-item px-0">
+                                            <div class="row g-2 align-items-center">
+                                                <div class="col-6 text-secondary small d-flex align-items-center gap-2">
+                                                    <i class="fa-regular fa-user"></i><span>Teacher</span>
+                                                </div>
+                                                <div class="col-6 fw-semibold text-end text-truncate"
+                                                    title="{{ $teacher }}">{{ $teacher }}</div>
+                                            </div>
+                                        </li>
+
+                                        <li class="list-group-item px-0">
+                                            <div class="row g-2 align-items-center">
+                                                <div class="col-6 text-secondary small d-flex align-items-center gap-2">
+                                                    <i class="fa-regular fa-clock"></i><span>Date & time</span>
+                                                </div>
+                                                <div class="col-6 fw-semibold text-end text-truncate"
+                                                    title="{{ $whenStr }}">{{ $whenStr }}</div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                {{-- Report --}}
+                                <div>
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <i class="fa-regular fa-clipboard text-primary"></i>
+                                        <span class="text-uppercase text-muted small fw-semibold">Report</span>
+                                    </div>
+
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item px-0">
+                                            <div class="row g-2 align-items-center">
+                                                <div class="col-6 text-secondary small d-flex align-items-center gap-2">
+                                                    <i class="fa-regular fa-flag"></i><span>Status</span>
+                                                </div>
+                                                <div class="col-6 text-end">
+                                                    <span class="badge {{ $statusClass }}">{{ $status ?? '—' }}</span>
+                                                </div>
+                                            </div>
+                                        </li>
+
+                                        <li class="list-group-item px-0">
+                                            <div class="row g-2 align-items-center">
+                                                <div class="col-6 text-secondary small d-flex align-items-center gap-2">
+                                                    <i class="fa-regular fa-lightbulb"></i><span>Next topic</span>
+                                                </div>
+                                                <div class="col-6 fw-semibold text-end text-truncate"
+                                                    title="{{ $nextTop }}">{{ $nextTop }}</div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-light border"
+                                    data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <div class="alert alert-light border d-flex align-items-center gap-2 mb-0">
+                    <i class="fa-regular fa-circle-info text-secondary"></i>
+                    <span class="small">No history yet.</span>
+                </div>
+            @endforelse
         </div>
 
-        <!-- View More -->
+        {{-- View more --}}
         <div class="text-center mt-3">
-            <button type="button" class="btn btn-light border">View more</button>
+            <a href="{{ route('students.lessonhistory') }}" class="btn btn-light border">
+                View more
+            </a>
         </div>
     </section>
 @endsection

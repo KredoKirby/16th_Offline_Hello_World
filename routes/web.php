@@ -125,6 +125,9 @@ Route::middleware('auth')->group(function () {
         Route::get('mylearning',      [MylearningController::class, 'show'])->name('mylearning');
         Route::get('lesson_history',  [LessonhistoryController::class, 'show'])->name('lessonhistory');
         Route::get('profile',         [StudentProfileController::class, 'show'])->name('profile');
+         // Cancel (DELETE) an upcoming booking (student only)
+        Route::delete('bookings/{booking}', [StudentBookingController::class, 'destroy'])
+        ->name('bookings.cancel');
 
         // 予約フォーム表示 / 保存（既存）
         // Route::get('/bookings/create', [StudentBookingController::class, 'create'])

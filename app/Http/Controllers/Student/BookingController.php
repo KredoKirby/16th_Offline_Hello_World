@@ -44,4 +44,37 @@ class BookingController extends Controller
 
         return redirect()->back()->with('success', 'Booking completed successfully!');
     }
+
+    /**
+     * DELETE /students/bookings/{booking}
+     * Cancels (deletes) an upcoming booking for the logged-in student.
+     */
+    public function destroy(Booking $booking, Request $request)
+    {
+        $user = Auth::user();
+
+        // Guard: only the owner (student) can cancel this booking
+        if ((int)$booking->student_id !== (int)$user->id) {
+            abort(403, 'You are not allowed to cancel this booking.');
+        }
+
+        // Guard: only future (or not-yet-started today) can be canceled
+        $now      = Carbon::now(); // uses app timezone
+        $today    = $now->toDateString();      // 'YYYY-MM-DD'
+        $nowTime  = $now->format('H:i:s');     // 'HH:MM:SS'
+
+        $isFuture = ($booking->date > $today)
+                 || ($booking->date === $today && $booking->time >= $nowTime);
+
+        if (!$isFuture) {
+            return back()->with('error', 'Past lessons cannot be canceled.');
+        }
+
+        // Perform cancellation.
+        // If your schema has a status column, you can update instead:
+        // $booking->update(['status' => 'canceled']);
+        $booking->delete();
+
+        return back()->with('success', 'The booking was canceled.');
+    }
 }
