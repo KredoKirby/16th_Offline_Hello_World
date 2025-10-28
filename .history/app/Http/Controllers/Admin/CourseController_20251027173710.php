@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Course;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 
 class CourseController extends Controller
 {
@@ -49,15 +49,14 @@ class CourseController extends Controller
         $course->language = $request->language;
         $course->level = $request->level;
 
-        // Base64画像をStorageに保存
+        // Base64画像を保存
         if ($request->image) {
-            $imageData = preg_replace('#^data:image/\w+;base64,#i', '', $request->image);
+            $imageData = $request->image;
+            $imageData = preg_replace('#^data:image/\w+;base64,#i', '', $imageData);
             $imageData = str_replace(' ', '+', $imageData);
             $imageName = time() . '.png';
-
-            // storage/app/public/courses に保存
-            Storage::disk('public')->put('courses/' . $imageName, base64_decode($imageData));
-            $course->image = 'courses/' . $imageName;
+            File::put(public_path('images/courses/' . $imageName), base64_decode($imageData));
+            $course->image = $imageName;
         }
 
         $course->save();
@@ -97,16 +96,16 @@ class CourseController extends Controller
 
         if ($request->image) {
             // 古い画像を削除
-            if ($course->image && Storage::disk('public')->exists($course->image)) {
-                Storage::disk('public')->delete($course->image);
+            if ($course->image && File::exists(public_path('images/courses/' . $course->image))) {
+                File::delete(public_path('images/courses/' . $course->image));
             }
 
-            $imageData = preg_replace('#^data:image/\w+;base64,#i', '', $request->image);
+            $imageData = $request->image;
+            $imageData = preg_replace('#^data:image/\w+;base64,#i', '', $imageData);
             $imageData = str_replace(' ', '+', $imageData);
             $imageName = time() . '.png';
-
-            Storage::disk('public')->put('courses/' . $imageName, base64_decode($imageData));
-            $course->image = 'courses/' . $imageName;
+            File::put(public_path('images/courses/' . $imageName), base64_decode($imageData));
+            $course->image = $imageName;
         }
 
         $course->save();
@@ -120,8 +119,8 @@ class CourseController extends Controller
     public function destroy(Course $course)
     {
         // 画像も削除
-        if ($course->image && Storage::disk('public')->exists($course->image)) {
-            Storage::disk('public')->delete($course->image);
+        if ($course->image && File::exists(public_path('images/courses/' . $course->image))) {
+            File::delete(public_path('images/courses/' . $course->image));
         }
 
         $course->delete();

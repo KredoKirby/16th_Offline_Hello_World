@@ -60,7 +60,7 @@
 
     <div style="display:flex; gap:8px">
       <button class="btn btn-dark" type="submit">Save</button>
-      <a class="btn btn-outline-secondary" href="{{ route('admin.courses.index') }}">Cancel</a>
+      <a class="btn btn-outline-secondary" href="{{ route('admin.courses') }}">Cancel</a>
     </div>
   </form>
 

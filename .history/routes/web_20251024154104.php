@@ -57,7 +57,6 @@ Route::prefix('admin')->middleware('can:admin')->name('admin.')->group(function 
     Route::resource('students', AdminStudentController::class)->names('students');
     Route::resource('teachers', AdminTeacherController::class)->names('teachers');
     Route::resource('courses', AdminCourseController::class)->names('courses');
-    
     // Route::resource('forums', AdminForumController::class)->names('forums');
 
     // ── Teachers（明示ルートに統一） ─────

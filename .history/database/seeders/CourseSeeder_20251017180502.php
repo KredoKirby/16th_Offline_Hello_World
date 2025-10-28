@@ -148,7 +148,9 @@ class CourseSeeder extends Seeder
         ]);
     }
 
-
+    /**
+     * 指定された画像ファイルをBase64に変換して配列で返す
+     */
     private function encodeImages(array $filenames): array
     {
         $base64Array = [];
