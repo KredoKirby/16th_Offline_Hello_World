@@ -15,13 +15,19 @@ use App\Http\Controllers\Admin\CourseController as AdminCourseController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\LessonController;
+use App\Http\Controllers\BookingController;
+use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\SelfLearningController;
+
+// Front/controllers
+use App\Http\Controllers\Student\CourseInitApiController;
 use App\Http\Controllers\Student\MylearningController;
 use App\Http\Controllers\Student\LessonhistoryController;
-use App\Http\Controllers\Student\IndexController as StudentIndexController;
-use App\Http\Controllers\Teacher\IndexController as TeacherIndexController;
+use App\Http\Controllers\Student\IndexController  as StudentIndexController;
+use App\Http\Controllers\Teacher\IndexController  as TeacherIndexController;
+use App\Http\Controllers\Student\BookingController as StudentBookingController;
 use App\Http\Controllers\Student\ProfileController as StudentProfileController;
 use App\Http\Controllers\Teacher\ProfileController as TeacherProfileController;
-use App\Http\Controllers\SelfLearningController;
 
 Auth::routes();
 
@@ -33,10 +39,10 @@ Route::middleware('auth')->group(function () {
         $role = Auth::user()->role_id;
 
         return match ($role) {
-            1 => redirect()->route('admin.index'), // admin
-            2 => redirect()->route('teachers.index'), // teacher
-            3 => redirect()->route('students.index'), // student
-            4 => redirect()->route('courses.index'), // basic_user
+            1 => redirect()->route('admin.dashboard'),   // admin
+            2 => redirect()->route('teachers.index'),      // teacher
+            3 => redirect()->route('students.index'),      // student
+            4 => redirect()->route('courses.index'),     // user
         };
     })->name('home');
 });
@@ -128,15 +134,26 @@ Route::prefix('selflearning')->group(function () {
 });
 
 /* ------------------- Student area ------------------- */
-Route::prefix('students')->middleware('can:students')->name('student.')->group(function () {
-    Route::get('/', [StudentIndexController::class, 'index'])->name('home');
-    Route::get('mylearning', [MylearningController::class, 'show'])->name('mylearning');
-    Route::get('lesson_history', [LessonhistoryController::class, 'show'])->name('lessonhistory');
-    Route::get('profile', [StudentProfileController::class, 'show'])->name('profile');
+Route::prefix('students')->middleware('can:students')->name('students.')->group(function () {
+    Route::get('/', [StudentIndexController::class, 'index'])->name('index');
+    Route::get('mylearning',      [MylearningController::class, 'show'])->name('mylearning');
+    Route::get('lesson_history',  [LessonhistoryController::class, 'show'])->name('lessonhistory');
+    Route::get('profile',         [StudentProfileController::class, 'show'])->name('profile');
+
+    // 予約フォーム表示 / 保存（既存）
+    // Route::get('/bookings/create', [StudentBookingController::class, 'create'])
+    //     ->name('bookings.create');
+    Route::post('/bookings', [StudentBookingController::class, 'store'])
+        ->name('bookings.store');
+
+    // Ajax: 指定コースのトピック一覧 + 「次のTopic」候補（JSON）
+    Route::get('/api/courses/{course}/init', [CourseInitApiController::class, 'show'])
+    ->name('api.courses.init');
 });
 
 /* ------------------- Teacher area ------------------- */
 Route::prefix('teachers')->middleware('can:teachers')->name('teachers.')->group(function () {
     Route::get('/', [TeacherIndexController::class, 'index'])->name('index');
     Route::get('profile', [TeacherProfileController::class, 'show'])->name('profile');
+    Route::post('/bookings/store', [BookingController::class, 'store'])->name('bookings.store');
 });
