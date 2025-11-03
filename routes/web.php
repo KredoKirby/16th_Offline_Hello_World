@@ -23,11 +23,7 @@ use App\Http\Controllers\Admin\AdminController;
 // Front/controllers
 use App\Http\Controllers\SelfLearningController;
 use App\Http\Controllers\Student\MylearningController;
-<<<<<<< HEAD
-=======
-use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Student\CourseInitApiController;
->>>>>>> origin/students
 use App\Http\Controllers\Student\LessonhistoryController;
 use App\Http\Controllers\Student\IndexController as StudentIndexController;
 use App\Http\Controllers\Teacher\IndexController as TeacherIndexController;
@@ -120,10 +116,6 @@ Route::prefix('students')->middleware('can:students')->name('students.')->group(
     Route::post('/bookings', [StudentBookingController::class, 'store'])
         ->name('bookings.store');
 
-<<<<<<< HEAD
-    // Ajax: 指定コースのトピック一覧 + 「次のTopic」候補（JSON）
-    Route::get('/api/courses/{course}/init', [CourseInitApiController::class, 'show'])
-=======
         // 追加のアクション
         Route::patch('teachers/{teacher}/toggle', [AdminTeacherController::class, 'toggle'])
             ->name('teachers.toggle');
@@ -177,7 +169,6 @@ Route::prefix('students')->middleware('can:students')->name('students.')->group(
 
         // Ajax: 指定コースのトピック一覧 + 「次のTopic」候補（JSON）
         Route::get('/api/courses/{course}/init', [CourseInitApiController::class, 'show'])
->>>>>>> origin/students
         ->name('api.courses.init');
 });
 
