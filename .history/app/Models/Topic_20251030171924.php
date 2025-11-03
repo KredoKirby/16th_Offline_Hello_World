@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Course;
 use Illuminate\Database\Eloquent\Model;
 
-class Section extends Model
+class Topic extends Model
 {
-    protected $fillable = ['course_id', 'title'];
+    protected $fillable = ['name', 'course_id'];
 
-    public function course()
+    public function courses()
     {
         return $this->belongsTo(Course::class);
     }
