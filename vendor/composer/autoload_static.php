@@ -92,11 +92,7 @@ class ComposerStaticInit527c605b05d43e36d645b765b960c8be
             'Symfony\\Component\\CssSelector\\' => 30,
             'Symfony\\Component\\Console\\' => 26,
             'Symfony\\Component\\Clock\\' => 24,
-<<<<<<< HEAD
             'Srmklive\\PayPal\\' => 16,
-            'Spatie\\GoogleCalendar\\' => 22,
-=======
->>>>>>> origin/students
         ),
         'R' => 
         array (
@@ -337,7 +333,6 @@ class ComposerStaticInit527c605b05d43e36d645b765b960c8be
         array (
             0 => __DIR__ . '/..' . '/symfony/clock',
         ),
-<<<<<<< HEAD
         'Srmklive\\PayPal\\' => 
         array (
             0 => __DIR__ . '/..' . '/srmklive/paypal/src',
@@ -346,8 +341,6 @@ class ComposerStaticInit527c605b05d43e36d645b765b960c8be
         array (
             0 => __DIR__ . '/..' . '/spatie/laravel-google-calendar/src',
         ),
-=======
->>>>>>> origin/students
         'Ramsey\\Uuid\\' => 
         array (
             0 => __DIR__ . '/..' . '/ramsey/uuid/src',
@@ -6123,13 +6116,6 @@ class ComposerStaticInit527c605b05d43e36d645b765b960c8be
         'SebastianBergmann\\Type\\UnknownType' => __DIR__ . '/..' . '/sebastian/type/src/type/UnknownType.php',
         'SebastianBergmann\\Type\\VoidType' => __DIR__ . '/..' . '/sebastian/type/src/type/VoidType.php',
         'SebastianBergmann\\Version' => __DIR__ . '/..' . '/sebastian/version/src/Version.php',
-<<<<<<< HEAD
-        'Spatie\\GoogleCalendar\\Event' => __DIR__ . '/..' . '/spatie/laravel-google-calendar/src/Event.php',
-        'Spatie\\GoogleCalendar\\Exceptions\\InvalidConfiguration' => __DIR__ . '/..' . '/spatie/laravel-google-calendar/src/Exceptions/InvalidConfiguration.php',
-        'Spatie\\GoogleCalendar\\GoogleCalendar' => __DIR__ . '/..' . '/spatie/laravel-google-calendar/src/GoogleCalendar.php',
-        'Spatie\\GoogleCalendar\\GoogleCalendarFacade' => __DIR__ . '/..' . '/spatie/laravel-google-calendar/src/GoogleCalendarFacade.php',
-        'Spatie\\GoogleCalendar\\GoogleCalendarFactory' => __DIR__ . '/..' . '/spatie/laravel-google-calendar/src/GoogleCalendarFactory.php',
-        'Spatie\\GoogleCalendar\\GoogleCalendarServiceProvider' => __DIR__ . '/..' . '/spatie/laravel-google-calendar/src/GoogleCalendarServiceProvider.php',
         'Srmklive\\PayPal\\Facades\\PayPal' => __DIR__ . '/..' . '/srmklive/paypal/src/Facades/PayPal.php',
         'Srmklive\\PayPal\\PayPalFacadeAccessor' => __DIR__ . '/..' . '/srmklive/paypal/src/PayPalFacadeAccessor.php',
         'Srmklive\\PayPal\\Providers\\PayPalServiceProvider' => __DIR__ . '/..' . '/srmklive/paypal/src/Providers/PayPalServiceProvider.php',
@@ -6169,8 +6155,6 @@ class ComposerStaticInit527c605b05d43e36d645b765b960c8be
         'Srmklive\\PayPal\\Traits\\PayPalHttpClient' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalHttpClient.php',
         'Srmklive\\PayPal\\Traits\\PayPalRequest' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalRequest.php',
         'Srmklive\\PayPal\\Traits\\PayPalVerifyIPN' => __DIR__ . '/..' . '/srmklive/paypal/src/Traits/PayPalVerifyIPN.php',
-=======
->>>>>>> origin/students
         'Stringable' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Stringable.php',
         'Symfony\\Component\\Clock\\Clock' => __DIR__ . '/..' . '/symfony/clock/Clock.php',
         'Symfony\\Component\\Clock\\ClockAwareTrait' => __DIR__ . '/..' . '/symfony/clock/ClockAwareTrait.php',
