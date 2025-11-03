@@ -44,4 +44,9 @@ class Topic extends Model
     {
         return $this->attributes['name'] ?? null;
     }
+
+    public function lessons()
+    {
+        return $this->hasMany(Lesson::class);
+    }
 }

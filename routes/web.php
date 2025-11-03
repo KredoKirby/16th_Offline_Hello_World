@@ -59,6 +59,39 @@ Route::prefix('admin')->middleware('can:admin')->name('admin.')->group(function 
     Route::resource('students', AdminStudentController::class)->names('students');
     Route::resource('teachers', AdminTeacherController::class)->names('teachers');
     Route::resource('courses', AdminCourseController::class)->names('courses');
+    
+    // Route::resource('forums', AdminForumController::class)->names('forums');
+
+    // ── Teachers（明示ルートに統一） ─────
+    // Route::get('/teachers', [AdminController::class, 'teachers'])->name('teachers.index');
+    // Route::get('/teachers/create', [AdminController::class, 'teacherAddForm'])->name('teachers.create');
+    // Route::post('/teachers', [AdminController::class, 'teacherAdd'])->name('teachers.store');
+    // Route::post('/teachers/{id}/toggle', [AdminController::class, 'teacherToggle'])->name('teachers.toggle');
+    // Route::get('/teachers/{id}/edit', [AdminController::class, 'teacherEdit'])->name('teachers.edit');
+    // Route::put('/teachers/{id}', [AdminController::class, 'teacherUpdate'])->name('teachers.update');
+
+    // ── Courses（show/edit/update あり） ─
+    // Route::get('/courses', [AdminController::class, 'courses'])->name('courses.index');
+    // Route::get('/courses/create', [AdminController::class, 'courseAddForm'])->name('courses.create');
+    // Route::post('/courses', [AdminController::class, 'courseAdd'])->name('courses.store');
+    // Route::get('/courses/{id}', [AdminController::class, 'courseShow'])->name('courses.show');
+    // Route::get('/courses/{id}/edit', [AdminController::class, 'courseEdit'])->name('courses.edit');
+    // Route::put('/courses/{id}', [AdminController::class, 'courseUpdate'])->name('courses.update');
+    // Route::post('/courses/{id}/toggle', [AdminController::class, 'courseToggle'])->name('courses.toggle');
+
+    // 追加フォーム表示 & 保存 course
+    // Route::get('/courses/create', [AdminController::class, 'courseAddForm'])->name('courses.create');
+    // Route::post('/courses', [AdminController::class, 'courseAdd'])->name('courses.store');
+
+    // Route::get('/forums', [AdminController::class, 'forums'])->name('forums');
+
+    // Teachers: Add 追加フォーム & 保存
+    // Route::get('/teachers/add', [AdminController::class, 'teacherAddForm'])->name('teachers.add.form');
+    // Route::post('/teachers/add', [AdminController::class, 'teacherAdd'])->name('teachers.add');
+
+    // Courses: Add 追加フォーム & 保存
+    // Route::get('/courses/create', [AdminController::class, 'courseAddForm'])->name('courses.create');
+    // Route::post('/courses', [AdminController::class, 'courseAdd'])->name('courses.store');
 
     // 追加のアクション
     Route::patch('teachers/{teacher}/toggle', [AdminTeacherController::class, 'toggle'])->name('teachers.toggle');
