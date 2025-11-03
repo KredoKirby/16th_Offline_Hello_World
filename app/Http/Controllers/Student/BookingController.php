@@ -50,31 +50,42 @@ class BookingController extends Controller
      * Cancels (deletes) an upcoming booking for the logged-in student.
      */
     public function destroy(Booking $booking, Request $request)
-    {
-        $user = Auth::user();
+{
+    $user = Auth::user();
 
-        // Guard: only the owner (student) can cancel this booking
-        if ((int)$booking->student_id !== (int)$user->id) {
-            abort(403, 'You are not allowed to cancel this booking.');
-        }
-
-        // Guard: only future (or not-yet-started today) can be canceled
-        $now      = Carbon::now(); // uses app timezone
-        $today    = $now->toDateString();      // 'YYYY-MM-DD'
-        $nowTime  = $now->format('H:i:s');     // 'HH:MM:SS'
-
-        $isFuture = ($booking->date > $today)
-                 || ($booking->date === $today && $booking->time >= $nowTime);
-
-        if (!$isFuture) {
-            return back()->with('error', 'Past lessons cannot be canceled.');
-        }
-
-        // Perform cancellation.
-        // If your schema has a status column, you can update instead:
-        // $booking->update(['status' => 'canceled']);
-        $booking->delete();
-
-        return back()->with('success', 'The booking was canceled.');
+    // 1) 自分の予約だけキャンセル可能
+    if ((int) $booking->student_id !== (int) $user->id) {
+        abort(403, 'You are not allowed to cancel this booking.');
     }
+
+    // 2) 未来（または未開始の当日）だけキャンセル可能
+    $now     = Carbon::now();                // app.timezone
+    $today   = $now->toDateString();         // 'YYYY-MM-DD'
+    $nowTime = $now->format('H:i:s');        // 'HH:MM:SS'
+    $isFuture = ($booking->date > $today)
+             || ($booking->date === $today && $booking->time >= $nowTime);
+
+    if (!$isFuture) {
+        return back()->with('error', 'Past lessons cannot be canceled.');
+    }
+
+    // 3) 予約を「空き枠」に戻す（student_id, course_id, topic_id, updated_at を NULL）
+    DB::transaction(function () use ($booking) {
+        // Eloquent の updated_at 自動更新を回避
+        $booking->timestamps = false;
+
+        $booking->student_id = null;
+        $booking->course_id  = null;
+        $booking->topic_id   = null;
+        $booking->updated_at = null; // ← 明示的に NULL
+
+        $booking->save();
+
+        // 必要ならここで関連データも整理：
+        // 例）レポートを未確定に戻す等
+        // optional($booking->report)->update([...]);
+    });
+
+    return back()->with('success', 'The booking was canceled and the slot is now open.');
+}
 }

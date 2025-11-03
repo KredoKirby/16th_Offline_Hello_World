@@ -7,14 +7,15 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\LessonController;
+use App\Http\Controllers\ApiTestController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\SelfLearningController;
 
 // Front/controllers
-use App\Http\Controllers\Student\CourseInitApiController;
+use App\Http\Controllers\SelfLearningController;
 use App\Http\Controllers\Student\MylearningController;
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Student\CourseInitApiController;
 use App\Http\Controllers\Student\LessonhistoryController;
 use App\Http\Controllers\Admin\ForumController   as AdminForumController;
 use App\Http\Controllers\Admin\CourseController  as AdminCourseController;
