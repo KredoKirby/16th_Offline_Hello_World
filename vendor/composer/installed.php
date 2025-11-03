@@ -412,11 +412,7 @@
         'laravel/laravel' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-<<<<<<< HEAD
-            'reference' => '09ffd608cfda0d41b841767072f77e7d90913a4d',
-=======
             'reference' => '01cda19eb4fdb91b33c064d6b745973f6891189d',
->>>>>>> origin/students
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
