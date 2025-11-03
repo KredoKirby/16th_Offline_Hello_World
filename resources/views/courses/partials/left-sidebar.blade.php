@@ -79,6 +79,12 @@
         $active = (bool) ($c->is_active ?? true);
     @endphp
 
+    <a href="{{ route('courses.show', $c->id) }}" class="text-decoration-none text-dark">
+        <div class="d-flex align-items-center mb-3 p-2 rounded border 
+                    {{ $isSelected ? 'bg-light border-primary shadow-sm' : 'shadow-sm' }}">
+            <img src="{{ $c->display_image }}"
+                 alt="{{ $c->title }}"
+                 class="rounded me-2" style="width:60px;height:60px;object-fit:cover;">
     <div class="list-group-item border-0 p-0 mb-2">
 
         {{-- ===== 1行目（ヘッダ） ===== --}}
