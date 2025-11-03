@@ -12,9 +12,9 @@ class Lesson extends Model
         'section_id',
         'title',
         'content',
-        'video',       
-        'images',     
-        'thumbs',    
+        'video',
+        'images',
+        'thumbs',
         'pages',
         'video'
     ];
@@ -24,6 +24,11 @@ class Lesson extends Model
         'thumbs' => 'array',
     ];
 
+     public function course()
+    {
+        return $this->belongsTo(\App\Models\Course::class, 'course_id');
+    }
+
     /* ---------- リレーション ---------- */
 
     public function section()
@@ -31,18 +36,18 @@ class Lesson extends Model
         return $this->belongsTo(Section::class);
     }
 
-   public function users()
-{
-    return $this->belongsToMany(\App\Models\User::class, 'lesson_user')
-                ->withPivot('is_completed', 'completed_at', 'study_time')
-                ->withTimestamps();
-}
+    public function users()
+    {
+        return $this->belongsToMany(\App\Models\User::class, 'lesson_user')
+            ->withPivot('is_completed', 'completed_at', 'study_time')
+            ->withTimestamps();
+    }
 
     public function completedByUsers()
     {
         return $this->belongsToMany(User::class, 'lesson_user')
-                    ->withPivot('completed_at')
-                    ->withTimestamps();
+            ->withPivot('completed_at')
+            ->withTimestamps();
     }
 
     public function progress()
@@ -58,9 +63,9 @@ class Lesson extends Model
     public function isCompletedBy($user)
     {
         return $this->progress()
-                    ->where('user_id', $user->id)
-                    ->where('completed', true)
-                    ->exists();
+            ->where('user_id', $user->id)
+            ->where('completed', true)
+            ->exists();
     }
 
     /**
