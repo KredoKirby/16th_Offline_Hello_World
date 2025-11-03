@@ -16,7 +16,7 @@
                     {{ $topic->is_active ? 'Active' : 'Inactive' }}
                 </td>
                 <td class="text-end">
-                    <form method="POST" action="{{ route('admin.courses.toggleTopic', $topic) }}">
+                    <form method="POST" action="{{ route('admin.courses.toggle', $topic) }}">
                         @csrf 
                         @method('PATCH')
                         <button class="btn btn-sm {{ $topic->is_active ? 'btn-secondary' : 'btn-success' }}">
