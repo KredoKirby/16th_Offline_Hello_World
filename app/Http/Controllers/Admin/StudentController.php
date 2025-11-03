@@ -1,5 +1,5 @@
 <?php
-// app/Http/Controllers/Admin/StudentController.php
+
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -9,9 +9,12 @@ class StudentController extends Controller
 {
     public function index()
     {
-        // まずは全ユーザーで表示確認（あとで条件を足す）
-        $students = User::orderByDesc('id')->paginate(10);
+        $students = User::where('role_id', 3)
+            ->with(['courses:id,title'])   // ← title のみ
+            ->withCount('courses')         // ← 件数取得
+            ->orderByDesc('id')
+            ->paginate(10);
+
         return view('admin.students.index', compact('students'));
     }
 }
-
