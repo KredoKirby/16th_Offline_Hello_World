@@ -729,9 +729,9 @@
 
                         --fc-today-bg-color: rgba(13, 110, 253, .08);
 
-                        --fc-event-bg-color: rgba(13, 110, 253, .10);
-                        --fc-event-border-color: rgba(13, 110, 253, .40);
-                        --fc-event-text-color: #0d6efd;
+                        /* --fc-event-bg-color: rgba(13, 110, 253, .10);
+                                                                --fc-event-border-color: rgba(13, 110, 253, .40);
+                                                                --fc-event-text-color: #0d6efd; */
 
                         font-size: 0.90rem;
                         /* カレンダー内を少し小さめ */
@@ -795,16 +795,16 @@
 
 
                     /* 小さめ文字＆黒基調、FullCalendar のトーン */
-                    #myCalendar .fc {
-                        --fc-page-bg-color: #fff;
-                        --fc-border-color: rgba(0, 0, 0, .08);
-                        --fc-today-bg-color: rgba(13, 110, 253, .08);
-                        --fc-event-bg-color: rgba(13, 110, 253, .10);
-                        --fc-event-border-color: rgba(13, 110, 253, .40);
-                        --fc-event-text-color: #0d6efd;
-                        font-size: .90rem;
-                        color: #000;
-                    }
+                    /* #myCalendar .fc {
+                                                        --fc-page-bg-color: #fff;
+                                                        --fc-border-color: rgba(0, 0, 0, .08);
+                                                        --fc-today-bg-color: rgba(13, 110, 253, .08);
+                                                        --fc-event-bg-color: rgba(13, 110, 253, .10);
+                                                        --fc-event-border-color: rgba(13, 110, 253, .40);
+                                                        --fc-event-text-color: #0d6efd;
+                                                        font-size: .90rem;
+                                                        color: #000;
+                                                    } */
 
                     #myCalendar .fc a {
                         text-decoration: none;
@@ -816,35 +816,29 @@
                         overflow: hidden;
                     }
 
-                    /* イベント背景や角丸を強めに（必要なら色は調整） */
-                    #myCalendar .fc .fc-daygrid-event {
-                        background: rgba(13, 110, 253, .12);
-                        /* 背景色 */
-                        border: 1px solid rgba(13, 110, 253, .35);
-                        border-radius: .5rem;
-                    }
-
-                    #myCalendar .fc .fc-daygrid-event .fc-event-main {
-                        padding: .15rem .35rem;
-                        color: #0d6efd;
-                        /* 文字色 */
-                        font-weight: 600;
-                    }
-
                     /* 月ビューのイベントで時間だけを見やすく（リンク下線消しも再確認） */
                     #myCalendar .fc a {
                         text-decoration: none;
                         color: inherit;
                     }
 
-                    /* ★ 月ビューのイベント本体ではなく“中身”を塗る */
-                    #myCalendar .fc .fc-daygrid-event .fc-event-main {
-                        background: rgba(13, 110, 253, .12) !important;
-                        border: 1px solid rgba(13, 110, 253, .35) !important;
-                        border-radius: .5rem !important;
-                        padding: .15rem .35rem !important;
-                        color: #0d6efd !important;
-                        font-weight: 600;
+                    /* クリックできるカーソル */
+                    #myCalendar .fc .fc-event {
+                        cursor: pointer;
+                    }
+
+                    /* 滑らかなアニメーション */
+                    #myCalendar .fc .fc-daygrid-event .fc-event-main,
+                    #myCalendar .fc .fc-timegrid-event {
+                        transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+                    }
+
+                    /* ホバー時：少し持ち上げて影を濃く、わずかに明るく */
+                    #myCalendar .fc .fc-daygrid-event:hover .fc-event-main,
+                    #myCalendar .fc .fc-timegrid-event:hover {
+                        transform: translateY(-1px);
+                        box-shadow: 0 6px 14px rgba(0, 0, 0, .16);
+                        filter: brightness(1.05);
                     }
                 </style>
             @endpush
@@ -876,57 +870,154 @@
                             fixedWeekCount: true,
                             showNonCurrentDates: true,
 
+                            // ← ここを追加
+                            eventClassNames(arg) {
+                                const start = arg.event.start;
+                                // 終了が無いときは50分レッスン前提
+                                const end = arg.event.end ?? new Date(start.getTime() + 50 * 60000);
+                                return (end.getTime() < Date.now()) ? ['is-past'] : [];
+                            },
+
+                            eventDidMount(arg) {
+                                const start = arg.event.start;
+                                const end = arg.event.end ?? new Date(start.getTime() + 50 * 60000);
+                                const isPast = end.getTime() < Date.now();
+
+                                // ビュー判定
+                                const isDayGrid = arg.el.classList.contains('fc-daygrid-event');
+                                const isTimeGrid = arg.el.classList.contains('fc-timegrid-event');
+
+                                // 中身(main)を取得：dayGridは .fc-event-main、timeGridは要素自体
+                                const main = isTimeGrid ?
+                                    arg.el :
+                                    (arg.el.querySelector('.fc-event-main') || arg.el);
+
+                                // ── 外側（ラッパー）を常に透明化：これで “濃い青の外側” を消す ──
+                                // dayGridは<a>が外側、timeGridはdivなので、どちらも無条件で透明化してOK
+                                arg.el.style.setProperty('background', 'transparent', 'important');
+                                arg.el.style.setProperty('background-color', 'transparent', 'important');
+                                arg.el.style.setProperty('border', 'none', 'important');
+                                arg.el.style.setProperty('box-shadow', 'none', 'important');
+
+                                // dayGridのドット表示が有効な場合の小丸も透明化（念のため）
+                                const dot = arg.el.querySelector('.fc-daygrid-event-dot');
+                                if (dot) {
+                                    dot.style.setProperty('border-color', 'transparent', 'important');
+                                    dot.style.setProperty('background', 'transparent', 'important');
+                                }
+
+                                // 中身のスタイル
+                                const setMain = (bg, border) => {
+                                    main.style.setProperty('background', bg, 'important');
+                                    main.style.setProperty('border', border, 'important');
+                                    main.style.borderRadius = '.5rem';
+                                    main.style.padding = '.15rem .35rem';
+                                    main.style.fontWeight = '600';
+
+                                    // 文字は常に白
+                                    main.style.setProperty('color', '#fff', 'important');
+                                    // タイトル・時間などの子要素も強制的に白
+                                    (arg.el.querySelectorAll('*') || []).forEach(n => {
+                                        n.style.setProperty('color', '#fff', 'important');
+                                    });
+                                };
+
+                                if (isPast) {
+                                    // 過去＝グレー
+                                    setMain('rgba(108,117,125,1)', '1px solid rgba(108,117,125,.9)');
+                                } else {
+                                    // 未来＝青
+                                    setMain('#0d6efd', '1px solid rgba(13,110,253,.9)');
+                                }
+
+                                // クリックできる見た目
+                                arg.el.style.cursor = 'pointer';
+
+                                // ホバー用トランジション（main に付与）
+                                main.style.transition = 'transform .15s ease, box-shadow .15s ease, filter .15s ease';
+
+                                // Tab 移動でも“押せそう”に（アクセシビリティ）
+                                arg.el.tabIndex = 0;
+                                arg.el.setAttribute('role', 'button');
+                            },
+
+                            eventMouseEnter(info) {
+                                const main = info.el.querySelector('.fc-event-main') || info.el;
+
+                                // 少し持ち上げ＋影を濃く＋わずかに明るく
+                                main.style.transform = 'translateY(-1px)';
+                                main.style.boxShadow = '0 6px 14px rgba(0,0,0,.16)';
+                                main.style.filter = 'brightness(1.05)';
+
+                                // 影が切れないよう浮かせる
+                                info.el.style.zIndex = 3;
+                            },
+
+                            eventMouseLeave(info) {
+                                const main = info.el.querySelector('.fc-event-main') || info.el;
+
+                                // 元に戻す
+                                main.style.transform = '';
+                                main.style.boxShadow = '';
+                                main.style.filter = '';
+                                info.el.style.zIndex = '';
+                            },
+
                             // ★ ここを追加：すべてのイベントをブロック表示に
                             eventDisplay: 'block',
 
                             // ★ 追加：24h表記にして、分も出す
-  eventTimeFormat: { hour: '2-digit', minute: '2-digit', hour12: false },
+                            eventTimeFormat: {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: false
+                            },
 
-  // ★ 追加：終了時刻も一緒に表示（"12:00 - 12:50" になる）
-  displayEventEnd: true,
+                            // ★ 追加：終了時刻も一緒に表示（"12:00 - 12:50" になる）
+                            displayEventEnd: true,
 
                             // ★ ここで色を確実に適用（CSSより確実）
-                            eventBackgroundColor: 'rgba(13,110,253,.12)',
-                            eventBorderColor: 'rgba(13,110,253,.35)',
-                            eventTextColor: '#0d6efd',
+                            // eventBackgroundColor: 'rgba(13,110,253,.12)',
+                            // eventBorderColor: 'rgba(13,110,253,.35)',
+                            // eventTextColor: '#0d6efd',
 
                             events: @json($fcEvents ?? []),
 
                             // 時刻のみ表示
                             eventContent(arg) {
-  const div = document.createElement('div');
-  // FCが timeZone を考慮して作る時刻テキスト（例: "12:00 - 12:50"）
-  div.textContent = arg.timeText;
-  div.className = 'small';
-  return { domNodes: [div] };
-},
+                                const div = document.createElement('div');
+                                // FCが timeZone を考慮して作る時刻テキスト（例: "12:00 - 12:50"）
+                                div.textContent = arg.timeText;
+                                div.className = 'small';
+                                return {
+                                    domNodes: [div]
+                                };
+                            },
 
                             eventClick(info) {
-                                // クリックのデフォルト遷移を止める（<a>タグ扱いのため）
                                 info.jsEvent.preventDefault();
 
                                 const e = info.event;
                                 const bookingId = String(e.id || '');
 
+                                // 過去かどうかの判定（絶対時刻でOK）
                                 const isPast = e.start.getTime() < Date.now();
 
+                                // Lesson history モーダル優先（あなたの元コードのまま）
                                 if (isPast) {
-                                    // Lesson history 側にあるモーダルを探して開く
                                     const historyModalEl = document.getElementById(`bookingDetails-${bookingId}`);
                                     if (historyModalEl) {
                                         const historyModal = bootstrap.Modal.getOrCreateInstance(historyModalEl);
                                         historyModal.show();
-                                        return; // ここで終了（汎用モーダルは出さない）
+                                        return;
                                     }
-                                    // 念のためのフォールバック（詳細ページへ遷移など）
                                     window.location.href = `/students/bookings/${bookingId}`;
                                     return;
                                 }
 
-                                // === ここからは将来の予約（キャンセル可能）のときの処理 ===
+                                // 予約（将来）用UIの準備（元コードのまま）
                                 const footer = document.getElementById('calModalFooter');
-                                const viewTpl = footer.dataset.viewUrlTemplate; // "/students/bookings/__ID__"
-                                const cancelTpl = footer.dataset.cancelUrlTemplate; // route で "__ID__" を置換
+                                const cancelTpl = footer.dataset.cancelUrlTemplate;
 
                                 const viewBtn = document.getElementById('calModalViewBtn');
                                 const cancelFm = document.getElementById('calModalCancelForm');
@@ -937,25 +1028,39 @@
                                 cancelFm.classList.remove('d-none');
                                 cancelFm.action = cancelTpl.replace('__ID__', bookingId);
 
-                                // 表示テキスト群（必要ならそのまま）
-                                const pad2 = n => String(n).padStart(2, '0');
-                                const hm = d => `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
-                                const EN_WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                                // ====== ここが肝：表示用のフォーマットは calendar.formatDate を使う ======
+                                // FullCalendar の timeZone 設定（'Asia/Tokyo'）が内部で使われる
+                                const fDate = (d) =>
+                                    calendar.formatDate(d, {
+                                        weekday: 'short',
+                                        year: 'numeric',
+                                        month: 'short',
+                                        day: '2-digit'
+                                    });
+
+                                const fTime = (d) =>
+                                    calendar.formatDate(d, {
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                        hour12: false
+                                    });
+
                                 const start = e.start;
                                 const end = e.end ?? new Date(start.getTime() + 50 * 60000);
-                                const y = start.getFullYear(),
-                                    m = pad2(start.getMonth() + 1),
-                                    d = pad2(start.getDate());
-                                const wk = EN_WD[start.getDay()];
+
+                                // 画面反映（ローカルDateのgetHoursは一切使わない）
                                 document.getElementById('calModalTitle').textContent = e.title || 'Lesson';
-                                document.getElementById('calModalDate').textContent = `${y}-${m}-${d}, ${wk}`;
-                                document.getElementById('calModalTime').textContent = `${hm(start)}-${hm(end)}`;
+                                document.getElementById('calModalDate').textContent = fDate(start);
+                                document.getElementById('calModalTime').textContent = `${fTime(start)}-${fTime(end)}`;
                                 document.getElementById('calModalCourse').textContent = e.extendedProps?.course_name ??
                                     '-';
                                 document.getElementById('calModalTopic').textContent = e.extendedProps?.topic_name ??
                                     '-';
                                 document.getElementById('calModalTeacher').textContent = e.extendedProps?.teacher ??
-                                '-';
+                                    '-';
+
+                                // （デバッグしたい場合は下を一時的に有効化）
+                                // console.log('FC tz =', calendar.getOption('timeZone'), 'start=', start.toISOString(), 'shown=', fDate(start), fTime(start));
 
                                 const modalEl = document.getElementById('calEventModal');
                                 const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
