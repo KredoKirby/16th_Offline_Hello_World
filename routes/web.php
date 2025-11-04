@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\AdminController;
 
 // Front/controllers
 use App\Http\Controllers\SelfLearningController;
+use App\Http\Controllers\Teacher\ReportController;
 use App\Http\Controllers\Student\MylearningController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Student\CourseInitApiController;
@@ -25,6 +26,7 @@ use App\Http\Controllers\Student\IndexController  as StudentIndexController;
 use App\Http\Controllers\Teacher\IndexController  as TeacherIndexController;
 use App\Http\Controllers\Student\BookingController as StudentBookingController;
 use App\Http\Controllers\Student\ProfileController as StudentProfileController;
+use App\Http\Controllers\Teacher\BookingController as TeacherBookingController;
 use App\Http\Controllers\Teacher\ProfileController as TeacherProfileController;
 
 Auth::routes();
@@ -144,7 +146,24 @@ Route::middleware('auth')->group(function () {
     /* ------------------- Teacher area ------------------- */
     Route::prefix('teachers')->middleware('can:teachers')->name('teachers.')->group(function () {
         Route::get('/', [TeacherIndexController::class, 'index'])->name('index');
-        Route::get('profile', [TeacherProfileController::class, 'show'])->name('profile');
-        Route::post('/bookings/store', [BookingController::class, 'store'])->name('bookings.store');
+        Route::get('profile/{user_id}', [TeacherProfileController::class, 'show'])->name('profile');
+        Route::post('/bookings/store', [TeacherBookingController::class, 'store'])->name('bookings.store');
+        Route::get('/calendar/show', [TeacherBookingController::class, 'show'])->name('calendar.show');
+        Route::prefix('bookings')->name('bookings.')->group(function () {
+            Route::post('/',            [TeacherBookingController::class, 'store'])->name('store');
+            Route::delete('/{id}',      [TeacherBookingController::class, 'destroy'])->name('destroy');
+            Route::post('/bulk-delete', [TeacherBookingController::class, 'bulkDestroyOpen'])->name('bulkDelete');
+            // Route::post('/{id}/cancel', [TeacherBookingController::class, 'cancelBooked'])->name('cancel');
+            // ★ キャンセル（先生）：削除しない／report を更新＆通知
+            Route::post('/{id}/cancel', [TeacherBookingController::class, 'cancelBooked'])->name('cancel');
+        });
+
+        // ★ Report 取得/更新（モーダル表示用）
+        Route::get('reports/{booking}', [ReportController::class, 'show'])->name('reports.show');
+        Route::patch('reports/{booking}', [ReportController::class, 'update'])->name('reports.update');
+        // POST にしたい場合は ↓でもOK（JS 側の method を合わせる）
+        // Route::post('reports/{booking}', [ReportController::class, 'update'])->name('reports.update');
+        // topics 一覧（id 昇順）
+        // Route::get('/teachers/next_topic', [ReportController::class, 'index'])->name('next_topic.index');
     });
 });

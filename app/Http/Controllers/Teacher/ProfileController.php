@@ -11,6 +11,6 @@ class ProfileController extends Controller
     public function show($user_id)
     {
         $user = User::findOrFail($user_id);
-        return view('student.profile', compact('user'));
+        return view('teacher.profile', compact('user'));
     }
 }

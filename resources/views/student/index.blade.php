@@ -641,6 +641,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="calModalTitle">Lesson</h5>
+                            <span id="calModalStatus" class="badge d-none ms-2"></span>
                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                 aria-label="Close"></button>
                         </div>
@@ -677,6 +678,110 @@
                                 </button>
                             </form>
 
+                            <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 共通：Lesson historyと同じフォーマットの詳細モーダル -->
+            <div class="modal fade" id="calEventDetailsLikeHistory" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Lesson details</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            <!-- Booking block -->
+                            <div class="mb-3">
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <i class="fa-regular fa-calendar-check text-primary"></i>
+                                    <span class="text-uppercase text-muted small fw-semibold">Booking</span>
+                                </div>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item px-0">
+                                        <div class="row g-2 align-items-center">
+                                            <div class="col-6 text-secondary small d-flex align-items-center gap-2">
+                                                <i class="fa-regular fa-clone"></i><span>Course</span>
+                                            </div>
+                                            <div class="col-6 fw-semibold text-end text-truncate" id="calLikeHistCourse">-
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item px-0">
+                                        <div class="row g-2 align-items-center">
+                                            <div class="col-6 text-secondary small d-flex align-items-center gap-2">
+                                                <i class="fa-regular fa-bookmark"></i><span>Topic</span>
+                                            </div>
+                                            <div class="col-6 fw-semibold text-end text-truncate" id="calLikeHistTopic">-
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item px-0">
+                                        <div class="row g-2 align-items-center">
+                                            <div class="col-6 text-secondary small d-flex align-items-center gap-2">
+                                                <i class="fa-regular fa-user"></i><span>Teacher</span>
+                                            </div>
+                                            <div class="col-6 fw-semibold text-end text-truncate" id="calLikeHistTeacher">
+                                                -</div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item px-0">
+                                        <div class="row g-2 align-items-center">
+                                            <div class="col-6 text-secondary small d-flex align-items-center gap-2">
+                                                <i class="fa-regular fa-clock"></i><span>Date & time</span>
+                                            </div>
+                                            <div class="col-6 fw-semibold text-end text-truncate" id="calLikeHistWhen">-
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <!-- Report block -->
+                            <div>
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <i class="fa-regular fa-clipboard text-primary"></i>
+                                    <span class="text-uppercase text-muted small fw-semibold">Report</span>
+                                </div>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item px-0">
+                                        <div class="row g-2 align-items-center">
+                                            <div class="col-6 text-secondary small d-flex align-items-center gap-2">
+                                                <i class="fa-regular fa-flag"></i><span>Status</span>
+                                            </div>
+                                            <div class="col-6 text-end">
+                                                <span id="calLikeHistStatusBadge" class="badge text-bg-secondary">—</span>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item px-0">
+                                        <div class="row g-2 align-items-center">
+                                            <div class="col-6 text-secondary small d-flex align-items-center gap-2">
+                                                <i class="fa-regular fa-lightbulb"></i><span>Next topic</span>
+                                            </div>
+                                            <div class="col-6 fw-semibold text-end text-truncate" id="calLikeHistNext">—
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item px-0">
+                                        <div class="row g-2 align-items-start">
+                                            <div class="col-6 text-secondary small d-flex align-items-center gap-2">
+                                                <i class="fa-regular fa-comment-dots"></i><span>Feedback</span>
+                                            </div>
+                                            <div class="col-6 fw-semibold text-end text-wrap" id="calLikeHistFeedback">—
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <!-- 読取専用：操作ボタンなし -->
                             <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Close</button>
                         </div>
                     </div>
@@ -730,8 +835,8 @@
                         --fc-today-bg-color: rgba(13, 110, 253, .08);
 
                         /* --fc-event-bg-color: rgba(13, 110, 253, .10);
-                                                                --fc-event-border-color: rgba(13, 110, 253, .40);
-                                                                --fc-event-text-color: #0d6efd; */
+                                                                                                                                --fc-event-border-color: rgba(13, 110, 253, .40);
+                                                                                                                                --fc-event-text-color: #0d6efd; */
 
                         font-size: 0.90rem;
                         /* カレンダー内を少し小さめ */
@@ -796,15 +901,15 @@
 
                     /* 小さめ文字＆黒基調、FullCalendar のトーン */
                     /* #myCalendar .fc {
-                                                        --fc-page-bg-color: #fff;
-                                                        --fc-border-color: rgba(0, 0, 0, .08);
-                                                        --fc-today-bg-color: rgba(13, 110, 253, .08);
-                                                        --fc-event-bg-color: rgba(13, 110, 253, .10);
-                                                        --fc-event-border-color: rgba(13, 110, 253, .40);
-                                                        --fc-event-text-color: #0d6efd;
-                                                        font-size: .90rem;
-                                                        color: #000;
-                                                    } */
+                                                                                                                        --fc-page-bg-color: #fff;
+                                                                                                                        --fc-border-color: rgba(0, 0, 0, .08);
+                                                                                                                        --fc-today-bg-color: rgba(13, 110, 253, .08);
+                                                                                                                        --fc-event-bg-color: rgba(13, 110, 253, .10);
+                                                                                                                        --fc-event-border-color: rgba(13, 110, 253, .40);
+                                                                                                                        --fc-event-text-color: #0d6efd;
+                                                                                                                        font-size: .90rem;
+                                                                                                                        color: #000;
+                                                                                                                    } */
 
                     #myCalendar .fc a {
                         text-decoration: none;
@@ -870,7 +975,6 @@
                             fixedWeekCount: true,
                             showNonCurrentDates: true,
 
-                            // ← ここを追加
                             eventClassNames(arg) {
                                 const start = arg.event.start;
                                 // 終了が無いときは50分レッスン前提
@@ -879,66 +983,48 @@
                             },
 
                             eventDidMount(arg) {
-                                const start = arg.event.start;
-                                const end = arg.event.end ?? new Date(start.getTime() + 50 * 60000);
-                                const isPast = end.getTime() < Date.now();
-
-                                // ビュー判定
-                                const isDayGrid = arg.el.classList.contains('fc-daygrid-event');
-                                const isTimeGrid = arg.el.classList.contains('fc-timegrid-event');
-
-                                // 中身(main)を取得：dayGridは .fc-event-main、timeGridは要素自体
-                                const main = isTimeGrid ?
-                                    arg.el :
-                                    (arg.el.querySelector('.fc-event-main') || arg.el);
-
-                                // ── 外側（ラッパー）を常に透明化：これで “濃い青の外側” を消す ──
-                                // dayGridは<a>が外側、timeGridはdivなので、どちらも無条件で透明化してOK
                                 arg.el.style.setProperty('background', 'transparent', 'important');
                                 arg.el.style.setProperty('background-color', 'transparent', 'important');
                                 arg.el.style.setProperty('border', 'none', 'important');
                                 arg.el.style.setProperty('box-shadow', 'none', 'important');
-
-                                // dayGridのドット表示が有効な場合の小丸も透明化（念のため）
                                 const dot = arg.el.querySelector('.fc-daygrid-event-dot');
                                 if (dot) {
                                     dot.style.setProperty('border-color', 'transparent', 'important');
                                     dot.style.setProperty('background', 'transparent', 'important');
                                 }
+                                const start = arg.event.start;
+                                const end = arg.event.end ?? new Date(start.getTime() + 50 * 60000);
+                                const isPast = end.getTime() < Date.now();
 
-                                // 中身のスタイル
+                                // ラッパ透明化・main取得は今のままでOK…以下色だけ変更
+                                const isCanceledByTeacher =
+                                    arg.event.extendedProps?.has_report === true &&
+                                    String(arg.event.extendedProps?.report_status || '').toLowerCase() ===
+                                    'canceled by teacher';
+
                                 const setMain = (bg, border) => {
+                                    const isTimeGrid = arg.el.classList.contains('fc-timegrid-event');
+                                    const main = isTimeGrid ? arg.el : (arg.el.querySelector('.fc-event-main') ||
+                                        arg.el);
                                     main.style.setProperty('background', bg, 'important');
                                     main.style.setProperty('border', border, 'important');
                                     main.style.borderRadius = '.5rem';
                                     main.style.padding = '.15rem .35rem';
                                     main.style.fontWeight = '600';
-
-                                    // 文字は常に白
                                     main.style.setProperty('color', '#fff', 'important');
-                                    // タイトル・時間などの子要素も強制的に白
-                                    (arg.el.querySelectorAll('*') || []).forEach(n => {
-                                        n.style.setProperty('color', '#fff', 'important');
-                                    });
+                                    (arg.el.querySelectorAll('*') || []).forEach(n => n.style.setProperty('color',
+                                        '#fff', 'important'));
                                 };
 
                                 if (isPast) {
-                                    // 過去＝グレー
-                                    setMain('rgba(108,117,125,1)', '1px solid rgba(108,117,125,.9)');
+                                    setMain('rgba(108,117,125,1)', '1px solid rgba(108,117,125,.9)'); // 過去=グレー
+                                } else if (isCanceledByTeacher) {
+                                    setMain('#dc3545', '1px solid #bb2d3b'); // ★ 未来×講師キャンセル=赤
                                 } else {
-                                    // 未来＝青
-                                    setMain('#0d6efd', '1px solid rgba(13,110,253,.9)');
+                                    setMain('#0d6efd', '1px solid rgba(13,110,253,.9)'); // 未来=青
                                 }
 
-                                // クリックできる見た目
                                 arg.el.style.cursor = 'pointer';
-
-                                // ホバー用トランジション（main に付与）
-                                main.style.transition = 'transform .15s ease, box-shadow .15s ease, filter .15s ease';
-
-                                // Tab 移動でも“押せそう”に（アクセシビリティ）
-                                arg.el.tabIndex = 0;
-                                arg.el.setAttribute('role', 'button');
                             },
 
                             eventMouseEnter(info) {
@@ -999,68 +1085,121 @@
 
                                 const e = info.event;
                                 const bookingId = String(e.id || '');
+                                const end = e.end ?? new Date(e.start.getTime() + 50 * 60000);
 
-                                // 過去かどうかの判定（絶対時刻でOK）
-                                const isPast = e.start.getTime() < Date.now();
+                                const isPast = end.getTime() < Date.now();
+                                const isCanceledByTeacher =
+                                    e.extendedProps?.has_report === true &&
+                                    String(e.extendedProps?.report_status || '').trim().toLowerCase() ===
+                                    'canceled by teacher';
 
-                                // Lesson history モーダル優先（あなたの元コードのまま）
-                                if (isPast) {
-                                    const historyModalEl = document.getElementById(`bookingDetails-${bookingId}`);
-                                    if (historyModalEl) {
-                                        const historyModal = bootstrap.Modal.getOrCreateInstance(historyModalEl);
-                                        historyModal.show();
-                                        return;
-                                    }
-                                    window.location.href = `/students/bookings/${bookingId}`;
+                                // 1) 過去 → 履歴モーダル（個別に用意済み）を優先
+                                const historyModalEl = document.getElementById(`bookingDetails-${bookingId}`);
+                                if (isPast && historyModalEl) {
+                                    const historyModal = bootstrap.Modal.getOrCreateInstance(historyModalEl);
+                                    historyModal.show();
                                     return;
                                 }
 
-                                // 予約（将来）用UIの準備（元コードのまま）
-                                const footer = document.getElementById('calModalFooter');
-                                const cancelTpl = footer.dataset.cancelUrlTemplate;
+                                // 2) 未来 かつ Canceled by teacher → 「Lesson history と同じフォーマット」モーダルのみを開く
+                                if (isCanceledByTeacher) {
+                                    // 念のため、開いているモーダルがあれば閉じる（多重オープン防止）
+                                    document.querySelectorAll('.modal.show').forEach(m => {
+                                        const inst = bootstrap.Modal.getInstance(m);
+                                        if (inst) inst.hide();
+                                    });
 
-                                const viewBtn = document.getElementById('calModalViewBtn');
-                                const cancelFm = document.getElementById('calModalCancelForm');
+                                    const likeEl = document.getElementById('calEventDetailsLikeHistory');
+                                    const likeModal = bootstrap.Modal.getOrCreateInstance(likeEl);
 
-                                viewBtn.classList.add('d-none');
-                                viewBtn.href = '#';
-
-                                cancelFm.classList.remove('d-none');
-                                cancelFm.action = cancelTpl.replace('__ID__', bookingId);
-
-                                // ====== ここが肝：表示用のフォーマットは calendar.formatDate を使う ======
-                                // FullCalendar の timeZone 設定（'Asia/Tokyo'）が内部で使われる
-                                const fDate = (d) =>
-                                    calendar.formatDate(d, {
+                                    const fDate = (d) => calendar.formatDate(d, {
                                         weekday: 'short',
                                         year: 'numeric',
                                         month: 'short',
                                         day: '2-digit'
                                     });
-
-                                const fTime = (d) =>
-                                    calendar.formatDate(d, {
+                                    const fTime = (d) => calendar.formatDate(d, {
                                         hour: '2-digit',
                                         minute: '2-digit',
                                         hour12: false
                                     });
 
-                                const start = e.start;
-                                const end = e.end ?? new Date(start.getTime() + 50 * 60000);
+                                    const start = e.start;
+                                    const eend = e.end ?? new Date(start.getTime() + 50 * 60000);
 
-                                // 画面反映（ローカルDateのgetHoursは一切使わない）
+                                    // Booking block
+                                    document.getElementById('calLikeHistCourse').textContent = e.extendedProps
+                                        ?.course_name ?? '-';
+                                    document.getElementById('calLikeHistTopic').textContent = e.extendedProps
+                                        ?.topic_name ?? '-';
+                                    document.getElementById('calLikeHistTeacher').textContent = e.extendedProps
+                                        ?.teacher ?? '-';
+                                    document.getElementById('calLikeHistWhen').textContent =
+                                        `${fDate(start)} ${fTime(start)}–${fTime(eend)}`;
+                                    document.getElementById('calLikeHistFeedback').textContent = e.extendedProps
+                                        ?.report_feedback ?? '—';
+
+                                    // Report block
+                                    const statusText = e.extendedProps?.report_status ?? '—';
+                                    const statusBadge = document.getElementById('calLikeHistStatusBadge');
+                                    statusBadge.textContent = statusText;
+
+                                    const st = String(statusText).trim().toLowerCase();
+                                    let badgeClass = 'badge text-bg-secondary';
+                                    if (st === 'canceled by teacher') badgeClass = 'badge text-bg-danger';
+                                    else if (st === 'attended' || st === 'done' || st === 'completed') badgeClass =
+                                        'badge text-bg-success';
+                                    else if (st === 'pending' || st === 'todo') badgeClass = 'badge text-bg-warning';
+                                    else if (st === 'missed' || st === 'absent') badgeClass = 'badge text-bg-danger';
+                                    statusBadge.className = badgeClass;
+
+                                    document.getElementById('calLikeHistNext').textContent = e.extendedProps
+                                        ?.report_next ?? '—';
+                                    likeModal.show();
+                                    return; // ★ ここで終了（通常モーダルは開かない）
+                                }
+
+                                // 3) 上記以外（未来の通常レッスン） → 従来の #calEventModal
+                                const footer = document.getElementById('calModalFooter');
+                                const cancelTpl = footer.dataset.cancelUrlTemplate;
+                                const viewBtn = document.getElementById('calModalViewBtn');
+                                const cancelFm = document.getElementById('calModalCancelForm');
+
+                                viewBtn.classList.add('d-none');
+                                viewBtn.href = '#';
+                                cancelFm.classList.remove('d-none');
+                                cancelFm.action = cancelTpl.replace('__ID__', bookingId);
+
+                                const fDate = (d) => calendar.formatDate(d, {
+                                    weekday: 'short',
+                                    year: 'numeric',
+                                    month: 'short',
+                                    day: '2-digit'
+                                });
+                                const fTime = (d) => calendar.formatDate(d, {
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    hour12: false
+                                });
+
+                                const start = e.start;
+                                const eend = e.end ?? new Date(start.getTime() + 50 * 60000);
+
                                 document.getElementById('calModalTitle').textContent = e.title || 'Lesson';
                                 document.getElementById('calModalDate').textContent = fDate(start);
-                                document.getElementById('calModalTime').textContent = `${fTime(start)}-${fTime(end)}`;
+                                document.getElementById('calModalTime').textContent = `${fTime(start)}-${fTime(eend)}`;
                                 document.getElementById('calModalCourse').textContent = e.extendedProps?.course_name ??
                                     '-';
                                 document.getElementById('calModalTopic').textContent = e.extendedProps?.topic_name ??
                                     '-';
                                 document.getElementById('calModalTeacher').textContent = e.extendedProps?.teacher ??
-                                    '-';
+                                '-';
 
-                                // （デバッグしたい場合は下を一時的に有効化）
-                                // console.log('FC tz =', calendar.getOption('timeZone'), 'start=', start.toISOString(), 'shown=', fDate(start), fTime(start));
+                                const badge = document.getElementById('calModalStatus');
+                                if (badge) {
+                                    badge.textContent = '';
+                                    badge.className = 'badge d-none ms-2';
+                                }
 
                                 const modalEl = document.getElementById('calEventModal');
                                 const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
@@ -1114,6 +1253,7 @@
 
                     $status = $b->report->status ?? null;
                     $nextTop = $b->report->next_topic ?? '—';
+                    $feedback = $b->report->feedback ?? '—';
                     $statusClass = match (strtolower((string) $status)) {
                         'done', 'completed' => 'text-bg-success',
                         'pending', 'todo' => 'text-bg-warning',
@@ -1243,6 +1383,16 @@
                                                 </div>
                                                 <div class="col-6 fw-semibold text-end text-truncate"
                                                     title="{{ $nextTop }}">{{ $nextTop }}</div>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item px-0">
+                                            <div class="row g-2 align-items-start">
+                                                <div class="col-6 text-secondary small d-flex align-items-center gap-2">
+                                                    <i class="fa-regular fa-comment-dots"></i><span>Feedback</span>
+                                                </div>
+                                                <div class="col-6 fw-semibold text-end text-wrap">
+                                                    {{ $feedback }}
+                                                </div>
                                             </div>
                                         </li>
                                     </ul>
