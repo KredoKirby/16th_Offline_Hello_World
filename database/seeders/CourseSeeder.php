@@ -32,7 +32,7 @@ class CourseSeeder extends Seeder
             'price'       => 3900.00,
         ]);
 
-        $phpIntro = Topic::create(['course_id' => $php->id, 'title' => 'PHP入門','name' => 'PHP入門']);
+        $phpIntro = Topic::create(['course_id' => $php->id, 'title' => 'Introduction to PHP','name' => 'Introduction to PHP']);
         Lesson::create([
             'course_id'   => $php->id,
             'topic_id'  => $phpIntro->id,
@@ -52,7 +52,7 @@ class CourseSeeder extends Seeder
             'duration'    => 210,
         ]);
 
-        $phpSyntax = Topic::create(['course_id' => $php->id, 'title' => '基礎文法','name' => '基礎文法']);
+        $phpSyntax = Topic::create(['course_id' => $php->id, 'title' => 'Basic Grammar','name' => 'Basic Grammar']);
         Lesson::create([
             'course_id'   => $php->id,
             'topic_id'  => $phpSyntax->id,
@@ -72,7 +72,7 @@ class CourseSeeder extends Seeder
             'duration'    => 240,
         ]);
 
-        $phpPrac = Topic::create(['course_id' => $php->id, 'title' => '実践','name' => '実践']);
+        $phpPrac = Topic::create(['course_id' => $php->id, 'title' => 'Practice','name' => 'Practice']);
         Lesson::create([
             'course_id'   => $php->id,
             'topic_id'  => $phpPrac->id,
@@ -104,7 +104,7 @@ class CourseSeeder extends Seeder
             'price'       => 7500.00,
         ]);
 
-        $jsIntro = Topic::create(['course_id' => $js->id, 'title' => 'JavaScript入門','name' => 'JavaScript入門']);
+        $jsIntro = Topic::create(['course_id' => $js->id, 'title' => 'Introduction to Javascript','name' => 'Introduction to Javascript']);
         Lesson::create([
             'course_id'   => $js->id,
             'topic_id'  => $jsIntro->id,
@@ -124,7 +124,7 @@ class CourseSeeder extends Seeder
                 'duration'    => 200,
             ]);
 
-            $jsSyntax = Topic::create(['course_id' => $js->id, 'title' => '文法基礎', 'name' => '文法基礎']);
+            $jsSyntax = Topic::create(['course_id' => $js->id, 'title' => 'Grammar Basics', 'name' => 'Grammar Basics']);
             Lesson::create([
                 'course_id'   => $js->id,
                 'topic_id'    => $jsSyntax->id,
@@ -144,7 +144,7 @@ class CourseSeeder extends Seeder
                 'duration'    => 240,
             ]);
 
-            $jsDom = Topic::create(['course_id' => $js->id, 'title' => 'DOM操作', 'name' => 'DOM操作']);
+            $jsDom = Topic::create(['course_id' => $js->id, 'title' => 'DOM manipulation', 'name' => 'DOM manipulation']);
             Lesson::create([
                 'course_id'   => $js->id,
                 'topic_id'    => $jsDom->id,
@@ -228,7 +228,7 @@ class CourseSeeder extends Seeder
             'price'       => 6000.00,
         ]);
 
-        $pyIntro = Topic::create(['course_id' => $py->id, 'title' => 'Python入門','name' => 'Python入門']);
+        $pyIntro = Topic::create(['course_id' => $py->id, 'title' => 'Introduction to Python','name' => 'Introduction to Python']);
         Lesson::create([
             'course_id'   => $py->id,
             'topic_id'    => $pyIntro->id,
@@ -248,7 +248,7 @@ class CourseSeeder extends Seeder
             'duration'    => 180,
         ]);
 
-        $pySyntax = Topic::create(['course_id' => $py->id, 'title' => '基礎文法', 'name' => '基礎文法']);
+        $pySyntax = Topic::create(['course_id' => $py->id, 'title' => 'Basic Grammar', 'name' => 'Basic Grammar']);
         Lesson::create([
             'course_id'   => $py->id,
             'topic_id'    => $pySyntax->id,
@@ -268,7 +268,7 @@ class CourseSeeder extends Seeder
             'duration'    => 220,
         ]);
 
-        $pyData = Topic::create(['course_id' => $py->id, 'title' => 'データ処理','name' => 'データ処理']);
+        $pyData = Topic::create(['course_id' => $py->id, 'title' => 'Data Processing','name' => 'Data Processing']);
         Lesson::create([
             'course_id'   => $py->id,
             'topic_id'    => $pyData->id,

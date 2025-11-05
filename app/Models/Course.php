@@ -14,7 +14,7 @@ class Course extends Model
     // コースに紐づくレッスン
     public function lessons()
     {
-        return $this->hasMany(Lesson::class);
+          return $this->hasMany(\App\Models\Lesson::class, 'course_id')->orderBy('id');
     }
 
 
@@ -56,7 +56,8 @@ class Course extends Model
 
 public function topics()
 {
-    return $this->hasMany(Topic::class);
+    // return $this->hasMany(Topic::class);
+     return $this->hasMany(\App\Models\Topic::class, 'course_id');
 }
 
 public function teachers()

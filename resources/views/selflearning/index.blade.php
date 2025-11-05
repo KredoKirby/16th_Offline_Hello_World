@@ -43,7 +43,7 @@
                         </div>
                     </div>
 
-                    {{-- ✅ Study Time（フォーマット済） --}}
+                    {{--  Study Time --}}
                     @php
                         $hours = floor($hoursLearned / 3600);
                         $minutes = floor(($hoursLearned % 3600) / 60);
