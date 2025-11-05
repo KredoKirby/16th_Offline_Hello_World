@@ -54,11 +54,11 @@
     <div class="border-start bg-white p-3" style="min-height: 500px; overflow-y:auto;">
         <h5 class="fw-bold mb-3">Video List</h5>
 
-        <div class="accordion" id="videoAccordion">
-            @foreach($course->sections as $sIndex => $section)
+        <div class="accordion" id="videoAccordion">topic
+            @foreach($course->topics as $sIndex => $topic)
                 @php
                     // セクション合計時間（秒 → mm:ss）
-                    $totalSeconds = $section->lessons->sum('duration');
+                    $totalSeconds = $topic->lessons->sum('duration');
                     $totalMinutes = floor($totalSeconds / 60);
                     $totalRemainSeconds = $totalSeconds % 60;
                 @endphp
@@ -66,9 +66,9 @@
                     <h2 class="accordion-header" id="headingVideo{{ $sIndex }}">
                         <button class="accordion-button {{ $sIndex > 0 ? 'collapsed' : '' }}" type="button"
                                 data-bs-toggle="collapse" data-bs-target="#collapseVideo{{ $sIndex }}">
-                            {{ $loop->iteration }}. {{ $section->title }}
+                            {{ $loop->iteration }}. {{ $topic->title }}
                             <span class="ms-auto small text-muted">
-                                {{ $section->lessons->count() }} videos ・
+                                {{ $topic->lessons->count() }} videos ・
                                 {{ sprintf('%02d:%02d', $totalMinutes, $totalRemainSeconds) }}
                             </span>
                         </button>
@@ -78,7 +78,7 @@
                          data-bs-parent="#videoAccordion">
                         <div class="accordion-body">
                             <ul class="list-unstyled">
-                                @foreach($section->lessons as $l)
+                                @foreach($topic->lessons as $l)
                                     @php
                                         $lMinutes = floor($l->duration / 60);
                                         $lSeconds = $l->duration % 60;

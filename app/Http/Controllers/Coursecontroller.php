@@ -14,7 +14,7 @@ class CourseController extends Controller
     public function index(Request $request)
     {
         $user = auth()->user();
-        $query = Course::with('sections.lessons');
+        $query = Course::with('topics.lessons');
         // 検索
         if ($request->filled('search')) {
             $query->where('title', 'like', '%' . $request->search . '%');
@@ -31,14 +31,14 @@ class CourseController extends Controller
 
             if ($request->status === 'active') {
                 $courses = $courses->filter(function ($c) use ($completedLessonIds) {
-                    $lessonIds = $c->sections->flatMap(fn($s) => $s->lessons)->pluck('id')->toArray();
+                    $lessonIds = $c->topics->flatMap(fn($s) => $s->lessons)->pluck('id')->toArray();
                     $total = count($lessonIds);
                     $completed = $total ? count(array_intersect($lessonIds, $completedLessonIds)) : 0;
                     return $total > 0 && $completed < $total;
                 });
             } elseif ($request->status === 'completed') {
                 $courses = $courses->filter(function ($c) use ($completedLessonIds) {
-                    $lessonIds = $c->sections->flatMap(fn($s) => $s->lessons)->pluck('id')->toArray();
+                    $lessonIds = $c->topics->flatMap(fn($s) => $s->lessons)->pluck('id')->toArray();
                     $total = count($lessonIds);
                     $completed = $total ? count(array_intersect($lessonIds, $completedLessonIds)) : 0;
                     return $total > 0 && $completed === $total;
@@ -64,11 +64,11 @@ class CourseController extends Controller
         return view('courses.index', compact('courses', 'enrolledCourseIds'));
     }
 
-    // showメソッドは変更なし
+   
     public function show(Request $request, $id)
     {
         $user = auth()->user();
-        $course = Course::with('sections.lessons')->findOrFail($id);
+        $course = Course::with('topics.lessons')->findOrFail($id);
 
         $completedLessonIds = $user
             ? $user->lessons()->wherePivot('is_completed', true)->pluck('lessons.id')->toArray()
@@ -79,7 +79,7 @@ class CourseController extends Controller
             : [];
 
         // 左サイド一覧
-        $query = Course::with('sections.lessons');
+        $query = Course::with('topics.lessons');
         if ($request->filled('lang')) {
             $query->where('language', $request->lang);
         }
@@ -88,14 +88,14 @@ class CourseController extends Controller
         if ($request->status && $user) {
             if ($request->status === 'active') {
                 $courses = $courses->filter(function ($c) use ($completedLessonIds) {
-                    $lessonIds = $c->sections->flatMap(fn($s) => $s->lessons)->pluck('id')->toArray();
+                    $lessonIds = $c->topics->flatMap(fn($s) => $s->lessons)->pluck('id')->toArray();
                     $total = count($lessonIds);
                     $completed = $total ? count(array_intersect($lessonIds, $completedLessonIds)) : 0;
                     return $total > 0 && $completed < $total;
                 });
             } elseif ($request->status === 'completed') {
                 $courses = $courses->filter(function ($c) use ($completedLessonIds) {
-                    $lessonIds = $c->sections->flatMap(fn($s) => $s->lessons)->pluck('id')->toArray();
+                    $lessonIds = $c->topics->flatMap(fn($s) => $s->lessons)->pluck('id')->toArray();
                     $total = count($lessonIds);
                     $completed = $total ? count(array_intersect($lessonIds, $completedLessonIds)) : 0;
                     return $total > 0 && $completed === $total;
@@ -107,11 +107,11 @@ class CourseController extends Controller
         $sectionProgress = [];
         $totalCourseLessons = 0;
         $completedCourseLessons = 0;
-        foreach ($course->sections as $section) {
-            $lessonIds = $section->lessons->pluck('id')->toArray();
+       foreach ($course->topics as $topic) {
+            $lessonIds = $topic->lessons->pluck('id')->toArray();
             $total = count($lessonIds);
             $completed = $total ? count(array_intersect($lessonIds, $completedLessonIds)) : 0;
-            $sectionProgress[$section->id] = [
+            $sectionProgress[$topic->id] = [
                 'percent' => $total ? round($completed / $total * 100) : 0,
                 'total' => $total,
                 'completed' => $completed,
@@ -119,6 +119,7 @@ class CourseController extends Controller
             $totalCourseLessons += $total;
             $completedCourseLessons += $completed;
         }
+
         $coursePercent = $totalCourseLessons ? round($completedCourseLessons / $totalCourseLessons * 100) : 0;
 
         return view('courses.show', compact(
