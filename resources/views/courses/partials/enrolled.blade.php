@@ -1,16 +1,11 @@
 <div>
-    {{-- コースヘッダー画像 --}}
-    <div class="mb-3">
-        @if($course->image)
-            <img src="{{ asset('images/courses/' . $course->image) }}" 
-                 class="course-header-image rounded"
-                 alt="{{ $course->title }}">
-        @else
-            <div class="bg-secondary text-white text-center p-5 rounded">
-                No Image
+                {{-- コース画像 --}}
+            <div class="mb-3">
+                <img src="{{ $course->display_image }}"
+                    class="course-header-image rounded"
+                    alt="{{ $course->title }}">
             </div>
-        @endif
-    </div>
+
 
             {{-- コースタイトル & アクション --}}
             <div class="d-flex justify-content-between align-items-center mb-2">

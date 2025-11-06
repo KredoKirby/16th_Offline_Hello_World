@@ -63,9 +63,10 @@ class SelfLearningController extends Controller
     $user = auth()->user();
 
     $course = $user->courses()
-        ->with(['sections.lessons'])
-        ->where('courses.id', $id)
-        ->firstOrFail();
+    ->with(['topics.lessons'])
+    ->where('courses.id', $id)
+    ->firstOrFail();
+
 
     return view('selflearning.show', compact('course'));
 }
@@ -77,7 +78,7 @@ class SelfLearningController extends Controller
         $user = auth()->user();
 
         $course = $user->courses()
-            ->with('lessons')
+             ->with('topics.lessons')
             ->findOrFail($courseId);
 
         $lessons = $course->lessons;

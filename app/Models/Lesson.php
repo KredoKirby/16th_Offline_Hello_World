@@ -9,7 +9,7 @@ use Intervention\Image\Facades\Image;
 class Lesson extends Model
 {
     protected $fillable = [
-        'section_id',
+        'topic_id',
         'title',
         'content',
         'video',

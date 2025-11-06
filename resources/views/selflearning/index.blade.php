@@ -94,8 +94,9 @@
                     @foreach($courses as $course)
                     <a href="{{ route('selflearning.show', $course->id) }}" class="text-decoration-none text-dark">
                         <div class="dashboard-course-card d-flex flex-row flex-wrap align-items-center mb-3">
-                            <img src="{{ asset('images/courses/' . ($course->image ?? 'sample.jpg')) }}" 
+                            <img src="{{ $course->image_path }}" 
                                  alt="course" class="me-3 rounded dashboard-course-img mb-2 mb-md-0">
+
                             <div class="flex-grow-1 w-100 w-md-auto">
                                 <h6 class="mb-1 fw-bold">{{ $course->title }}</h6>
                                 <div class="d-flex align-items-center flex-wrap">
@@ -123,22 +124,23 @@
                 <img src="{{ asset('images/calendar.jpg') }}" class="img-fluid rounded" alt="calendar">
             </div>
 
-            {{-- Recommended --}}
-            <div class="dashboard-side-card">
-                <h6 class="fw-bold">Recommended courses</h6>
-                @foreach($recommendedCourses as $rec)
-                <a href="{{ route('selflearning.show', $rec->id) }}" class="text-decoration-none text-dark">
-                    <div class="dashboard-recommend-item d-flex flex-row align-items-center mb-2">
-                        <img src="{{ asset('images/courses/' . ($rec->image ?? 'php.jpg')) }}" 
-                            alt="course" class="me-2 rounded dashboard-recommend-img">
-                        <div>
-                            <h6 class="mb-0 small fw-bold">{{ $rec->title }}</h6>
-                            <small class="text-muted">{{ Str::limit($rec->description, 30) }}</small>
+          {{-- Recommended --}}
+                <div class="dashboard-side-card">
+                    <h6 class="fw-bold">Recommended courses</h6>
+                    @foreach($recommendedCourses as $rec)
+                    <a href="{{ route('courses.show', $rec->id) }}" class="text-decoration-none text-dark">
+                        <div class="dashboard-recommend-item d-flex flex-row align-items-center mb-2">
+                            <img src="{{ $rec->image_path }}" 
+                                alt="course" class="me-2 rounded dashboard-recommend-img">
+                            <div>
+                                <h6 class="mb-0 small fw-bold">{{ $rec->title }}</h6>
+                                <small class="text-muted">{{ Str::limit($rec->description, 30) }}</small>
+                            </div>
                         </div>
-                    </div>
-                </a>
-                @endforeach
-            </div>
+                    </a>
+                    @endforeach
+                </div>
+
         </div>
     </div>
 </div>

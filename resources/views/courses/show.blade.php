@@ -4,6 +4,16 @@
 <div class="container-fluid p-3">
     <div class="row">
 
+        {{-- 右上ログアウト --}}
+    <div class="d-flex justify-content-end mb-3">
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit" class="btn btn-outline-danger btn-sm">
+                Logout
+            </button>
+        </form>
+    </div>
+    
         {{-- 左サイド --}}
         <div class="courses-col-md-3 col-md-3 col-12 border-end bg-white mb-4 mb-md-0" style="min-height:100vh;">
             <h3 class="fw-bold mb-3">
