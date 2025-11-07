@@ -1,9 +1,10 @@
 <?php
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Course;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 
 class TeacherController extends Controller
@@ -51,4 +52,25 @@ class TeacherController extends Controller
         return back()->with('status', 'Status updated.');
     }
 
+    public function attach(Request $request, User $user)
+    {
+        $this->authorize('admin-only');
+
+        $data = $request->validate([
+            'course_id' => ['required','exists:courses,id'],
+        ]);
+
+        $user->courses()->syncWithoutDetaching([$data['course_id']]);
+
+        return back()->with('status', 'Course added.');
+    }
+
+    public function detach(User $user, Course $course)
+    {
+        $this->authorize('admin-only');
+
+        $user->courses()->detach($course->id);
+
+        return back()->with('status', 'Course removed.');
+    }
 }

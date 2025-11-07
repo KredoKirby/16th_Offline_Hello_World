@@ -54,7 +54,7 @@
 
     {{-- セクションごとのアコーディオン --}}
     <div class="accordion mt-3" id="courseAccordion">
-        @foreach($course->sections as $sectionIndex => $section)
+        @foreach($course->sections ?? [] as $sectionIndex => $section)
             <div class="accordion-item">
                 <h2 class="accordion-header" id="heading{{ $section->id }}">
                     <button class="accordion-button collapsed" type="button" 

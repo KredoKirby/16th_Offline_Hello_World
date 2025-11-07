@@ -21,17 +21,23 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\ApiTestController;
 use App\Http\Controllers\BookingController;
-use App\Http\Controllers\Admin\AdminController;
+//use App\Http\Controllers\Admin\ForumController as AdminForumController;
 
 // Front/controllers
+use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\SelfLearningController;
+use App\Http\Controllers\Teacher\ReportController;
+use App\Http\Controllers\Teacher\ProfileController;
 use App\Http\Controllers\Student\MylearningController;
+
+// Front/controllers
 use App\Http\Controllers\Student\CourseInitApiController;
 use App\Http\Controllers\Student\LessonhistoryController;
 use App\Http\Controllers\Student\IndexController as StudentIndexController;
 use App\Http\Controllers\Teacher\IndexController as TeacherIndexController;
 use App\Http\Controllers\Student\BookingController as StudentBookingController;
 use App\Http\Controllers\Student\ProfileController as StudentProfileController;
+use App\Http\Controllers\Teacher\BookingController as TeacherBookingController;
 use App\Http\Controllers\Teacher\ProfileController as TeacherProfileController;
 
 Auth::routes();
@@ -116,6 +122,11 @@ Route::prefix('admin')->middleware('can:admin')->name('admin.')->group(function 
     Route::patch('teachers/{teacher}/toggle', [AdminTeacherController::class, 'toggle'])
         ->name('teachers.toggle');
 
+    Route::delete('courses/{course}/topics/{topic}',[CourseTopicController::class, 'destroy'])->name('courses.topics.destroy');
+
+    // teacherに担当courseを割り当てる。
+    Route::post('/teachers/{user}/courses', [AdminTeacherController::class, 'attach'])->name('courses.attach');
+    Route::delete('/teachers/{user}/courses/{course}', [AdminTeacherController::class, 'detach'])->name('courses.detach');
 });
 
 // Courses
@@ -155,9 +166,9 @@ Route::prefix('selflearning')->group(function () {
 /* ------------------- Student area ------------------- */
 Route::prefix('students')->middleware('can:students')->name('students.')->group(function () {
     Route::get('/', [StudentIndexController::class, 'index'])->name('index');
-    Route::get('mylearning', [MylearningController::class, 'show'])->name('mylearning');
-    Route::get('lesson_history', [LessonhistoryController::class, 'show'])->name('lessonhistory');
-    Route::get('profile', [StudentProfileController::class, 'show'])->name('profile');
+    // Route::get('mylearning', [MylearningController::class, 'show'])->name('mylearning');
+    // Route::get('lesson_history', [LessonhistoryController::class, 'show'])->name('lessonhistory');
+    // Route::get('profile', [StudentProfileController::class, 'show'])->name('profile');
 
     // 予約フォーム表示 / 保存（既存）
     // Route::get('/bookings/create', [StudentBookingController::class, 'create'])
@@ -172,19 +183,47 @@ Route::prefix('students')->middleware('can:students')->name('students.')->group(
         ->name('courses.toggle');
 });
 
-// Courses
-Route::prefix('courses')->group(function () {
-    Route::get('/', [CourseController::class, 'index'])->name('courses.index');
-    Route::get('/{course}', [CourseController::class, 'show'])->name('courses.show');
-    Route::post('/{course}/enroll', [CourseController::class, 'enroll'])->name('courses.enroll');
-    Route::delete('/{course}/unenroll', [CourseController::class, 'unenroll'])->name('courses.unenroll');
-    Route::post('/{course}/lessons/{lesson}/progress', [LessonController::class, 'updateProgress'])
-        ->name('lessons.updateProgress');
-    Route::post('/{course}/lessons/{lesson}/toggle', [LessonController::class, 'toggle'])
-        ->name('lessons.toggle');
-    // Admin\CourseController 
-    Route::patch('courses/{course}/toggle', [AdminCourseController::class, 'toggle'])->name('courses.toggle');
+     /* ------------------- Student area ------------------- */
+    Route::prefix('students')->middleware('can:students')->name('students.')->group(function () {
+        Route::get('/', [StudentIndexController::class, 'index'])->name('index');
+        // Route::get('mylearning',      [MylearningController::class, 'show'])->name('mylearning');
+        Route::get('lesson_history',  [LessonhistoryController::class, 'show'])->name('lessonhistory');
+         // Cancel (DELETE) an upcoming booking (student only)
+        Route::delete('bookings/{booking}', [StudentBookingController::class, 'destroy'])
+        ->name('bookings.cancel');
+
+        // 予約フォーム表示 / 保存（既存）
+        // Route::get('/bookings/create', [StudentBookingController::class, 'create'])
+        //     ->name('bookings.create');
+        Route::post('/bookings', [StudentBookingController::class, 'store'])
+            ->name('bookings.store');
+
+        // Ajax: 指定コースのトピック一覧 + 「次のTopic」候補（JSON）
+        Route::get('/api/courses/{course}/init', [CourseInitApiController::class, 'show'])
+        ->name('api.courses.init');
+
+        // Route::get('/profile/{user}', [ProfileController::class, 'show'])
+        // ->name('profile.show');
+
+    // プロフィール更新（モーダルから）
+    Route::put('/profile/{user}', [StudentProfileController::class, 'update'])
+        ->name('profile.update');
+
+        Route::put('/profile/{user}/photo', [StudentProfileController::class, 'updatePhoto'])
+        ->name('profile.photo.update');
 });
+
+    // Courses
+    Route::prefix('courses')->group(function () {
+        Route::get('/', [CourseController::class, 'index'])->name('courses.index');
+        Route::get('/{course}', [CourseController::class, 'show'])->name('courses.show');
+        Route::post('/{course}/enroll', [CourseController::class, 'enroll'])->name('courses.enroll');
+        Route::delete('/{course}/unenroll', [CourseController::class, 'unenroll'])->name('courses.unenroll');
+        Route::post('/{course}/lessons/{lesson}/progress', [LessonController::class, 'updateProgress'])
+            ->name('lessons.updateProgress');
+        Route::post('/{course}/lessons/{lesson}/toggle', [LessonController::class, 'toggle'])
+            ->name('lessons.toggle');
+    });
 
 //  Self-learning
 Route::prefix('selflearning')->group(function () {
@@ -202,30 +241,33 @@ Route::prefix('selflearning')->group(function () {
         ->name('selflearning.updateTime');
 });
 
-/* ------------------- Student area ------------------- */
-Route::prefix('students')->middleware('can:students')->name('students.')->group(function () {
-    Route::get('/', [StudentIndexController::class, 'index'])->name('index');
-    Route::get('mylearning', [MylearningController::class, 'show'])->name('mylearning');
-    Route::get('lesson_history', [LessonhistoryController::class, 'show'])->name('lessonhistory');
-    Route::get('profile', [StudentProfileController::class, 'show'])->name('profile');
-    // Cancel (DELETE) an upcoming booking (student only)
-    Route::delete('bookings/{booking}', [StudentBookingController::class, 'destroy'])
-        ->name('bookings.cancel');
+    // Profile
+    Route::get('teachers/profile/{user_id}', [TeacherProfileController::class, 'show'])->name('teachers.profile');
+    // Route::get('students/profile/{user_id}', [StudentProfileController::class, 'show'])->name('students.profile');
+    Route::get('students/profile/{user}', [StudentProfileController::class, 'show'])
+        ->name('students.profile.show');
 
-    // 予約フォーム表示 / 保存（既存）
-    // Route::get('/bookings/create', [StudentBookingController::class, 'create'])
-    //     ->name('bookings.create');
-    Route::post('/bookings', [StudentBookingController::class, 'store'])
-        ->name('bookings.store');
+    /* ------------------- Teacher area ------------------- */
+    Route::prefix('teachers')->middleware('can:teachers')->name('teachers.')->group(function () {
+        Route::get('/', [TeacherIndexController::class, 'index'])->name('index');
+        Route::post('/bookings/store', [TeacherBookingController::class, 'store'])->name('bookings.store');
+        Route::get('/calendar/show', [TeacherBookingController::class, 'show'])->name('calendar.show');
+        Route::prefix('bookings')->name('bookings.')->group(function () {
+            Route::post('/',            [TeacherBookingController::class, 'store'])->name('store');
+            Route::delete('/{id}',      [TeacherBookingController::class, 'destroy'])->name('destroy');
+            Route::post('/bulk-delete', [TeacherBookingController::class, 'bulkDestroyOpen'])->name('bulkDelete');
+            // Route::post('/{id}/cancel', [TeacherBookingController::class, 'cancelBooked'])->name('cancel');
+            // ★ キャンセル（先生）：削除しない／report を更新＆通知
+            Route::post('/{id}/cancel', [TeacherBookingController::class, 'cancelBooked'])->name('cancel');
+        });
 
-    // Ajax: 指定コースのトピック一覧 + 「次のTopic」候補（JSON）
-    Route::get('/api/courses/{course}/init', [CourseInitApiController::class, 'show'])
-        ->name('api.courses.init');
-});
-
-/* ------------------- Teacher area ------------------- */
-Route::prefix('teachers')->middleware('can:teachers')->name('teachers.')->group(function () {
-    Route::get('/', [TeacherIndexController::class, 'index'])->name('index');
-    Route::get('profile', [TeacherProfileController::class, 'show'])->name('profile');
-    Route::post('/bookings/store', [BookingController::class, 'store'])->name('bookings.store');
-});
+        // ★ Report 取得/更新（モーダル表示用）
+        Route::get('reports/{booking}', [ReportController::class, 'show'])->name('reports.show');
+        Route::patch('reports/{booking}', [ReportController::class, 'update'])->name('reports.update');
+        // POST にしたい場合は ↓でもOK（JS 側の method を合わせる）
+        // Route::post('reports/{booking}', [ReportController::class, 'update'])->name('reports.update');
+        // topics 一覧（id 昇順）
+        // Route::get('/teachers/next_topic', [ReportController::class, 'index'])->name('next_topic.index');
+        Route::put('/{user}/profile', [ProfileController::class, 'update'])
+     ->name('profile.update');
+    });
