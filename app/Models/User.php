@@ -3,9 +3,10 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
@@ -20,8 +21,24 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'about',
         'password',
+        'role_id',
+        'meeting_url',
+        'avatar_path',
     ];
+
+    //   public function getAvatarUrlAttribute(): string
+    // {
+    //     if (!empty($this->avatar_path)) {
+    //         // avatar_path: "avatars/xxx.png" を想定
+    //         // → /storage/avatars/xxx.png に変換
+    //         return asset('storage/' . ltrim($this->avatar_path, '/'));
+    //     }
+
+    //     // 未設定時のデフォルト画像
+    //     return asset('images/default-avatar.png');
+    // }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -47,49 +64,57 @@ class User extends Authenticatable
         ];
     }
 
-      public function enrollments()
+    public function enrollments()
     {
-        return $this->hasMany(Enrollment::class);
+        return $this->hasMany(\App\Models\Enrollment::class, 'user_id');
     }
 
-    
-    public function courses() {
-        return $this->belongsToMany(Course::class, 'enrollments', 'user_id', 'course_id')
-                ->withPivot(['status','enrollment_date'])
-                ->withTimestamps();
+    public function courses()
+    {
+        return $this->belongsToMany(\App\Models\Course::class, 'enrollments', 'user_id', 'course_id')
+            ->withPivot(['status'])
+            ->withTimestamps();
     }
 
 
     public function lessons()
-{
-    return $this->belongsToMany(Lesson::class)
-                ->withPivot('is_completed', 'completed_at')
-                ->withTimestamps();
-}
+    {
+        return $this->belongsToMany(Lesson::class)
+            ->withPivot('is_completed', 'completed_at')
+            ->withTimestamps();
+    }
 
 
-public function completedLessons() {
-    return $this->belongsToMany(Lesson::class, 'lesson_user')
-                ->withPivot('is_completed', 'completed_at', 'study_time')
-                ->withTimestamps();
-}
+    public function completedLessons()
+    {
+        return $this->belongsToMany(Lesson::class, 'lesson_user')
+            ->withPivot('is_completed', 'completed_at', 'study_time')
+            ->withTimestamps();
+    }
 
-public function progress()
-{
-    return $this->hasMany(Progress::class);
-}
+    public function progress()
+    {
+        return $this->hasMany(Progress::class);
+    }
 
-public function enrolledCourses()
-{
-    return $this->belongsToMany(Course::class, 'enrollments')
-                ->withPivot('status', 'progress')
-                ->withTimestamps();
-}
+    public function enrolledCourses()
+    {
+        return $this->belongsToMany(Course::class, 'enrollments')
+            ->withPivot('status', 'progress')
+            ->withTimestamps();
+    }
 
-public function coursesTaught()
-{
-    // 第3引数: 現在モデル側FK（teacher_id）, 第4引数: 相手側FK（course_id）
-    return $this->belongsToMany(Course::class, 'teacher_course', 'teacher_id', 'course_id');
-}
+    public function coursesTaught()
+    {
+        // pivot名が違う場合は 'course_user' を合わせてください
+        return $this->belongsToMany(\App\Models\Course::class, 'course_user', 'user_id', 'course_id');
+    }
+
+
+// public function coursesTaught()
+// {
+//     // 第3引数: 現在モデル側FK（teacher_id）, 第4引数: 相手側FK（course_id）
+//     return $this->belongsToMany(Course::class, 'teacher_course', 'teacher_id', 'course_id');
+// }
 
 }

@@ -60,20 +60,20 @@
 
     {{-- コースヘッダー --}}
     <div class="mb-4">
-        <img src="{{ asset('images/courses/' . ($course->image ?? 'sample.jpg')) }}"
+        <img src="{{ $course->image_path }}" 
              class="course-header-image rounded mb-3">
         <h2 class="fw-bold">{{ $course->title }}</h2>
         <p class="course-meta">
-            {{ $course->sections->count() }} sections ・
-            {{ $course->sections->sum(fn($s) => $s->lessons->count()) }} lectures ・
-            {{ $course->sections->sum(fn($s) => $s->lessons->sum('pages')) }} pages ・
-            {{ gmdate('H', $course->sections->sum(fn($s) => $s->lessons->sum('duration')) * 60) }} minutes
+            {{ $course->topics->count() }} topics ・
+            {{ $course->topics->sum(fn($s) => $s->lessons->count()) }} lectures ・
+            {{ $course->topics->sum(fn($s) => $s->lessons->sum('pages')) }} pages ・
+            {{ gmdate('H', $course->topics->sum(fn($s) => $s->lessons->sum('duration')) * 60) }} minutes
         </p>
     </div>
 
     {{-- セクション一覧 --}}
     <div class="accordion course-accordion" id="courseAccordion">
-        @foreach($course->sections as $index => $section)
+        @foreach($course->topics as $index => $section)
             <div class="accordion-item">
                 <h2 class="accordion-header" id="heading{{ $index }}">
                     <button class="accordion-button {{ $index > 0 ? 'collapsed' : '' }}" type="button"

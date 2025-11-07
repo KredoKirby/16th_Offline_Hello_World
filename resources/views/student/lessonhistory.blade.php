@@ -8,7 +8,39 @@
         <div class="vstack gap-3">
             @forelse ($bookings as $b)
                 @php
-                    $dt = \Carbon\Carbon::parse($b->date . ' ' . $b->time)->timezone(config('app.timezone'));
+                    // DBのタイムゾーン（=保存時の意味）。通常は app.timezone（例: Asia/Tokyo）
+                    $srcTz = config('app.timezone', 'Asia/Manila');
+
+                    // 表示タイムゾーン（セブに合わせる）
+                    $viewTz = 'Asia/Manila';
+
+                    // --- date を 'Y-m-d' に正規化 ---
+                    $rawDate = $b->getAttribute('date');
+                    if ($rawDate instanceof \Carbon\Carbon) {
+                        $dateStr = $rawDate->format('Y-m-d');
+                    } else {
+                        $dateStr = (string) $rawDate;
+                        if (preg_match('/^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}$/', $dateStr)) {
+                            $dateStr = substr($dateStr, 0, 10);
+                        }
+                    }
+
+                    // --- time を 'H:i:s' に正規化 ---
+                    $rawTime = $b->getAttribute('time');
+                    if ($rawTime instanceof \Carbon\Carbon) {
+                        $timeStr = $rawTime->format('H:i:s');
+                    } else {
+                        $timeStr = (string) $rawTime;
+                        if (preg_match('/^\d{2}:\d{2}$/', $timeStr)) {
+                            $timeStr .= ':00';
+                        }
+                    }
+
+                    // 明示フォーマットで結合 → まずは保存TZで生成 → 表示TZへ
+                    $dt = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', "$dateStr $timeStr", $srcTz)->setTimezone(
+                        $viewTz,
+                    );
+
                     $duration = $b->duration_minutes ?? 50;
                     $end = (clone $dt)->addMinutes($duration);
 
@@ -16,9 +48,9 @@
                     $topic = $b->topic->name ?? 'Topic';
                     $teacher = $b->teacher->name ?? 'Teacher';
                     $iconUrl = $b->course->icon_url ?? asset('images/placeholder-course.png');
+
                     $whenStr = $dt->format('D, M j H:i') . '–' . $end->format('H:i');
 
-                    // report (optional)
                     $status = $b->report->status ?? null;
                     $nextTop = $b->report->next_topic ?? '—';
                     $statusClass = match (strtolower((string) $status)) {
@@ -36,15 +68,15 @@
                                 style="width:48px;height:48px;object-fit:cover;">
 
                             <div class="min-w-0 flex-grow-1">
-                                <div class="fw-semibold fs-5 text-truncate">
+                                <div class="fw-semibold text-truncate">
                                     {{ $course }} <span class="text-body-secondary">·</span> {{ $topic }}
                                 </div>
-                                <div class="d-flex align-items-center flex-wrap gap-2 mt-1 text-secondary small">
+                                <div class="d-flex align-items-center flex-wrap gap-2 mt-1">
                                     <span class="d-inline-flex align-items-center">
                                         <i class="fa-regular fa-calendar me-1"></i>{{ $whenStr }}
                                     </span>
-                                    <span>•</span>
-                                    <span>with <span class="text-body">{{ $teacher }}</span></span>
+                                    {{-- <span>•</span> --}}
+                                    <span>with Teacher <span class="text-body fw-bold">{{ $teacher }}</span></span>
                                 </div>
                             </div>
 

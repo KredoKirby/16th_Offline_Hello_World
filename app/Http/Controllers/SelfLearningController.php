@@ -10,51 +10,42 @@ use Illuminate\Support\Facades\Auth;
 class SelfLearningController extends Controller
 {
     // 学習一覧ページ
-    public function index(Request $request)
-    {
-        // 1. Get the search keyword from the form
-        $search = $request->input('search');
-        
-        $user = auth()->user();
+  public function index(Request $request)
+{
+    $search = $request->input('search');
+    $user = auth()->user();
 
-        // 2. Start building the query for the user's enrolled courses
-        $coursesQuery = $user->courses()->getQuery();
+    $coursesQuery = $user->courses();
 
-        // 3. If a search keyword exists, apply a filter
-        if ($search) {
-            $coursesQuery->where(function ($query) use ($search) {
-                $query->where('title', 'LIKE', "%{$search}%")
-                    ->orWhere('description', 'LIKE', "%{$search}%");
-            });
-        }
-
-        // 4. Execute the query to get the (now possibly filtered) courses
-        $myCourses = $coursesQuery->get();
-
-        // 🔹 完了したコース数
-        $completedCourses = $myCourses->filter(function ($course) use ($user) {
-            return $course->completionRate($user->id) >= 100;
-        })->count();
-
-        // 🔹 総学習時間（秒単位）
-        $hoursLearned = $user->completedLessons()->sum('lesson_user.study_time');
-
-        // 🔹 おすすめコース（自分が未受講のものからランダムに5件）
-        $recommendedCourses = \App\Models\Course::whereNotIn(
-            'id',
-            $user->courses->pluck('id')
-        )->inRandomOrder()->take(5)->get();
-
-        // 🔹 ビューへ渡す
-        return view('selflearning.index', compact(
-            'myCourses',
-            'completedCourses',
-            'hoursLearned',
-            'recommendedCourses'
-        ));
+    if ($search) {
+        $coursesQuery->where(function ($query) use ($search) {
+            $query->where('title', 'LIKE', "%{$search}%")
+                  ->orWhere('description', 'LIKE', "%{$search}%");
+        });
     }
 
-    // 🔹 秒を時間表記に変換
+    $myCourses = $coursesQuery->orderBy('courses.id')->get()->values();
+
+    $completedCourses = $myCourses->filter(function ($course) use ($user) {
+        return $course->completionRate($user->id) >= 100;
+    })->count();
+
+    $hoursLearned = $user->completedLessons()->sum('lesson_user.study_time');
+
+    $recommendedCourses = Course::whereNotIn('id', $user->courses->pluck('id'))
+        ->inRandomOrder()
+        ->take(5)
+        ->get();
+
+    return view('selflearning.index', compact(
+        'myCourses',
+        'completedCourses',
+        'hoursLearned',
+        'recommendedCourses'
+    ));
+}
+
+
     private function formatTime($seconds)
     {
         if ($seconds < 60) {
@@ -66,28 +57,40 @@ class SelfLearningController extends Controller
         }
     }
 
-    // 🔹 コース詳細
+    // コース詳細
     public function show($id)
-    {
-        $course = Course::with('lessons')->findOrFail($id);
-        return view('selflearning.show', compact('course'));
-    }
+{
+    $user = auth()->user();
 
-    // 🔹 レッスン動画ページ
+    $course = $user->courses()
+    ->with(['topics.lessons'])
+    ->where('courses.id', $id)
+    ->firstOrFail();
+
+
+    return view('selflearning.show', compact('course'));
+}
+
+
+    // レッスン動画ページ
     public function lessonVideo($courseId, $lessonId)
     {
-        $course = Course::with('lessons')->findOrFail($courseId);
-        $lessons = $course->lessons;
+        $user = auth()->user();
 
+        $course = $user->courses()
+             ->with('topics.lessons')
+            ->findOrFail($courseId);
+
+        $lessons = $course->lessons;
         $currentLesson = $lessons->firstWhere('id', $lessonId);
+
         if (!$currentLesson) abort(404, 'Lesson not found');
 
         $currentIndex = $lessons->search(fn($l) => $l->id === $currentLesson->id);
         $previousLesson = $lessons->get($currentIndex - 1);
         $nextLesson = $lessons->get($currentIndex + 1);
 
-        // 総学習時間（表示用）
-        $totalSeconds = Auth::user()->completedLessons()->sum('lesson_user.study_time');
+        $totalSeconds = $user->completedLessons()->sum('lesson_user.study_time');
         $hoursLearned = $this->formatTime($totalSeconds);
 
         return view('selflearning.lesson-video', compact(
@@ -95,16 +98,18 @@ class SelfLearningController extends Controller
         ));
     }
 
-    // 🔹 レッスンテキストページ（section_id → course_idに修正）
+    // レッスンテキストページ
     public function lessonText($courseId, $lessonId)
     {
-        $course = Course::findOrFail($courseId);
+        $user = auth()->user();
 
-        $lessons = Lesson::where('course_id', $course->id)
-            ->orderBy('id')
-            ->get();
+        $course = $user->courses()
+            ->with('lessons')
+            ->findOrFail($courseId);
 
+        $lessons = $course->lessons()->orderBy('id')->get();
         $currentLesson = $lessons->firstWhere('id', $lessonId);
+
         if (!$currentLesson) abort(404, 'Lesson not found');
 
         $currentIndex = $lessons->search(fn($lesson) => $lesson->id == $lessonId);
@@ -119,7 +124,7 @@ class SelfLearningController extends Controller
         ));
     }
 
-    // 🔹 レッスン完了処理
+    // レッスン完了処理
     public function lessonDone($courseId, $lessonId)
     {
         $lesson = Lesson::findOrFail($lessonId);
@@ -132,12 +137,12 @@ class SelfLearningController extends Controller
             ->with('success', 'Lesson marked as completed!');
     }
 
-    // 🔹 Lesson 完了トグル + 秒単位記録
+    // Lesson 完了トグル + 秒単位記録
     public function toggleLesson($courseId, $lessonId)
     {
         $user = auth()->user();
         $lesson = Lesson::findOrFail($lessonId);
-        $studyTime = request()->input('study_time', 30); // デフォルト30秒
+        $studyTime = request()->input('study_time', 30);
 
         if ($user->completedLessons->contains($lessonId)) {
             $user->completedLessons()->detach($lessonId);
@@ -160,12 +165,12 @@ class SelfLearningController extends Controller
         ]);
     }
 
-    // 🔹 study_time更新処理（秒単位で自動加算）
+    // study_time更新処理
     public function updateStudyTime(Request $request)
     {
         $user = Auth::user();
         $lessonId = (int) $request->input('lesson_id');
-        $seconds  = (int) $request->input('seconds', 0);
+        $seconds = (int) $request->input('seconds', 0);
 
         if (!$lessonId || $seconds <= 0) {
             return response()->json(['error' => 'Invalid data'], 400);
@@ -176,7 +181,6 @@ class SelfLearningController extends Controller
             return response()->json(['error' => 'Lesson not found'], 404);
         }
 
-        // check if pivot row exists
         $existing = $user->completedLessons()->where('lessons.id', $lessonId)->first();
 
         if ($existing) {
@@ -187,7 +191,6 @@ class SelfLearningController extends Controller
                 'updated_at' => now(),
             ]);
         } else {
-            // attach new pivot row (未完了フラグで作る)
             $user->completedLessons()->attach($lessonId, [
                 'is_completed' => false,
                 'study_time' => $seconds,
@@ -196,10 +199,7 @@ class SelfLearningController extends Controller
             ]);
         }
 
-        // 全体の合計（秒）
         $totalSeconds = (int) $user->completedLessons()->sum('lesson_user.study_time');
-
-        // フォーマット文字列（例: 1h 2m 3s または 10s）
         $formatted = $this->formatTime($totalSeconds);
 
         return response()->json([

@@ -14,7 +14,7 @@ class IndexController extends Controller
     {
         /** @var \App\Models\User $user */
         $user = Auth::user();
-        $tz   = config('app.timezone', 'Asia/Tokyo');
+        $tz   = config('app.timezone', 'Asia/Manila');
 
         $courses = $user->courses() // teacher_course tableからteacherに紐づくcourseを取得
         ->select('courses.id', 'courses.title')
@@ -51,12 +51,13 @@ $history = Booking::with([
         'topic:id,course_id,name',
         'teacher:id,name',
         'report:booking_id,status,next_topic',
+        'report.nextTopic:id,name',
     ])
     ->where('student_id', $user->id)
     // ← 追加：講師キャンセルは除外
-    ->whereDoesntHave('report', function ($q) {
-        $q->whereRaw('LOWER(status) = ?', ['canceled by teacher']);
-    })
+    // ->whereDoesntHave('report', function ($q) {
+    //     $q->whereRaw('LOWER(status) = ?', ['canceled by teacher']);
+    // })
     ->where(function ($q) use ($nowDate, $nowTime) {
         $q->where('date', '<', $nowDate)
           ->orWhere(function ($q) use ($nowDate, $nowTime) {
@@ -90,6 +91,7 @@ $fcEvents = $bookingsForCalendar->map(function (Booking $b) {
         'end'   => $endTokyo->toIso8601String(),
         'extendedProps' => [
             'teacher'        => $b->teacher->name ?? null,
+            'teacher_id'      => $b->teacher_id,
             'course_name'    => $b->course->title ?? null,
             'topic_name'     => $b->topic->name ?? null,
             'course_id'      => $b->course_id,

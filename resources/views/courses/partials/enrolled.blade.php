@@ -1,52 +1,51 @@
 <div>
-    {{-- コースヘッダー画像 --}}
-    <div class="mb-3">
-        @if($course->image)
-            <img src="{{ asset('images/courses/' . $course->image) }}" 
-                 class="course-header-image rounded"
-                 alt="{{ $course->title }}">
-        @else
-            <div class="bg-secondary text-white text-center p-5 rounded">
-                No Image
+                {{-- コース画像 --}}
+            <div class="mb-3">
+                <img src="{{ $course->display_image }}"
+                    class="course-header-image rounded"
+                    alt="{{ $course->title }}">
             </div>
-        @endif
-    </div>
+
 
             {{-- コースタイトル & アクション --}}
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <h3 class="fw-bold mb-0">{{ $course->title }}</h3>
 
-                <!-- Unenroll ボタンだけ置く -->
-                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#unenrollModal-{{ $course->id }}">
-                    Unenroll
-                </button>
+               {{-- 管理者のみ Unenroll ボタンを表示 --}}
+                @if(Auth::user() && Auth::user()->role_id === 1)
+                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#unenrollModal-{{ $course->id }}">
+                        Unenroll
+                    </button>
+                @endif
             </div>
 
-                <!-- モーダルはフレックスの外に配置 -->
-                <div class="modal fade" id="unenrollModal-{{ $course->id }}" tabindex="-1" aria-labelledby="unenrollModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="unenrollModalLabel">Confirm Unenroll</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        Are you sure you want to unenroll from <strong>{{ $course->title }}</strong>?
-                    </div>
-                    <div class="modal-footer">
-                        <form action="{{ route('courses.unenroll', $course->id) }}" method="POST">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger">Yes, Unenroll</button>
-                        </form>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    </div>
-                    </div>
-                </div>
-                </div>
-
+                {{-- 管理者用 Unenroll モーダル --}}
+                    @if(Auth::user() && Auth::user()->role_id === 1)
+                        <div class="modal fade" id="unenrollModal-{{ $course->id }}" tabindex="-1" aria-labelledby="unenrollModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="unenrollModalLabel">Confirm Unenroll</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Are you sure you want to unenroll from <strong>{{ $course->title }}</strong>?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <form action="{{ route('courses.unenroll', $course->id) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger">Yes, Unenroll</button>
+                                        </form>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+                    @endif
 
+                    </div>
+                        {{-- コース進捗 --}}
                         <p class="text-muted">Overall Progress: {{ $coursePercent }}%</p>
                         <div class="progress mb-4" style="height:8px;">
                             <div class="progress-bar bg-info" style="width: {{ $coursePercent }}%;"></div>
@@ -55,7 +54,7 @@
 
     {{-- セクションごとのアコーディオン --}}
     <div class="accordion mt-3" id="courseAccordion">
-        @foreach($course->sections as $sectionIndex => $section)
+        @foreach($course->sections ?? [] as $sectionIndex => $section)
             <div class="accordion-item">
                 <h2 class="accordion-header" id="heading{{ $section->id }}">
                     <button class="accordion-button collapsed" type="button" 

@@ -79,6 +79,7 @@ public function show(Request $request)
 
     return response()->json($events);
 }
+
 // ---- 単体削除（Open のみ物理削除 / Booked はNG）----
     public function destroy($id)
     {
@@ -102,7 +103,7 @@ public function show(Request $request)
         'to'    => ['sometimes','regex:/^\d{2}:\d{2}(:\d{2})?$/'],
     ]);
 
-    $tz     = config('app.timezone', 'Asia/Tokyo');
+    $tz     = config('app.timezone', 'Asia/Manila');
     $today  = now($tz)->toDateString();        // 'Y-m-d'
     $nowHms = now($tz)->format('H:i:s');       // 'H:i:s'
 
@@ -165,13 +166,13 @@ public function cancelBooked(Request $request, $id)
     $report->save();
 
     // 生徒に通知（例：メール）
-    $student = \App\Models\User::find($booking->student_id);
-    if ($student && $student->email) {
-        \Mail::raw(
-            "Your lesson was canceled by the teacher.\nDate: {$booking->date}\nTime: {$booking->time}\nReason: {$data['reason']}",
-            fn($m) => $m->to($student->email)->subject('Lesson canceled')
-        );
-    }
+    // $student = \App\Models\User::find($booking->student_id);
+    // if ($student && $student->email) {
+    //     \Mail::raw(
+    //         "Your lesson was canceled by the teacher.\nDate: {$booking->date}\nTime: {$booking->time}\nReason: {$data['reason']}",
+    //         fn($m) => $m->to($student->email)->subject('Lesson canceled')
+    //     );
+    // }
 
     // 予約レコードは削除しない（reports.status でキャンセル扱いを判定）
     return response()->json(['canceled' => true]);

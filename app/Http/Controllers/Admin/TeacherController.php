@@ -1,39 +1,65 @@
 <?php
-
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Models\Student;
-use App\Models\Teacher;
+use App\Models\User;
 use App\Models\Course;
-use App\Models\Forum;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
 
 class TeacherController extends Controller
 {
     public function index()
     {
-        // 件数
-        $studentsCount = Student::count();
-        $teachersCount = Teacher::count();
-        $coursesCount  = Course::count();
-        $forumsCount   = Forum::count();
+        // role_id = 2 のユーザーだけを新しい順で一覧
+        $teachers = User::where('role_id', 2)
+            ->with(['coursesTaught:id,title'])   
+            ->withCount('coursesTaught')
+            ->orderByDesc('id')   // latest() でもOK
+            ->paginate(10);
 
-        // 直近データ
-        $latestStudents = Student::latest()->select('id','name')->take(5)->get();
-        $latestTeachers = Teacher::latest()->select('id','name')->take(5)->get();
-        $latestCourses  = Course::latest()->select('id','name')->take(5)->get();
+        return view('admin.teachers.index', compact('teachers'));
+    }
 
-        // Forum はカラム直読み（course名/usernameが別テーブルなら後でwithに変更）
-        $latestForums = Forum::latest()->select('id','question','course','username')->take(4)->get()
-            ->map(fn($f) => [
-                'question' => $f->question ?? 'Question',
-                'course'   => $f->course   ?? 'Course',
-                'username' => $f->username ?? 'Username',
-            ]);
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:8'],
+        ]);
 
-        return view('admin.teachers.index', compact(
-            'studentsCount','teachersCount','coursesCount','forumsCount',
-            'latestStudents','latestTeachers','latestCourses','latestForums'
-        ));
+        User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+            'role_id' => 2,  // Teacher
+        ]);
+
+        return redirect()
+            ->route('admin.teachers.index')
+            ->with('status', 'Teacher added.'); // ← Blade とキーを合わせる
+    }
+
+    public function attach(Request $request, User $user)
+    {
+        $this->authorize('admin-only');
+
+        $data = $request->validate([
+            'course_id' => ['required','exists:courses,id'],
+        ]);
+
+        $user->courses()->syncWithoutDetaching([$data['course_id']]);
+
+        return back()->with('status', 'Course added.');
+    }
+
+    public function detach(User $user, Course $course)
+    {
+        $this->authorize('admin-only');
+
+        $user->courses()->detach($course->id);
+
+        return back()->with('status', 'Course removed.');
     }
 }

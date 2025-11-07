@@ -96,8 +96,8 @@
         {{-- 左：プレビュー (コース全体の通しページ番号を表示) --}}
         <div class="col-md-2 border-end p-2 preview-sidebar">
             @php $globalPageNumber = 0; @endphp
-            @foreach($course->sections as $section)
-                @foreach($section->lessons as $lesson)
+            @foreach($course->topics as $topic)
+                @foreach($topic->lessons as $lesson)
                     @for($p = 1; $p <= $lesson->pages; $p++)
                         @php
                             $globalPageNumber++;
@@ -132,8 +132,8 @@
             </div>
 
             <div id="lessonContainer">
-                @foreach($course->sections as $section)
-                    @foreach($section->lessons as $lesson)
+                @foreach($course->topics as $topic)
+                    @foreach($topic->lessons as $lesson)
                         @for($p = 1; $p <= $lesson->pages; $p++)
                             <div class="lesson-item mb-4 p-3 rounded shadow"
                                  data-lesson-id="{{ $lesson->id }}"
@@ -161,14 +161,14 @@
         <div class="col-md-3 border-start bg-white p-3" style="min-height:100vh; overflow-y:auto;">
             <h5 class="fw-bold mb-3">Table of contents</h5>
             <div class="accordion" id="textAccordion">
-                @foreach($course->sections as $sIndex => $section)
+                @foreach($course->topics as $sIndex => $topic)
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingText{{ $sIndex }}">
                             <button class="accordion-button {{ $sIndex>0?'collapsed':'' }}" type="button"
                                     data-bs-toggle="collapse" data-bs-target="#collapseText{{ $sIndex }}">
-                                {{ $loop->iteration }}. {{ $section->title }}
+                                {{ $loop->iteration }}. {{ $topic->title }}
                                 <span class="ms-auto small text-muted">
-                                    {{ $section->lessons->count() }} lessons ・ {{ $section->lessons->sum('pages') }} pages
+                                    {{ $topic->lessons->count() }} lessons ・ {{ $topic->lessons->sum('pages') }} pages
                                 </span>
                             </button>
                         </h2>
@@ -177,7 +177,7 @@
                              data-bs-parent="#textAccordion">
                             <div class="accordion-body">
                                 <ul class="list-unstyled">
-                                    @foreach($section->lessons as $lesson)
+                                    @foreach($topic->lessons as $lesson)
                                     <li class="mb-2 d-flex align-items-center">
                                         <i class="lesson-status-icon me-2 {{ auth()->user()->completedLessons->contains($lesson->id)?'fa-solid fa-check-circle text-success':'fa-regular fa-circle text-muted' }}" 
                                            data-lesson-id="{{ $lesson->id }}"></i>

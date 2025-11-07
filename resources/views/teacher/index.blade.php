@@ -6,9 +6,24 @@
     <section class="container py-3">
         {{-- CSRF（fetch用） --}}
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        @if (!$hasMeetingUrl)
+            <div class="alert alert-warning py-2 px-3 mb-2">
+                To open a slot, set your meeting URL in <strong>Profile</strong>.
+            </div>
+        @endif
 
-        {{-- Bulk Delete toolbar --}}
-        <div class="d-flex justify-content-end mb-3">
+        <!-- Toolbar row: Left = Legend, Right = Bulk delete -->
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+            <!-- Legend (left/top) -->
+            <div id="tcLegend" class="d-flex flex-wrap align-items-center gap-2">
+                <span class="legend-item"><span class="legend-dot" style="--c:#0d6efd"></span> Open</span>
+                <span class="legend-item"><span class="legend-dot" style="--c:#d63384"></span> Scheduled</span>
+                <span class="legend-item"><span class="legend-dot" style="--c:#111827"></span> Teacher-canceled</span>
+                <span class="legend-item"><span class="legend-dot" style="--c:#16a34a"></span> Report submitted</span>
+                <span class="legend-item"><span class="legend-dot" style="--c:#6c757d"></span> Report pending</span>
+            </div>
+
+            <!-- Bulk delete (right/top) -->
             <button id="btn-open-bulk-range" type="button" class="btn btn-outline-danger">
                 Bulk delete
             </button>
@@ -68,7 +83,10 @@
                         <div class="row g-2">
                             <div class="col-md-6">
                                 <div class="small text-muted">Student</div>
-                                <div id="rpt-student" class="fw-semibold">—</div>
+                                <div class="fw-semibold">
+                                    <a id="rpt-student-link" href="javascript:void(0)"
+                                        class="link-dark text-decoration-none disabled-link">—</a>
+                                </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="small text-muted">Date</div>
@@ -85,7 +103,10 @@
                         <div class="row g-2">
                             <div class="col-md-6">
                                 <div class="small text-muted">Course</div>
-                                <div id="rpt-course" class="fw-semibold">—</div>
+                                <div class="fw-semibold">
+                                    <a id="rpt-course-link" href="javascript:void(0)"
+                                        class="link-dark text-decoration-none disabled-link">—</a>
+                                </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="small text-muted">Topic</div>
@@ -98,21 +119,28 @@
                             <select id="rpt-status-select" class="form-select" required>
                                 <option value="">—</option>
                                 {{-- <option value="scheduled">scheduled</option> --}}
-                                <option value="attended">attended</option>
-                                <option value="absent">absent</option>
+                                <option value="Attended">Attended</option>
+                                <option value="Absent">Absent</option>
                                 {{-- <option value="canceled by student">canceled by student</option> --}}
-                                <option value="canceled by teacher">canceled by teacher</option> {{-- ★ 要望の選択肢 --}}
-                                <option value="others">others</option> {{-- ★ 要望の選択肢 --}}
+                                <option value="Canceled by teacher">Canceled by teacher</option> {{-- ★ 要望の選択肢 --}}
+                                <option value="Others">Others</option> {{-- ★ 要望の選択肢 --}}
                             </select>
                         </div>
 
                         {{-- ★ Next topic（候補は id 昇順のリスト）。保存は「テキスト」で reports.next_topic に入れます --}}
-                        <div class="mt-3">
+                        <div class="mt-3" id="rpt-next-topic-wrap">
                             <label for="rpt-next-topic" class="form-label fw-semibold">Next topic</label>
-                            <select id="rpt-next-topic" class="form-select" required>
-                                {{-- JS で id 昇順に埋め込む。値は「topic_name（タイトル）」をセット --}}
-                            </select>
-                            <div class="form-text">Default = current topic. Options are ordered by id asc.</div>
+                            <select id="rpt-next-topic" class="form-select" required></select>
+
+                            <!-- 既存の補足テキスト（通常時に表示） -->
+                            <div id="rpt-next-topic-hint" class="form-text">
+                                Default = current topic. Options are ordered by id asc.
+                            </div>
+
+                            <!-- キャンセル時（Canceled by teacher）だけ表示するメッセージ -->
+                            <div id="rpt-next-topic-msg" class="small text-muted d-none">
+                                Next topic is not required when the lesson is <strong>Canceled by teacher</strong>.
+                            </div>
                         </div>
 
                         <div class="mt-3">
@@ -139,9 +167,11 @@
             data-destroy-url="{{ route('teachers.bookings.destroy', ['id' => '__ID__']) }}"
             data-bulkdel-url="{{ route('teachers.bookings.bulkDelete') }}"
             data-cancel-url="{{ route('teachers.bookings.cancel', ['id' => '__ID__']) }}"
-            data-report-url="{{ route('teachers.reports.show', ['booking' => '__ID__']) }}" {{-- ★追加：取得 --}}
-            data-report-update-url="{{ route('teachers.reports.update', ['booking' => '__ID__']) }}" {{-- ★追加：保存 --}}
-            style="min-height: 500px;"></div>
+            data-report-url="{{ route('teachers.reports.show', ['booking' => '__ID__']) }}"
+            data-report-update-url="{{ route('teachers.reports.update', ['booking' => '__ID__']) }}"
+            data-student-url="{{ route('students.profile.show', ['user' => '__ID__']) }}"
+            data-course-url="{{ route('courses.show', ['course' => '__ID__']) }}"
+            data-has-meeting-url="{{ $hasMeetingUrl ? 1 : 0 }}" style="min-height: 500px;"></div>
     </section>
 @endsection
 
@@ -192,13 +222,38 @@
             color: #6c757d;
         }
 
-        /* 1時間の高さを統一（必要なら値を調整） */
-        /* #teacherWeekCal .fc .fc-timegrid-slot,
-                                                                                            #teacherWeekCal .fc .fc-timegrid-slot-lane{ height:6em; } */
-        /* 1時間の高さをさらに大きく（例：7.5em） */
-        /* #teacherWeekCal {
-                                                                                          --fc-timegrid-slot-min-height: 7.5em;
-                                                                                        } */
+        /* 1時間コマを強制的に大きくする */
+        #teacherWeekCal .fc-timegrid-slot,
+        #teacherWeekCal .fc-timegrid-slot-lane {
+            height: 2.5rem !important;
+            /* お好みで 5.5〜8rem */
+            min-height: 2.5rem !important;
+            line-height: 2.5rem !important;
+            /* 目盛りの縦位置がズレる時の保険 */
+        }
+
+        /* スクロールが抑え込まれていないかの保険 */
+        #teacherWeekCal .fc-scroller {
+            overflow-y: auto !important;
+        }
+
+        #tcLegend .legend-item {
+            font-size: .85rem;
+            color: #000;
+            display: inline-flex;
+            align-items: center;
+            gap: .35rem;
+            white-space: nowrap;
+        }
+
+        #tcLegend .legend-dot {
+            width: .8rem;
+            height: .8rem;
+            border-radius: 999px;
+            background: var(--c, #6c757d);
+            box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .18);
+            display: inline-block;
+        }
     </style>
 @endpush
 
@@ -209,11 +264,14 @@
         document.addEventListener('DOMContentLoaded', () => {
             const el = document.getElementById('teacherWeekCal');
             const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            const hasMeetingUrl = (el.dataset.hasMeetingUrl === '1');
             const feed = el.dataset.feedUrl;
             const store = el.dataset.storeUrl;
             const delTpl = el.dataset.destroyUrl; // .../__ID__
             const bulk = el.dataset.bulkdelUrl;
             const cancelTpl = el.dataset.cancelUrl; // .../__ID__/cancel
+            const studentUrlTpl = el.dataset.studentUrl || '';
+            const courseUrlTpl = el.dataset.courseUrl || '';
 
             const ONE_HOUR_MS = 60 * 60 * 1000;
             const nowLocal = () => new Date();
@@ -234,45 +292,73 @@
                 return out;
             };
 
+            // ステータスの全候補（値と表示ラベル）
+            const ALL_STATUS_OPTIONS = [{
+                    value: 'Attended',
+                    label: 'Attended'
+                },
+                {
+                    value: 'Absent',
+                    label: 'Absent'
+                },
+                {
+                    value: 'Canceled by teacher',
+                    label: 'Canceled by teacher'
+                },
+                {
+                    value: 'Others',
+                    label: 'Others'
+                },
+            ];
+
+            const PAST_STATUS_OPTIONS = ALL_STATUS_OPTIONS.filter(
+                o => o.value !== 'Canceled by teacher'
+            );
+
+            function setStatusOptions(selectEl, options) {
+                // 先頭のプレースホルダ
+                selectEl.innerHTML = '<option value="">—</option>';
+                for (const opt of options) {
+                    const o = document.createElement('option');
+                    o.value = opt.value;
+                    o.textContent = opt.label;
+                    selectEl.appendChild(o);
+                }
+            }
+
             const calendar = new FullCalendar.Calendar(el, {
                 themeSystem: 'bootstrap5',
-                // timeZone: 'local',
                 initialView: 'timeGridWeek',
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
                     right: 'timeGridWeek,timeGridDay,dayGridMonth'
                 },
-                /* ここはそのまま（all-day を出さない） */
-                allDaySlot: false,
 
-                /* 赤線の表示 */
+                // ▼ スクロールさせるために高さ“固定”
+                height: 680, // ← 全体の高さ。好みで 600〜800
+                // contentHeight: 750,      // ← 使わない（どちらか一方にする）
+                expandRows: false, // ← これが true だと伸びてしまいスクロールしにくい
+
+                // ▼ 時間帯・表示
+                allDaySlot: false,
                 nowIndicator: true,
-                contentHeight: 750, // ← 自動に
-                expandRows: true,
                 slotMinTime: '06:00:00',
                 slotMaxTime: '24:00:00',
                 slotDuration: '01:00:00',
                 snapDuration: '01:00:00',
-                selectable: true,
-                selectMirror: true,
-                selectOverlap: false,
                 slotLabelInterval: {
                     hours: 1
                 },
 
+                // ▼ 初期スクロール位置（開いた瞬間の位置）
+                scrollTime: '06:00:00',
+
+                selectable: true,
+                selectMirror: true,
+                selectOverlap: false,
                 views: {
-                    dayGridMonth: {
-                        // ✅ Monthでも 24h 表記に統一（例: 03:00）
-                        eventTimeFormat: {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            hour12: false
-                        },
-                        displayEventEnd: true
-                    },
                     timeGridWeek: {
-                        // 念のため明示（既に同設定なら省略可）
                         eventTimeFormat: {
                             hour: '2-digit',
                             minute: '2-digit',
@@ -285,6 +371,14 @@
                             minute: '2-digit',
                             hour12: false
                         }
+                    },
+                    dayGridMonth: {
+                        eventTimeFormat: {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: false
+                        },
+                        displayEventEnd: true
                     }
                 },
 
@@ -293,11 +387,19 @@
                 selectAllow(span) {
                     const isMonth = calendar.view?.type === 'dayGridMonth';
                     if (isMonth) return false; // ← 月表示では新規作成不可
+                    if (!hasMeetingUrl) return false;
                     return span.start.getTime() >= nowLocal().getTime();
                 },
 
                 // 複数枠作成
                 select(info) {
+
+                    // ★追加：URL未設定なら何もしない（メッセージ表示して解除）
+                    if (!hasMeetingUrl) {
+                        alert('To open a slot, set your meeting URL in Profile.');
+                        calendar.unselect();
+                        return;
+                    }
                     const times = hoursBetween(info.start, info.end);
                     if (!times.length) return calendar.unselect();
 
@@ -320,10 +422,40 @@
                 // クリックで削除/取消
                 eventClick(arg) {
                     const id = arg.event.id;
-                    const isBooked = !!arg.event.extendedProps?.student_id;
+                    const ep = arg.event.extendedProps || {};
+                    const isBooked = !!ep.student_id;
+                    const hasReport = ep.has_report === true;
 
-                    if (!isBooked) {
-                        // Open → 即削除
+                    // 将来 Others など、APIが返せない時のための即時プレフィル用
+                    const fallback = {
+                        student: ep.student_name || null,
+                        course: ep.course_title || null,
+                        topic: ep.topic_name || null,
+                        start: arg.event.start || null,
+                        end: arg.event.end || null,
+                    };
+
+                    // ▼ 過去の「Canceled by teacher」はモーダルを開かない
+                    const ONE_HOUR_MS = 60 * 60 * 1000;
+                    const start = arg.event.start;
+                    const end = arg.event.end ?? new Date(start.getTime() + ONE_HOUR_MS);
+                    const isPast = end.getTime() < Date.now();
+
+                    const statusRaw = ep.report_status ?? '';
+                    const status = typeof statusRaw === 'string' ? statusRaw.trim().toLowerCase() : '';
+
+                    if (hasReport && status === 'canceled by teacher' && isPast) {
+                        return; // 何もしない（モーダルを開かない）
+                    }
+
+                    if (!isBooked && !hasReport && isPast) {
+                        return;
+                    }
+
+                    if (hasReport || isBooked) {
+                        // ← ここがポイント：fallback を渡す
+                        openReportModal(id, fallback);
+                    } else {
                         const url = delTpl.replace('__ID__', id);
                         if (!confirm('Delete this open slot?')) return;
                         fetch(url, {
@@ -334,9 +466,6 @@
                                 }
                             })
                             .then(() => calendar.refetchEvents());
-                    } else {
-                        // Booked → Report モーダルを開く
-                        openReportModal(id);
                     }
                 },
 
@@ -346,6 +475,7 @@
                 }],
 
                 eventDidMount(info) {
+                    const ONE_HOUR_MS = 60 * 60 * 1000;
                     const start = info.event.start;
                     const end = info.event.end ?? new Date(start.getTime() + ONE_HOUR_MS);
                     const isPast = end.getTime() < Date.now();
@@ -353,8 +483,9 @@
 
                     const hasReport = info.event.extendedProps?.has_report === true;
                     const statusRaw = info.event.extendedProps?.report_status ?? '';
-                    const status = typeof statusRaw === 'string' ? statusRaw.toLowerCase() : '';
+                    const status = typeof statusRaw === 'string' ? statusRaw.trim().toLowerCase() : '';
 
+                    // FCの既定装飾をリセット
                     const wrap = info.el;
                     const main = info.el.querySelector('.fc-event-main');
                     if (main) {
@@ -364,29 +495,57 @@
                         main.style.padding = '0';
                     }
 
-                    let bg, brd;
+                    // ==== ここがポイント：色マップ ====
+                    // open → 青(#0d6efd)
+                    // booked → ピンク(#d63384)
+                    // canceled by teacher → 黒(#111827)
+                    // report submitted → 緑(#16a34a)
+                    // report not submitted → 灰(#6c757d)
+                    const palette = {
+                        open: {
+                            bg: '#0d6efd',
+                            brd: '1px solid rgba(13,110,253,.90)'
+                        }, // 青
+                        booked: {
+                            bg: '#d63384',
+                            brd: '1px solid #c12d76'
+                        }, // ピンク
+                        cancel: {
+                            bg: '#111827',
+                            brd: '1px solid #0b1220'
+                        }, // 黒
+                        done: {
+                            bg: '#16a34a',
+                            brd: '1px solid #166534'
+                        }, // 緑
+                        second: {
+                            bg: '#6c757d',
+                            brd: '1px solid #5c636a'
+                        }, // 灰
+                    };
 
+                    // 優先度:
+                    // 1) hasReport && status === 'canceled by teacher' → 黒
+                    // 2) hasReport → 緑
+                    // 3) isPast && !hasReport && isBooked → 灰（報告未提出）
+                    // 4) isBooked（未来 & 未提出） → ピンク
+                    // 5) それ以外（Open） → 青
+                    let col;
                     if (hasReport && status === 'canceled by teacher') {
-                        // ★ 講師キャンセルは赤
-                        bg = '#dc3545'; // Bootstrap danger
-                        brd = '1px solid #bb2d3b';
+                        col = palette.cancel;
                     } else if (hasReport) {
-                        // ★ レポートあり（通常）は緑
-                        bg = '#198754'; // Bootstrap success
-                        brd = '1px solid #157347';
-                    } else if (isPast) {
-                        bg = 'rgba(108,117,125,1)'; // gray for past
-                        brd = '1px solid rgba(108,117,125,.9)';
+                        col = palette.done;
+                    } else if (isPast && isBooked) {
+                        col = palette.second;
                     } else if (isBooked) {
-                        bg = '#d63384'; // booked (no report yet): pink
-                        brd = '1px solid #c12d76';
+                        col = palette.booked;
                     } else {
-                        bg = '#0d6efd'; // open: blue
-                        brd = '1px solid rgba(13,110,253,.9)';
+                        col = palette.open;
                     }
 
-                    wrap.style.setProperty('background', bg, 'important');
-                    wrap.style.setProperty('border', brd, 'important');
+                    // 適用
+                    wrap.style.setProperty('background', col.bg, 'important');
+                    wrap.style.setProperty('border', col.brd, 'important');
                     wrap.style.borderRadius = '.5rem';
                     wrap.style.padding = '.12rem .32rem';
                     wrap.style.fontWeight = '600';
@@ -416,10 +575,10 @@
                     let labelText;
                     if (reportStatus) {
                         // 学生名があれば「学生名 · status」、なければ「status」のみ
-                        labelText = `${reportStatus}`;
+                        labelText = toTitleCase(reportStatus);
                     } else {
                         // reportなし：学生名があればそれ、無ければ Booked/Open
-                        labelText = (isBooked ? 'Booked' : 'Open');
+                        labelText = (isBooked ? 'Scheduled' : 'Open');
                     }
 
                     label.textContent = labelText;
@@ -577,6 +736,12 @@
             const reportModalEl = document.getElementById('reportModal');
             const reportModal = reportModalEl ? new bootstrap.Modal(reportModalEl) : null;
 
+            // ステータス変更で Next topic を制御
+            document.getElementById('rpt-status-select')?.addEventListener('change', (e) => {
+                const val = String(e.target.value || '').trim().toLowerCase();
+                setNextTopicDisabled(val === 'canceled by teacher');
+            });
+
             async function openReportModal(bookingId) {
                 if (!reportTpl || !reportModal) return;
 
@@ -592,100 +757,205 @@
 
                     // 基本情報
                     document.getElementById('rpt-booking-id').value = j.booking?.id ?? bookingId;
-                    document.getElementById('rpt-student').textContent = j.student?.name ?? '—';
+                    // document.getElementById('rpt-student').textContent = j.student?.name ?? '—';
                     document.getElementById('rpt-date').textContent = j.booking?.date ?? '—';
                     document.getElementById('rpt-time').textContent =
                         (j.booking?.start && j.booking?.end) ? `${j.booking.start} – ${j.booking.end}` : '—';
-                    document.getElementById('rpt-course').textContent = j.course?.title ?? '—';
-                    document.getElementById('rpt-topic').textContent = j.topic?.name ?? '—'; // ← 表示はname
+                    // document.getElementById('rpt-course').textContent = j.course?.title ?? '—';
+                    document.getElementById('rpt-topic').textContent = j.topic?.name ?? '—';
+
+                    // 未来判定
+                    const startStr = (j.booking?.start ?? '00:00'); // "HH:MM"
+                    const startDT = new Date(`${j.booking?.date}T${startStr}:00`);
+                    const isFuture = isFinite(startDT) && startDT.getTime() > Date.now();
+
+                    const statusSelect = document.getElementById('rpt-status-select');
+
+                    if (isFuture) {
+                        // 未来枠：Canceled by teacher のみ
+                        setStatusOptions(
+                            statusSelect,
+                            ALL_STATUS_OPTIONS.filter(o => o.value === 'Canceled by teacher')
+                        );
+                        statusSelect.value = 'Canceled by teacher';
+                    } else {
+                        // ★ 過去枠：Canceled by teacher を選択肢から除外
+                        setStatusOptions(statusSelect, PAST_STATUS_OPTIONS);
+
+                        // 既存レポートの値があれば反映、無ければ空（—）
+                        const wanted = j.report?.status ?? '';
+                        // “Canceled by teacher” だった場合は選択肢に存在しないので空にする
+                        statusSelect.value = [...statusSelect.options].some(o => o.value === wanted) ? wanted :
+                            '';
+                    }
+
+                    // ここで Next topic の有効/無効を反映
+                    {
+                        const val = String(statusSelect.value || '').trim().toLowerCase();
+                        setNextTopicDisabled(val === 'canceled by teacher'); // 過去はそもそも false になる
+                    }
+
+                    {
+                        const val = String(statusSelect.value || '').trim().toLowerCase();
+                        setNextTopicDisabled(val === 'canceled by teacher');
+                    }
 
                     // ステータス / フィードバック
-                    document.getElementById('rpt-status-select').value = j.report?.status ?? '';
+                    // const wanted = j.report?.status ?? '';
+                    // statusSelect.value = [...statusSelect.options].some(o => o.value === wanted) ? wanted : '';
                     document.getElementById('rpt-feedback').value = j.report?.feedback ?? '';
 
-                    // 次回トピックの選択肢（コースに紐づくもののみ）
+                    // 次回トピック選択肢
                     const preferredId = j.preferred_topic_id ?? null;
                     fillNextTopicSelect(j.topics ?? [], preferredId);
 
+                    // 学生・コース
+                    const student = j.student || null;
+                    const course = j.course || null;
+
+                    // Studentリンク
+                    const sLink = document.getElementById('rpt-student-link');
+                    if (sLink) {
+                        if (student && student.name) {
+                            sLink.textContent = student.name;
+
+                            // ルートテンプレ & id が揃っていればリンク有効化
+                            if (studentUrlTpl && student.id) {
+                                sLink.href = studentUrlTpl.replace('__ID__', student.id);
+                                sLink.classList.remove('disabled-link');
+                            } else {
+                                sLink.href = 'javascript:void(0)';
+                                sLink.classList.add('disabled-link'); // クリック不可だが名前は表示
+                            }
+                        } else {
+                            sLink.textContent = '—';
+                            sLink.href = 'javascript:void(0)';
+                            sLink.classList.add('disabled-link');
+                        }
+                    }
+
+                    // Courseリンク
+                    const cLink = document.getElementById('rpt-course-link');
+                    if (cLink) {
+                        if (course && course.title) {
+                            cLink.textContent = course.title;
+
+                            if (courseUrlTpl && course.id) {
+                                cLink.href = courseUrlTpl.replace('__ID__', course.id);
+                                cLink.classList.remove('disabled-link');
+                            } else {
+                                cLink.href = 'javascript:void(0)';
+                                cLink.classList.add('disabled-link');
+                            }
+                        } else {
+                            cLink.textContent = '—';
+                            cLink.href = 'javascript:void(0)';
+                            cLink.classList.add('disabled-link');
+                        }
+                    }
+
                 } catch (e) {
                     console.error(e);
+                    alert('Failed to fetch report.');
+                    return;
                 } finally {
                     reportModal.show();
                 }
             }
 
             function fillNextTopicSelect(options, preferredId) {
-  const sel = document.getElementById('rpt-next-topic');
-  sel.innerHTML = '';
+                const sel = document.getElementById('rpt-next-topic');
+                sel.innerHTML = '';
 
-  // 先頭のプレースホルダ（必須化に効く）
-  const ph = document.createElement('option');
-  ph.value = '';
-  ph.textContent = '— Select next topic —';
-  ph.disabled = true; ph.selected = true; ph.hidden = true;
-  sel.appendChild(ph);
+                // 先頭のプレースホルダ（必須化に効く）
+                const ph = document.createElement('option');
+                ph.value = '';
+                ph.textContent = '— Select next topic —';
+                ph.disabled = true;
+                ph.selected = true;
+                ph.hidden = true;
+                sel.appendChild(ph);
 
-  for (const t of options) {
-    const opt = document.createElement('option');
-    opt.value = String(t.id);           // 値はID
-    opt.textContent = t.name ?? '';
-    sel.appendChild(opt);
-  }
+                for (const t of options) {
+                    const opt = document.createElement('option');
+                    opt.value = String(t.id); // 値はID
+                    opt.textContent = t.name ?? '';
+                    sel.appendChild(opt);
+                }
 
-  // もし初期選択させたいなら、ここでselectedをセット
-  if (preferredId != null) {
-    sel.value = String(preferredId);
-  }
-}
+                // ★ 必ずどれかが選ばれるようにする
+                if (preferredId != null && options.some(o => String(o.id) === String(preferredId))) {
+                    sel.value = String(preferredId); // 優先候補
+                } else if (options.length > 0) {
+                    sel.value = String(options[0].id); // 先頭候補にフォールバック
+                }
+
+            }
 
             const reportForm = document.getElementById('report-form');
 
-document.getElementById('btn-save-report')?.addEventListener('click', async () => {
-  // 1) HTML5バリデーション（一括）
-  if (!reportForm.checkValidity()) {
-    // 入力エラーのある項目をブラウザが強調表示
-    reportForm.reportValidity();
-    return;
-  }
+            document.getElementById('btn-save-report')?.addEventListener('click', async () => {
+                if (!reportForm.checkValidity()) {
+                    reportForm.reportValidity();
+                    return;
+                }
 
-  // 2) 値の取得（必須なのでnullは入れない）
-  const bookingId   = document.getElementById('rpt-booking-id').value;
-  const status      = document.getElementById('rpt-status-select').value;
-  const nextTopicId = parseInt(document.getElementById('rpt-next-topic').value, 10);
-  const feedback    = document.getElementById('rpt-feedback').value.trim();
+                const bookingId = document.getElementById('rpt-booking-id').value;
+                const status = document.getElementById('rpt-status-select').value;
+                const nextSel = document.getElementById('rpt-next-topic');
+                const isNextDisabled = nextSel?.disabled === true;
+                const feedback = document.getElementById('rpt-feedback').value.trim();
 
-  if (!reportUpdateTpl || !bookingId) return;
-  const url = reportUpdateTpl.replace('__ID__', bookingId);
+                if (!reportUpdateTpl || !bookingId) return;
+                const url = reportUpdateTpl.replace('__ID__', bookingId);
 
-  try {
-    const res = await fetch(url, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-TOKEN': csrf,
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify({
-        status,
-        feedback,
-        next_topic: nextTopicId
-      })
-    });
+                // ← ここで payload を条件付きで組む
+                const payload = {
+                    status,
+                    feedback
+                };
+                if (!isNextDisabled) {
+                    const nextTopicRaw = nextSel.value;
+                    if (!/^\d+$/.test(nextTopicRaw)) {
+                        alert('Please select a next topic.');
+                        nextSel.focus();
+                        return;
+                    }
+                    payload.next_topic = parseInt(nextTopicRaw, 10);
+                }
 
-    if (!res.ok) {
-      const j = await res.json().catch(() => ({}));
-      console.warn('report update error', j);
-      alert('Failed to save the report.');
-      return;
-    }
+                try {
+                    const res = await fetch(url, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrf,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
 
-    reportModal.hide();
-    calendar.refetchEvents();
-  } catch (e) {
-    console.error(e);
-    alert('A network error occurred.');
-  }
-});
+                    if (!res.ok) {
+                        let msg = 'Failed to save the report.';
+                        try {
+                            const text = await res.text();
+                            try {
+                                msg = JSON.parse(text).message || JSON.parse(text).error || text;
+                            } catch {
+                                msg = text || msg;
+                            }
+                        } catch {}
+                        alert(msg);
+                        return;
+                    }
+
+                    reportModal.hide();
+                    calendar.refetchEvents();
+                } catch (e) {
+                    console.error(e);
+                    alert('A network error occurred.');
+                }
+            });
 
             // Cancel booking（キャンセル理由→学生通知＋report に反映はサーバ側で実装）
             document.getElementById('btn-submit-cancel')?.addEventListener('click', async () => {
@@ -723,6 +993,42 @@ document.getElementById('btn-save-report')?.addEventListener('click', async () =
                     alert('Network error.');
                 }
             });
+
+            // Title Case（先頭語は必ず大文字。a, an, the, by などは中語なら小文字に）
+            const toTitleCase = (str) => {
+                if (!str) return '';
+                const SMALL = new Set(['a', 'an', 'the', 'and', 'or', 'but', 'for', 'nor', 'as', 'at', 'by',
+                    'for', 'from', 'in', 'into', 'near', 'of', 'on', 'onto', 'to', 'vs', 'via'
+                ]);
+                const words = String(str).toLowerCase().split(/\s+/);
+                return words.map((w, i) => {
+                    if (i === 0) return w.charAt(0).toUpperCase() + w.slice(1); // 先頭語は必ず大文字
+                    return SMALL.has(w) ? w : (w.charAt(0).toUpperCase() + w.slice(1));
+                }).join(' ');
+            };
+
+            function setNextTopicDisabled(disabled) {
+                const sel = document.getElementById('rpt-next-topic');
+                const hint = document.getElementById('rpt-next-topic-hint');
+                const msg = document.getElementById('rpt-next-topic-msg');
+                if (!sel) return;
+
+                // 入力制御
+                sel.disabled = !!disabled;
+
+                // required の出し入れ（無効時は必須を外す）
+                if (disabled) {
+                    sel.dataset.wasRequired = sel.hasAttribute('required') ? '1' : '0';
+                    sel.removeAttribute('required');
+                } else {
+                    if (sel.dataset.wasRequired !== '0') sel.setAttribute('required', '');
+                }
+
+                // 見た目：セレクト/通常ヒントは隠す、メッセージは出す
+                sel.classList.toggle('d-none', !!disabled);
+                hint?.classList.toggle('d-none', !!disabled);
+                msg?.classList.toggle('d-none', !disabled);
+            }
         });
     </script>
 @endpush

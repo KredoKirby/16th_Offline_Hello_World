@@ -69,7 +69,7 @@ unset($allQuery['status']);
     <a href="{{ route('courses.show', $c->id) }}" class="text-decoration-none text-dark">
         <div class="d-flex align-items-center mb-3 p-2 rounded border 
                     {{ $isSelected ? 'bg-light border-primary shadow-sm' : 'shadow-sm' }}">
-            <img src="{{ asset('images/courses/' . $c->image) }}" 
+            <img src="{{ $c->display_image }}"
                  alt="{{ $c->title }}"
                  class="rounded me-2" style="width:60px;height:60px;object-fit:cover;">
             <div class="flex-grow-1">
