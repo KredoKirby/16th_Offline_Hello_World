@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Topic;
+use App\Models\Course;
 use Illuminate\Http\Request;
 
 class CourseTopicController extends Controller
