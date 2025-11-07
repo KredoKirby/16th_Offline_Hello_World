@@ -252,7 +252,7 @@
 
                             {{-- <div class="row"> --}}
                             {{-- ▼ 先生選択アクション（常に表示） --}}
-                            <div id="teacherActions" class="mt-3">
+                            <div id="teacherActions" class="">
                                 <label class="form-label fw-semibold d-block mb-2">Teacher</label>
                                 <div class="d-flex gap-2 align-items-center">
                                     {{-- デフォルトで "Automatically assigned" 状態 --}}
