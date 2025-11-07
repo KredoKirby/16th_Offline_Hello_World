@@ -127,10 +127,10 @@ class CourseController extends Controller
         $course->delete();
 
         return redirect()->route('admin.courses')->with('success', 'Course deleted successfully!');
-    // ★ 追加（ここが重要！）★
+    }
+  
     public function show($id)
     {
-        // topics を一緒に取る
         $course = Course::with('topics')->findOrFail($id);
 
         return view('admin.courses.show', compact('course'));
