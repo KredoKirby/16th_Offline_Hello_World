@@ -119,10 +119,16 @@
         {{-- 右カラム --}}
         <div class="col-lg-3 col-12">
             {{-- Schedule --}}
-            <div class="dashboard-side-card mb-4">
-                <h6 class="fw-bold">Schedule</h6>
-                <img src="{{ asset('images/calendar.jpg') }}" class="img-fluid rounded" alt="calendar">
+            <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="rounded-3 border border-2 bg-light-subtle d-flex align-items-center justify-content-center"
+                    >
+                    <div class="text-center">
+                        <div class="h5 mb-1">Weekly Calendar</div>
+                    </div>
+                </div>
             </div>
+        </div>
 
           {{-- Recommended --}}
                 <div class="dashboard-side-card">
