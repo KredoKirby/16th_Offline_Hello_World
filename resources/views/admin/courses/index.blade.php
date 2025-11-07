@@ -22,7 +22,7 @@
         {{-- Body --}}
         <div class="accordion" id="coursesAccordion">
             @forelse ($courses as $course)
-                @php $isOpen = $loop->first; @endphp
+                @php $isOpen = request('open') == $course->id; @endphp
 
                 <div class="accordion-item border rounded-3 shadow-sm mb-3">
                     <h2 class="accordion-header" id="heading-{{ $course->id }}">
@@ -56,13 +56,14 @@
                                         {{ $course->title }}
                                     </a>
 
-                                    {{-- Toggle --}}
-                                    <form method="POST" action="{{ route('admin.courses.toggle', $course) }}"
-                                        class="ms-2 flex-shrink-0" onclick="event.stopPropagation();">
+                                    {{--  Toggle --}}
+                                    <form method="POST"
+                                          action="{{ route('admin.courses.toggle', $course) }}?open={{ $course->id }}"
+                                          class="ms-2 flex-shrink-0"
+                                          onclick="event.stopPropagation();">
                                         @csrf
                                         @method('PATCH')
-                                        <input type="hidden" name="to"
-                                            value="{{ $isCourseActive ? 'inactive' : 'active' }}">
+                                        <input type="hidden" name="to" value="{{ $isCourseActive ? 'deactive' : 'active' }}">
                                         <button type="submit"
                                             class="btn btn-sm rounded-pill px-3 {{ $isCourseActive ? 'btn-secondary' : 'btn-success' }}">
                                             {{ $isCourseActive ? 'Deactivate' : 'Activate' }}
@@ -85,76 +86,57 @@
                         </div>
                     </h2>
 
-                    {{-- Lessons --}}
+                    {{-- Topics --}}
                     <div id="collapse-{{ $course->id }}" class="accordion-collapse collapse {{ $isOpen ? 'show' : '' }}"
                         aria-labelledby="heading-{{ $course->id }}" data-bs-parent="#coursesAccordion">
                         <div class="accordion-body bg-white border-top">
-
                             <div class="table-responsive">
                                 <table class="table align-middle mb-0">
                                     <thead>
                                         <tr>
-                                            <th class="ps-4">Lesson</th>
+                                            <th class="ps-4">Topic</th>
                                             <th>Status</th>
                                             <th class="text-end">Action</th>
                                         </tr>
                                     </thead>
-
                                     <tbody>
-                                        @forelse ($course->lessons as $lesson)
-                                            @php
-                                                $isLessonActive = data_get($lesson, 'is_active');
-                                                if (is_null($isLessonActive)) {
-                                                    $raw = data_get($lesson, 'status');
-                                                    $isLessonActive = is_bool($raw)
-                                                        ? $raw
-                                                        : strtolower((string) $raw) === 'active' || (int) $raw === 1;
-                                                }
-                                            @endphp
+                                        @forelse ($course->topics as $topic)
+                                            @php $isTopicActive = (int) $topic->status === 1; @endphp
 
                                             <tr>
-                                                <td class="ps-4 fw-semibold w-50">{{ $lesson->title }}</td>
-
+                                                <td class="ps-4 fw-semibold w-50">
+                                                    {{ $topic->name ?? ($topic->title ?? 'Topic #' . $topic->id) }}
+                                                </td>
                                                 <td class="w-25">
-                                                    @if ($isLessonActive)
+                                                    @if ($isTopicActive)
                                                         <span class="text-success fw-semibold">● Active</span>
                                                     @else
                                                         <span class="text-secondary fw-semibold">● Inactive</span>
                                                     @endif
                                                 </td>
-
                                                 <td class="text-end">
-                                                    <form method="POST" action="{{ route('admin.lessons.toggle', $lesson) }}"
-                                                        class="d-inline" onclick="event.stopPropagation();">
+                                                    {{-- Topic Toggle --}}
+                                                    <form method="POST"
+                                                          action="{{ route('admin.topics.toggle', $topic) }}?open={{ $course->id }}"
+                                                          class="d-inline" onclick="event.stopPropagation();">
                                                         @csrf
                                                         @method('PATCH')
+                                                        <input type="hidden" name="to" value="{{ $isTopicActive ? 'deactive' : 'active' }}">
                                                         <button type="submit"
-                                                            class="btn btn-sm rounded-pill px-3 {{ $isLessonActive ? 'btn-secondary' : 'btn-success' }}">
-                                                            {{ $isLessonActive ? 'Deactivate' : 'Activate' }}
+                                                            class="btn btn-sm rounded-pill px-3 {{ $isTopicActive ? 'btn-secondary' : 'btn-success' }}">
+                                                            {{ $isTopicActive ? 'Deactivate' : 'Activate' }}
                                                         </button>
                                                     </form>
                                                 </td>
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="3" class="text-center text-muted py-3">
-                                                    No lessons yet.
-                                                </td>
+                                                <td colspan="3" class="text-center text-muted py-3">No topics yet.</td>
                                             </tr>
                                         @endforelse
                                     </tbody>
-
                                 </table>
                             </div>
-
-                            <div class="text-center p-3">
-                                <a href="{{ route('admin.courses.show', $course->id) }}"
-                                    class="btn fw-bold btn-sm rounded-pill px-4 btn-dark"
-                                    onclick="event.stopPropagation();">
-                                    Add a lesson
-                                </a>
-                            </div>
-
                         </div>
                     </div>
                 </div>

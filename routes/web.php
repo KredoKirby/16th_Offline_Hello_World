@@ -11,10 +11,13 @@ use App\Http\Controllers\Admin\StudentController as AdminStudentController;
 use App\Http\Controllers\Admin\CourseController as AdminCourseController;
 use App\Http\Controllers\Admin\CourseTopicController;
 //use App\Http\Controllers\Admin\ForumController as AdminForumController;
+use App\Http\Controllers\CourseController;
+use App\Http\Controllers\TopicController;
+use App\Http\Controllers\Admin\TeacherController;
 
 // Front/controllers
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\CourseController;
+// use App\Http\Controllers\CourseController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\ApiTestController;
 use App\Http\Controllers\BookingController;
@@ -59,7 +62,7 @@ Route::prefix('admin')->middleware('can:admin')->name('admin.')->group(function 
     Route::resource('students', AdminStudentController::class)->names('students');
     Route::resource('teachers', AdminTeacherController::class)->names('teachers');
     Route::resource('courses', AdminCourseController::class)->names('courses');
-    
+
     // Route::resource('forums', AdminForumController::class)->names('forums');
 
     // ── Teachers（明示ルートに統一） ─────
@@ -104,6 +107,14 @@ Route::prefix('admin')->middleware('can:admin')->name('admin.')->group(function 
     // Admin 内（prefix: admin, name: admin.）
     Route::patch('lessons/{lesson}/toggle', [LessonController::class, 'toggle'])
         ->name('lessons.toggle');   // フル名は admin.lessons.toggle
+
+    Route::patch('topics/{topic}/toggle', [CourseTopicController::class, 'toggle'])
+        ->name('topics.toggle'); // ← 追加
+    Route::patch('courses/toggle-all', [AdminCourseController::class, 'toggleAll'])
+        ->name('courses.toggleAll');
+        //teacher 
+    Route::patch('teachers/{teacher}/toggle', [AdminTeacherController::class, 'toggle'])
+        ->name('teachers.toggle');
 
 });
 
@@ -171,6 +182,8 @@ Route::prefix('courses')->group(function () {
         ->name('lessons.updateProgress');
     Route::post('/{course}/lessons/{lesson}/toggle', [LessonController::class, 'toggle'])
         ->name('lessons.toggle');
+    // Admin\CourseController 
+    Route::patch('courses/{course}/toggle', [AdminCourseController::class, 'toggle'])->name('courses.toggle');
 });
 
 //  Self-learning

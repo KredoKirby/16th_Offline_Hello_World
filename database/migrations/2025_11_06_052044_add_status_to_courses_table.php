@@ -5,20 +5,19 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    /**
-     * Run the migrations.
-     */
+
     public function up(): void
     {
-        Schema::table('teachers', function (Blueprint $table) {
-            $table->boolean('status')->default(1); // 1 = Active, 0 = Deactive
+        Schema::table('courses', function (Blueprint $table) {
+            $table->boolean('status')->default(1)->after('image');
         });
     }
 
     public function down(): void
     {
-        Schema::table('teachers', function (Blueprint $table) {
+        Schema::table('courses', function (Blueprint $table) {
             $table->dropColumn('status');
         });
     }
+
 };
