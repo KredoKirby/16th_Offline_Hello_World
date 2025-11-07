@@ -3,9 +3,10 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
@@ -20,9 +21,24 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'about',
         'password',
-        'role_id'
+        'role_id',
+        'meeting_url',
+        'avatar_path',
     ];
+
+    //   public function getAvatarUrlAttribute(): string
+    // {
+    //     if (!empty($this->avatar_path)) {
+    //         // avatar_path: "avatars/xxx.png" を想定
+    //         // → /storage/avatars/xxx.png に変換
+    //         return asset('storage/' . ltrim($this->avatar_path, '/'));
+    //     }
+
+    //     // 未設定時のデフォルト画像
+    //     return asset('images/default-avatar.png');
+    // }
 
     /**
      * The attributes that should be hidden for serialization.
