@@ -74,25 +74,34 @@ class Lesson extends Model
      * @return string|null URL
      */
     public function getThumbnail($pageIndex)
-    {
-        if (!$this->images || !isset($this->images[$pageIndex])) {
-            return null;
-        }
-
-        $original = public_path('images/lessons/' . $this->images[$pageIndex]);
-        $thumbDir = public_path('images/lessons/thumbs');
-
-        if (!File::exists($thumbDir)) {
-            File::makeDirectory($thumbDir, 0755, true);
-        }
-
-        $thumbPath = $thumbDir . '/' . $this->id . '_' . $pageIndex . '_thumb.png';
-
-        if (!File::exists($thumbPath)) {
-            $img = Image::make($original)->fit(50, 35);
-            $img->save($thumbPath);
-        }
-
-        return asset('images/lessons/thumbs/' . $this->id . '_' . $pageIndex . '_thumb.png');
+{
+    if (!$this->images || !isset($this->images[$pageIndex])) {
+        return null;
     }
+
+    $imageData = $this->images[$pageIndex];
+
+    // Base64形式ならそのまま返す
+    if (str_starts_with($imageData, 'data:image')) {
+        return $imageData;
+    }
+
+    // ファイル名なら通常の処理
+    $original = public_path('images/lessons/' . $imageData);
+    $thumbDir = public_path('images/lessons/thumbs');
+
+    if (!File::exists($thumbDir)) {
+        File::makeDirectory($thumbDir, 0755, true);
+    }
+
+    $thumbPath = $thumbDir . '/' . $this->id . '_' . $pageIndex . '_thumb.png';
+
+    if (!File::exists($thumbPath)) {
+        $img = Image::make($original)->fit(50, 35);
+        $img->save($thumbPath);
+    }
+
+    return asset('images/lessons/thumbs/' . $this->id . '_' . $pageIndex . '_thumb.png');
+}
+
 }

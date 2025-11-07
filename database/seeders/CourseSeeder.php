@@ -289,20 +289,21 @@ class CourseSeeder extends Seeder
         ]);
     }
 
-    private function encodeImages(array $filenames): array
-    {
-        $base64Array = [];
-        foreach ($filenames as $filename) {
-            $path = public_path('lessons/thumbs/' . $filename);
-            if (file_exists($path)) {
-                $mime = mime_content_type($path);
-                $base64Array[] = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($path));
-            } else {
-                $base64Array[] = null;
-            }
+   private function encodeImages(array $filenames): array
+{
+    $base64Array = [];
+    foreach ($filenames as $filename) {
+        $path = public_path('lessons/thumbs/' . $filename); 
+        if (file_exists($path)) {
+            $mime = mime_content_type($path);
+            $base64Array[] = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($path));
+        } else {
+            $base64Array[] = null;
         }
-        return $base64Array;
     }
+    return $base64Array;
+}
+
 
    
     private function encodeSingleImage(string $filename): ?string
