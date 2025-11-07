@@ -7,14 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Course extends Model
 {
-   //変更
+    //変更
     protected $table = 'courses';
     protected $fillable = ['title', 'description', 'image_url', 'language', 'level', 'image', 'category'];
 
     // コースに紐づくレッスン
     public function lessons()
     {
-          return $this->hasMany(\App\Models\Lesson::class, 'course_id')->orderBy('id');
+        return $this->hasMany(Lesson::class);
     }
 
 
@@ -54,35 +54,29 @@ class Course extends Model
         return $totalLessons > 0 ? round(($completedLessons / $totalLessons) * 100) : 0;
     }
 
-public function topics()
-{
-    // return $this->hasMany(Topic::class);
-     return $this->hasMany(\App\Models\Topic::class, 'course_id');
-}
-
-public function teachers()
-{
-    // 第2引数: テーブル名, 第3引数: 現在モデル側FK（course_id）, 第4引数: 相手側FK（teacher_id）
-    return $this->belongsToMany(User::class, 'teacher_course', 'course_id', 'teacher_id');
-}
-
-public function getDisplayImageAttribute()
-{
-    // Base64ならそのまま返す
-    if ($this->image && str_starts_with($this->image, 'data:image')) {
-        return $this->image;
+    public function teachers()
+    {
+        // 第2引数: テーブル名, 第3引数: 現在モデル側FK（course_id）, 第4引数: 相手側FK（teacher_id）
+        return $this->belongsToMany(User::class, 'teacher_course', 'course_id', 'teacher_id');
     }
 
-    // 通常のファイルパスならasset()で返す
-    if ($this->image && file_exists(public_path('images/courses/' . $this->image))) {
-        return asset('images/courses/' . $this->image);
+    public function getDisplayImageAttribute()
+    {
+        // Base64ならそのまま返す
+        if ($this->image && str_starts_with($this->image, 'data:image')) {
+            return $this->image;
+        }
+
+        // 通常のファイルパスならasset()で返す
+        if ($this->image && file_exists(public_path('images/courses/' . $this->image))) {
+            return asset('images/courses/' . $this->image);
+        }
+
+        // どちらもない場合はデフォルト画像
+        return asset('images/default-course.jpg');
     }
 
-    // どちらもない場合はデフォルト画像
-    return asset('images/default-course.jpg');
-}
-
- public function getImagePathAttribute()
+    public function getImagePathAttribute()
     {
         if ($this->image && str_starts_with($this->image, 'data:image')) {
             // base64文字列そのまま返す
@@ -96,6 +90,11 @@ public function getDisplayImageAttribute()
 
         // デフォルト画像
         return asset('images/courses/sample.jpg');
+    }
+
+    public function topics()
+    {
+        return $this->hasMany(Topic::class);
     }
 
 }

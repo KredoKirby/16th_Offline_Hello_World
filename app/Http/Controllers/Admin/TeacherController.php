@@ -12,7 +12,7 @@ class TeacherController extends Controller
     {
         // role_id = 2 のユーザーだけを新しい順で一覧
         $teachers = User::where('role_id', 2)
-            ->with(['coursesTaught:id,title'])   
+            ->with(['coursesTaught:id,title'])
             ->withCount('coursesTaught')
             ->orderByDesc('id')   // latest() でもOK
             ->paginate(10);
@@ -39,4 +39,16 @@ class TeacherController extends Controller
             ->route('admin.teachers.index')
             ->with('status', 'Teacher added.'); // ← Blade とキーを合わせる
     }
+
+    public function toggle(User $teacher)
+    {
+        // Teacher以外を誤って叩かれないようにガード
+        abort_if($teacher->role_id !== 2, 404);
+
+        $teacher->status = ($teacher->status === 'active') ? 'inactive' : 'active';
+        $teacher->save();
+
+        return back()->with('status', 'Status updated.');
+    }
+
 }
