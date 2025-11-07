@@ -328,6 +328,7 @@ class InstalledVersions
         self::$installedIsLocalDir = false;
     }
 
+<<<<<<< HEAD
     /**
      * @return string
      */
@@ -340,6 +341,8 @@ class InstalledVersions
         return self::$selfDir;
     }
 
+=======
+>>>>>>> main
     /**
      * @return array[]
      * @psalm-return list<array{root: array{name: string, pretty_version: string, version: string, reference: string|null, type: string, install_path: string, aliases: string[], dev: bool}, versions: array<string, array{pretty_version?: string, version?: string, reference?: string|null, type?: string, install_path?: string, aliases?: string[], dev_requirement: bool, replaced?: string[], provided?: string[]}>}>
@@ -354,7 +357,11 @@ class InstalledVersions
         $copiedLocalDir = false;
 
         if (self::$canGetVendors) {
+<<<<<<< HEAD
             $selfDir = self::getSelfDir();
+=======
+            $selfDir = strtr(__DIR__, '\\', '/');
+>>>>>>> main
             foreach (ClassLoader::getRegisteredLoaders() as $vendorDir => $loader) {
                 $vendorDir = strtr($vendorDir, '\\', '/');
                 if (isset(self::$installedByVendor[$vendorDir])) {

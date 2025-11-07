@@ -626,7 +626,17 @@ class Filesystem
      */
     public function allDirectories(string $directory): array
     {
+<<<<<<< HEAD
         return $this->directories($directory, []);
+=======
+        $directories = [];
+
+        foreach (Finder::create()->in($directory)->directories()->sortByName() as $dir) {
+            $directories[] = $dir->getPathname();
+        }
+
+        return $directories;
+>>>>>>> main
     }
 
     /**

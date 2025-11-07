@@ -22,7 +22,15 @@ trait ReplacesAttributes
 
         $parameters[0] = $this->getDisplayableAttribute($parameters[0]);
 
+<<<<<<< HEAD
         return $this->replaceWhileKeepingCase($message, ['other' => $parameters[0], 'value' => $parameters[1]]);
+=======
+        return str_replace(
+            [':other', ':OTHER', ':Other', ':value', ':VALUE', ':Value'],
+            [$parameters[0], Str::upper($parameters[0]), Str::ucfirst($parameters[0]), $parameters[1], Str::upper($parameters[1]), Str::ucfirst($parameters[1])],
+            $message
+        );
+>>>>>>> main
     }
 
     /**
@@ -333,7 +341,15 @@ trait ReplacesAttributes
     {
         $value = $this->getDisplayableAttribute($parameters[0]);
 
+<<<<<<< HEAD
         return $this->replaceWhileKeepingCase($message, ['other' => $value]);
+=======
+        return str_replace(
+            [':other', ':OTHER', ':Other'],
+            [$value, Str::upper($value), Str::ucfirst($value)],
+            $message
+        );
+>>>>>>> main
     }
 
     /**
@@ -621,7 +637,15 @@ trait ReplacesAttributes
     {
         $value = $this->getDisplayableAttribute($parameters[0]);
 
+<<<<<<< HEAD
         return $this->replaceWhileKeepingCase($message, ['other' => $value]);
+=======
+        return str_replace(
+            [':other', ':OTHER', ':Other'],
+            [$value, Str::upper($value), Str::ucfirst($value)],
+            $message
+        );
+>>>>>>> main
     }
 
     /**
@@ -762,7 +786,15 @@ trait ReplacesAttributes
     {
         $value = $this->getDisplayableAttribute($parameters[0]);
 
+<<<<<<< HEAD
         return $this->replaceWhileKeepingCase($message, ['other' => $value]);
+=======
+        return str_replace(
+            [':other', ':OTHER', ':Other'],
+            [$value, Str::upper($value), Str::ucfirst($value)],
+            $message
+        );
+>>>>>>> main
     }
 
     /**

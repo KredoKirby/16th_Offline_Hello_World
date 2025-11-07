@@ -106,7 +106,11 @@ class QueueServiceProvider extends ServiceProvider implements DeferrableProvider
      */
     public function registerConnectors($manager)
     {
+<<<<<<< HEAD
         foreach (['Null', 'Sync', 'Deferred', 'Background', 'Failover', 'Database', 'Redis', 'Beanstalkd', 'Sqs'] as $connector) {
+=======
+        foreach (['Null', 'Sync', 'Deferred', 'Failover', 'Database', 'Redis', 'Beanstalkd', 'Sqs'] as $connector) {
+>>>>>>> main
             $this->{"register{$connector}Connector"}($manager);
         }
     }
@@ -151,6 +155,7 @@ class QueueServiceProvider extends ServiceProvider implements DeferrableProvider
     }
 
     /**
+<<<<<<< HEAD
      * Register the Background queue connector.
      *
      * @param  \Illuminate\Queue\QueueManager  $manager
@@ -164,6 +169,8 @@ class QueueServiceProvider extends ServiceProvider implements DeferrableProvider
     }
 
     /**
+=======
+>>>>>>> main
      * Register the Failover queue connector.
      *
      * @param  \Illuminate\Queue\QueueManager  $manager
