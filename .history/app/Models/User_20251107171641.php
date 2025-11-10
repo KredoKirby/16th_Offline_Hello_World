@@ -94,11 +94,11 @@ class User extends Authenticatable
         return $this->belongsToMany(\App\Models\Course::class, 'course_user', 'user_id', 'course_id');
     }
 
-public function teachingCourses()
-{
-    return $this->belongsToMany(Course::class, 'teacher_course', 'teacher_id', 'course_id')
-                ->withTimestamps();
-}
 
+// public function coursesTaught()
+// {
+//     // 第3引数: 現在モデル側FK（teacher_id）, 第4引数: 相手側FK（course_id）
+//     return $this->belongsToMany(Course::class, 'teacher_course', 'teacher_id', 'course_id');
+// }
 
 }

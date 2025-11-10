@@ -57,6 +57,12 @@ unset($allQuery['status']);
 
 @foreach($courses as $c)
     @php
+        // 教師は自分が担当するコースのみ表示
+        if(Auth::check() && Auth::user()->role_id == 3) {
+            $isTeacherOfCourse = $c->topics->contains(fn($t) => $t->teacher_id == Auth::id());
+            if(!$isTeacherOfCourse) continue;
+        }
+
         $isEnrolled = in_array($c->id, $enrolledCourseIds ?? []);
         $rate = $isEnrolled ? $c->completionRate(auth()->id()) : 0;
 
@@ -64,10 +70,8 @@ unset($allQuery['status']);
         if(request('status')=='completed' && (!$isEnrolled || $rate<100)) continue;
         if(request('lang') && request('lang') != $c->language) continue;
 
-        $isSelected = isset($course) && $course->id === $c->id;
+        $isSelected = isset($selectedCourse) ? $selectedCourse->id === $c->id : (isset($course) ? $course->id === $c->id : false);
     @endphp
-
-
 
 
     <a href="{{ route('courses.show', $c->id) }}" class="text-decoration-none text-dark">

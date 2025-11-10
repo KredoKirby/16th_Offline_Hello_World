@@ -57,6 +57,11 @@ unset($allQuery['status']);
 
 @foreach($courses as $c)
     @php
+        if(Auth::check() && Auth::user()->role_id == 2) {
+            $isMyTopic = $c->topics->contains(fn($t) => $t->teacher_id == Auth::id());
+            if(!$isMyTopic) continue;
+        }
+
         $isEnrolled = in_array($c->id, $enrolledCourseIds ?? []);
         $rate = $isEnrolled ? $c->completionRate(auth()->id()) : 0;
 

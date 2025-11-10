@@ -61,6 +61,7 @@ public function topics()
 
 public function teachers()
 {
+    // 第2引数: テーブル名, 第3引数: 現在モデル側FK（course_id）, 第4引数: 相手側FK（teacher_id）
     return $this->belongsToMany(User::class, 'teacher_course', 'course_id', 'teacher_id');
 }
 

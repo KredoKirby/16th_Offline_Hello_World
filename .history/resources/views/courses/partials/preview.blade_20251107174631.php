@@ -45,37 +45,21 @@
         </span>
     </h5>
 
-   {{-- 各セクション --}}
-<div class="mt-3">
-    @foreach($course->topics as $topic)
-        @if(Auth::check() && Auth::user()->role_id == 3)
-            {{-- 教師の担当トピックだけ表示 --}}
-            @if($topic->teacher_id == Auth::id())
-                @foreach($topic->lessons as $lesson)
-                    <div class="d-flex align-items-center mb-2 p-2 border rounded bg-white shadow-sm">
-                        <img src="{{ $course->display_image }}"
-                             alt="Lesson thumbnail"
-                             class="rounded me-3"
-                             style="width:60px;height:60px;object-fit:cover;">
-                        <span class="fw-semibold">{{ $lesson->title }}</span>
-                    </div>
-                @endforeach
-            @endif
-        @else
-            {{-- 管理者・学生・一般ユーザーは全トピックを表示 --}}
+    {{-- 各セクション --}}
+    <div class="mt-3">
+        @foreach($course->topics as $topic)
             @foreach($topic->lessons as $lesson)
                 <div class="d-flex align-items-center mb-2 p-2 border rounded bg-white shadow-sm">
-                    <img src="{{ $course->display_image }}"
-                         alt="Lesson thumbnail"
-                         class="rounded me-3"
-                         style="width:60px;height:60px;object-fit:cover;">
+                      <img src="{{ $course->display_image }}"
+                        alt="Lesson thumbnail"
+                        class="rounded me-3"
+                        style="width:60px;height:60px;object-fit:cover;">
+
                     <span class="fw-semibold">{{ $lesson->title }}</span>
                 </div>
             @endforeach
-        @endif
-    @endforeach
-</div>
-
+        @endforeach
+    </div>
 
 </div>
 
