@@ -49,5 +49,11 @@ class UserSeeder extends Seeder
         if ($bulk) {
             DB::table('users')->insert($bulk);
         }
+
+
+        # Student Faker
+        
+        # Teacher Faker
+        
     }
 }
