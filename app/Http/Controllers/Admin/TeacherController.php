@@ -89,8 +89,8 @@ class TeacherController extends Controller
 
         $user->courses()->syncWithoutDetaching([$data['course_id']]);
 
-        return back()->with('status', 'Course added.');
-    }
+    // skills リレーションで紐付け
+    $user->skills()->syncWithoutDetaching([$data['course_id']]);
 
     /**
      * コース解除
@@ -101,7 +101,10 @@ class TeacherController extends Controller
 
         abort_if($user->role_id !== 2, 404);
 
-        $user->courses()->detach($course->id);
+public function detach(User $user, Course $course)
+{
+    // 同様に middleware で保護済み
+    $user->skills()->detach($course->id);
 
         return back()->with('status', 'Course removed.');
     }

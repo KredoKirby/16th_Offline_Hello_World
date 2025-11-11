@@ -33,6 +33,7 @@ use App\Http\Controllers\Student\MylearningController;
 // Front/controllers
 use App\Http\Controllers\Student\CourseInitApiController;
 use App\Http\Controllers\Student\LessonhistoryController;
+use App\Http\Controllers\Teacher\LessonhistoryController as TeacherLessonHistoryController;
 use App\Http\Controllers\Student\IndexController as StudentIndexController;
 use App\Http\Controllers\Teacher\IndexController as TeacherIndexController;
 use App\Http\Controllers\Student\BookingController as StudentBookingController;
@@ -196,7 +197,7 @@ Route::prefix('students')->middleware('can:students')->name('students.')->group(
     // ->name('profile.show');
 
     // プロフィール更新（モーダルから）
-    Route::put('/profile/{user}', [StudentProfileController::class, 'update'])
+        Route::put('/profile/{user}', [StudentProfileController::class, 'update'])
         ->name('profile.update');
 
     Route::put('/profile/{user}/photo', [StudentProfileController::class, 'updatePhoto'])
