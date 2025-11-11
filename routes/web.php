@@ -33,6 +33,7 @@ use App\Http\Controllers\Student\MylearningController;
 // Front/controllers
 use App\Http\Controllers\Student\CourseInitApiController;
 use App\Http\Controllers\Student\LessonhistoryController;
+use App\Http\Controllers\Teacher\LessonhistoryController as TeacherLessonHistoryController;
 use App\Http\Controllers\Student\IndexController as StudentIndexController;
 use App\Http\Controllers\Teacher\IndexController as TeacherIndexController;
 use App\Http\Controllers\Student\BookingController as StudentBookingController;
@@ -125,8 +126,8 @@ Route::prefix('admin')->middleware('can:admin')->name('admin.')->group(function 
     Route::delete('courses/{course}/topics/{topic}',[CourseTopicController::class, 'destroy'])->name('courses.topics.destroy');
 
     // teacherに担当courseを割り当てる。
-    Route::post('/teachers/{user}/courses', [AdminTeacherController::class, 'attach'])->name('courses.attach');
-    Route::delete('/teachers/{user}/courses/{course}', [AdminTeacherController::class, 'detach'])->name('courses.detach');
+    Route::post('/teachers/{user}/courses', [AdminTeacherController::class, 'attach'])->name('teachers.courses.attach');
+    Route::delete('/teachers/{user}/courses/{course}', [AdminTeacherController::class, 'detach'])->name('teachers.courses.detach');
 });
 
 // Courses
@@ -187,7 +188,7 @@ Route::prefix('students')->middleware('can:students')->name('students.')->group(
     Route::prefix('students')->middleware('can:students')->name('students.')->group(function () {
         Route::get('/', [StudentIndexController::class, 'index'])->name('index');
         // Route::get('mylearning',      [MylearningController::class, 'show'])->name('mylearning');
-        Route::get('lesson_history',  [LessonhistoryController::class, 'show'])->name('lessonhistory');
+        // Route::get('lesson_history',  [LessonhistoryController::class, 'show'])->name('lessonhistory');
          // Cancel (DELETE) an upcoming booking (student only)
         Route::delete('bookings/{booking}', [StudentBookingController::class, 'destroy'])
         ->name('bookings.cancel');
@@ -206,12 +207,17 @@ Route::prefix('students')->middleware('can:students')->name('students.')->group(
         // ->name('profile.show');
 
     // プロフィール更新（モーダルから）
-    Route::put('/profile/{user}', [StudentProfileController::class, 'update'])
+        Route::put('/profile/{user}', [StudentProfileController::class, 'update'])
         ->name('profile.update');
 
         Route::put('/profile/{user}/photo', [StudentProfileController::class, 'updatePhoto'])
         ->name('profile.photo.update');
 });
+
+// Student lesson history -> login user, teacher , admin can view it
+Route::get('students/{student}/lesson-history', [LessonhistoryController::class, 'show'])
+    ->can('view-student-history', 'student') 
+    ->name('students.lessonhistory');
 
     // Courses
     Route::prefix('courses')->group(function () {
@@ -270,4 +276,10 @@ Route::prefix('selflearning')->group(function () {
         // Route::get('/teachers/next_topic', [ReportController::class, 'index'])->name('next_topic.index');
         Route::put('/{user}/profile', [ProfileController::class, 'update'])
      ->name('profile.update');
+
+     Route::put('/profile/{user}/photo', [TeacherProfileController::class, 'updatePhoto'])
+    ->name('profile.photo.update');
+
+     Route::get('/lesson-history', [TeacherLessonHistoryController::class, 'index'])
+            ->name('lessonhistory');
     });

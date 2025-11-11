@@ -53,24 +53,23 @@ class TeacherController extends Controller
     }
 
     public function attach(Request $request, User $user)
-    {
-        $this->authorize('admin-only');
+{
+    // ルートで can:admin 済みなのでここで authorize は不要（任意で admin に揃えるなら $this->authorize('admin');）
+    $data = $request->validate([
+        'course_id' => ['required','exists:courses,id'],
+    ]);
 
-        $data = $request->validate([
-            'course_id' => ['required','exists:courses,id'],
-        ]);
+    // skills リレーションで紐付け
+    $user->skills()->syncWithoutDetaching([$data['course_id']]);
 
-        $user->courses()->syncWithoutDetaching([$data['course_id']]);
+    return back()->with('status', 'Course added.');
+}
 
-        return back()->with('status', 'Course added.');
-    }
+public function detach(User $user, Course $course)
+{
+    // 同様に middleware で保護済み
+    $user->skills()->detach($course->id);
 
-    public function detach(User $user, Course $course)
-    {
-        $this->authorize('admin-only');
-
-        $user->courses()->detach($course->id);
-
-        return back()->with('status', 'Course removed.');
-    }
+    return back()->with('status', 'Course removed.');
+}
 }
