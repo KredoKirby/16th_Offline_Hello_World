@@ -54,12 +54,17 @@ class Course extends Model
         return $totalLessons > 0 ? round(($completedLessons / $totalLessons) * 100) : 0;
     }
 
+    // public function teachers()
+    // {
+    //     return $this->belongsToMany(Teacher::class, 'teacher_course');
+    // }
     public function teachers()
     {
-        // 第2引数: テーブル名, 第3引数: 現在モデル側FK（course_id）, 第4引数: 相手側FK（teacher_id）
-        return $this->belongsToMany(User::class, 'teacher_course', 'course_id', 'teacher_id');
+        // ユーザーモデルを参照（role_id=2 を Teacher として絞りたい場合の例）
+        return $this->belongsToMany(User::class, 'teacher_course', 'course_id', 'teacher_id')
+            ->where('role_id', 2)
+            ->withTimestamps();
     }
-
     public function getDisplayImageAttribute()
     {
         // Base64ならそのまま返す

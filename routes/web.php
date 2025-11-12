@@ -109,8 +109,17 @@ Route::prefix('admin')->middleware('can:admin')->name('admin.')->group(function 
     Route::get('/admin/teachers', [AdminTeacherController::class, 'index'])->name('admin.teachers.index');
     Route::patch('/admin/teachers/{teacher}/toggle', [AdminTeacherController::class, 'toggle'])
         ->name('admin.teachers.toggle');
-        //teacher Edit
-    Route::resource('teachers', TeacherController::class);
+
+    //teacher(New)
+    Route::resource('teachers', \App\Http\Controllers\Admin\TeacherController::class)
+        ->except(['show']); // index/create/store/edit/update/destroy
+    Route::post('teachers/{teacher}/toggle', [\App\Http\Controllers\Admin\TeacherController::class, 'toggle'])
+        ->name('teachers.toggle');
+    Route::post('teachers/{user}/attach', [\App\Http\Controllers\Admin\TeacherController::class, 'attach'])
+        ->name('teachers.attach');
+    Route::delete('teachers/{user}/detach/{course}', [\App\Http\Controllers\Admin\TeacherController::class, 'detach'])
+        ->name('teachers.detach');
+
 });
 //student 
 Route::middleware(['auth'])->group(function () {
