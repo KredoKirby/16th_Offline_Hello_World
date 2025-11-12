@@ -13,8 +13,8 @@ class CourseController extends Controller
 {
    public function index(Request $request)
 {
-    $user = auth()->user();
-    $query = Course::with('topics.lessons');
+    $user = Auth::user();
+    $query = Course::where('status', 1)->with('topics.lessons');
 
     if ($request->filled('search')) {
         $query->where('title', 'like', '%' . $request->search . '%');
@@ -62,7 +62,7 @@ class CourseController extends Controller
    
    public function show(Request $request, $id)
 {
-    $user = auth()->user();
+    $user = Auth::user();
     $course = Course::with('topics.lessons')->findOrFail($id);
 
     if ($user && $user->role_id == 2) {
@@ -247,7 +247,7 @@ class CourseController extends Controller
 
   public function unenroll($id)
 {
-    $user = auth()->user();
+    $user = Auth::user();
 
     // 管理者以外は禁止
     if ($user->role_id !== 1) {

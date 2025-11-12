@@ -139,7 +139,8 @@ class TeacherController extends Controller
                 // status=1 のコースのみ許可
                 Rule::exists('courses', 'id')->where(fn($q) => $q->where('status', 1)),
             ],
-
+        ]);
+        
         $courseId = $data['course_id'];
 
         // teacher に紐付け（重複回避）

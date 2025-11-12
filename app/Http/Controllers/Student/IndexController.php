@@ -17,12 +17,12 @@ class IndexController extends Controller
         $tz   = config('app.timezone', 'Asia/Manila');
 
         $courses = $user->courses()
-    ->select('courses.id', 'courses.title', 'courses.status')
-    ->with(['topics:id,course_id,name'])
-    ->withPivot('status') // enrollments の status を見るため
-    ->where('courses.status', 1) // ★ coursesテーブル側が有効(1)のものだけ
-    ->orderBy('courses.title')
-    ->get();
+            ->select('courses.id', 'courses.title', 'courses.status')
+            ->with(['topics:id,course_id,name'])
+            ->withPivot('status') // enrollments の status を見るため
+            ->where('courses.status', 1) // ★ coursesテーブル側が有効(1)のものだけ
+            ->orderBy('courses.title')
+            ->get();
 
         // Up next booking（直近の予約1件）を取得追加
         $now     = Carbon::now($tz); // 日時を取得

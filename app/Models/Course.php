@@ -9,7 +9,7 @@ class Course extends Model
 {
     //変更
     protected $table = 'courses';
-    protected $fillable = ['title', 'description', 'image_url', 'language', 'level', 'image', 'category'];
+    protected $fillable = ['title', 'price', 'description', 'image_url', 'status', 'language', 'level', 'image'];
 
     // コースに紐づくレッスン
     public function lessons()

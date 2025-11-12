@@ -72,8 +72,7 @@ class User extends Authenticatable
     public function courses()
     {
         // pivot名が teacher_course、FK が teacher_id / course_id
-        return $this->belongsToMany(Course::class, 'teacher_course', 'teacher_id', 'course_id')
-            ->withTimestamps();
+        return $this->belongsToMany(Course::class, 'enrollments', 'user_id', 'course_id');
     }
 
 
