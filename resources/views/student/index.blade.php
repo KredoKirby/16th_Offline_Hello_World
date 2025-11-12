@@ -208,9 +208,18 @@
                                         course
                                     </option>
                                     @foreach ($courses as $course)
+                                        @php
+                                            $enrollStatus = $course->pivot->status ?? null;
+                                            $isCompleted = $enrollStatus === 'completed';
+                                        @endphp
+
                                         <option value="{{ $course->id }}"
-                                            {{ old('course_id') == $course->id ? 'selected' : '' }}>
+                                            @if ($isCompleted) disabled @endif
+                                            @if (!$isCompleted && old('course_id') == $course->id) selected @endif>
                                             {{ $course->title }}
+                                            @if ($isCompleted)
+                                                (Completed)
+                                            @endif
                                         </option>
                                     @endforeach
                                 </select>
@@ -888,8 +897,8 @@
                     --fc-today-bg-color: rgba(13, 110, 253, .08);
 
                     /* --fc-event-bg-color: rgba(13, 110, 253, .10);
-                                                                                                                                                                                                                                                                                --fc-event-border-color: rgba(13, 110, 253, .40);
-                                                                                                                                                                                                                                                                                --fc-event-text-color: #0d6efd; */
+                                                                                                                                                                                                                                                                                        --fc-event-border-color: rgba(13, 110, 253, .40);
+                                                                                                                                                                                                                                                                                        --fc-event-text-color: #0d6efd; */
 
                     font-size: 0.90rem;
                     /* カレンダー内を少し小さめ */
@@ -1445,7 +1454,7 @@
                                         @else
                                             <span class="text-body fw-bold">{{ $teacher }}</span>
                                         @endif
-                                       @if ($statusRaw !== '')
+                                        @if ($statusRaw !== '')
                                             <span class="{{ $statusClass }} ms-2">
                                                 {{ $statusRaw }}
                                             </span>

@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Course;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 
 class TeacherController extends Controller
@@ -123,27 +124,45 @@ class TeacherController extends Controller
     /** 単一コース付与 */
     public function attach(Request $request, User $user)
     {
-        abort_if($user->role_id !== 2, 404);
+        $actor = $request->user();
+
+        // 実行者：admin(role_id=1)のみ
+        abort_unless($actor && (int) $actor->role_id === 1, 403);
+
+        // 対象ユーザー：teacher(role_id=2)のみ
+        abort_if((int) $user->role_id !== 2, 404);
 
         $data = $request->validate([
-            'course_id' => ['required', 'exists:courses,id'],
-        ]);
+            'course_id' => [
+                'required',
+                'integer',
+                // status=1 のコースのみ許可
+                Rule::exists('courses', 'id')->where(fn($q) => $q->where('status', 1)),
+            ],
 
-        $user->courses()->syncWithoutDetaching([$data['course_id']]);
+        $courseId = $data['course_id'];
 
-    // skills リレーションで紐付け
-    $user->skills()->syncWithoutDetaching([$data['course_id']]);
+        // teacher に紐付け（重複回避）
+        $user->skills()->syncWithoutDetaching([$courseId]);
 
-    /** コース解除 */
-    public function detach(User $user, Course $course)
+        return back()->with('status', 'Course attached to teacher.');
+    }
+
+    public function detach(Request $request, User $user, Course $course)
     {
-        abort_if($user->role_id !== 2, 404);
+        $actor = $request->user();
 
-public function detach(User $user, Course $course)
-{
-    // 同様に middleware で保護済み
-    $user->skills()->detach($course->id);
+        // 実行者：adminのみ
+        abort_unless($actor && (int) $actor->role_id === 1, 403);
 
-        return back()->with('status', 'Course removed.');
+        // 対象ユーザー：teacher のみ
+        abort_if((int) $user->role_id !== 2, 404);
+
+        // 操作対象は status=1 のコースだけ（仕様に合わせる）
+        abort_if((int) $course->status !== 1, 404);
+
+        $user->skills()->detach($course->id);
+
+        return back()->with('status', 'Course removed from teacher.');
     }
 }

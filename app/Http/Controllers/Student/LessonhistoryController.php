@@ -13,6 +13,29 @@ class LessonhistoryController extends Controller
 {
     public function show(Request $request, User $student)
     {
+        // ===== アクセス制限 =====
+    $viewer = $request->user();
+
+    // 未ログイン → 閲覧不可
+    if (!$viewer) {
+        abort(403);
+    }
+
+    $viewerId   = (int) $viewer->id;
+    $roleId     = (int) ($viewer->role_id ?? 0);
+    $roleName   = (string) ($viewer->role ?? '');
+
+    $isSelf     = ($viewerId === (int) $student->id);
+    $isAdmin    = ($roleId === 1 || $roleName === 'admin');
+    $isTeacher  = ($roleId === 2 || $roleName === 'teacher');
+
+    // 本人でも teacher でも admin でもない → 403
+    if (!($isSelf || $isAdmin || $isTeacher)) {
+        abort(403);
+    }
+    // ===== アクセス制限ここまで =====
+
+
         $now = Carbon::now();
 
         // フィルタ値（独立）

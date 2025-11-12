@@ -172,6 +172,12 @@
 
     <section class="py-4">
         <div class="container profile-container">
+             @if (!empty($isInactive) && $isInactive)
+        {{-- ★ inactive teacher 用メッセージ（英語のみ） --}}
+        <div class="alert alert-warning">
+            This teacher account is currently <strong>inactive</strong>, so profile details, skills, and schedule are not available.
+        </div>
+    @else
 
             {{-- ===== PROFILE AREA ===== --}}
             <div class="area-block mb-4">
@@ -438,5 +444,6 @@
                 </div>
             </div>
         </div>
+    @endif
     @endif
 @endsection
