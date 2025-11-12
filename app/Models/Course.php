@@ -7,14 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Course extends Model
 {
-   //変更
+    //変更
     protected $table = 'courses';
     protected $fillable = ['title', 'description', 'image_url', 'language', 'level', 'image', 'category'];
 
     // コースに紐づくレッスン
     public function lessons()
     {
-          return $this->hasMany(\App\Models\Lesson::class, 'course_id')->orderBy('id');
+        return $this->hasMany(Lesson::class);
     }
 
 
@@ -59,11 +59,14 @@ public function topics()
      return $this->hasMany(\App\Models\Topic::class, 'course_id');
 }
 
-public function teachers()
+ public function teachers()
 {
-    return $this->belongsToMany(User::class, 'teacher_course', 'course_id', 'teacher_id');
+    // ユーザーモデルを参照（role_id=2 を Teacher として絞りたい場合の例）
+    return $this->belongsToMany(User::class, 'teacher_course', 'course_id', 'teacher_id')
+        ->where('role_id', 2)
+        ->withTimestamps();
 }
-
+   
 public function getDisplayImageAttribute()
 {
     // Base64ならそのまま返す
@@ -80,20 +83,31 @@ public function getDisplayImageAttribute()
     return asset('images/default-course.jpg');
 }
 
- public function getImagePathAttribute()
-    {
-        if ($this->image && str_starts_with($this->image, 'data:image')) {
-            // base64文字列そのまま返す
-            return $this->image;
-        }
-
-        if ($this->image) {
-            // 通常ファイルパス
-            return asset('images/courses/' . $this->image);
-        }
-
-        // デフォルト画像
-        return asset('images/courses/sample.jpg');
+public function getImagePathAttribute()
+{
+    if ($this->image && str_starts_with($this->image, 'data:image')) {
+        // base64文字列そのまま返す
+        return $this->image;
     }
+
+    if ($this->image) {
+        // 通常ファイルパス
+        return asset('images/courses/' . $this->image);
+    }
+
+    // デフォルト画像
+    return asset('images/courses/sample.jpg');
+}
+
+public function topics()
+{
+    return $this->hasMany(Topic::class);
+}
+
+public function bookings()
+{
+    // bookings テーブルに course_id がある前提
+    return $this->hasMany(Booking::class);
+}
 
 }

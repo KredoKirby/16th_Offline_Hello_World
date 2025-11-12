@@ -6,6 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Course;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+// use App\Models\Course;
+use App\Models\Topic;
 
 class CourseController extends Controller
 {
@@ -14,7 +18,7 @@ class CourseController extends Controller
      */
     public function index()
     {
-        $courses = \App\Models\Course::with(['lessons'])->get();
+        $courses = Course::with(['topics'])->get();
         return view('admin.courses.index', compact('courses'));
     }
 
@@ -35,8 +39,7 @@ class CourseController extends Controller
             'title' => 'required|string|max:255',
             'price' => 'nullable|numeric',
             'description' => 'nullable|string',
-            'category' => 'nullable|string|max:100',
-            'language' => 'required|string',
+            'category' => 'required|string|in:IT,English,Japanese',
             'level' => 'required|string',
             'image' => 'nullable|string', // Base64
         ]);
@@ -46,7 +49,6 @@ class CourseController extends Controller
         $course->price = $request->price ?? 0;
         $course->description = $request->description;
         $course->category = $request->category;
-        $course->language = $request->language;
         $course->level = $request->level;
 
         // Base64画像をStorageに保存
@@ -54,8 +56,6 @@ class CourseController extends Controller
             $imageData = preg_replace('#^data:image/\w+;base64,#i', '', $request->image);
             $imageData = str_replace(' ', '+', $imageData);
             $imageName = time() . '.png';
-
-            // storage/app/public/courses に保存
             Storage::disk('public')->put('courses/' . $imageName, base64_decode($imageData));
             $course->image = 'courses/' . $imageName;
         }
@@ -82,8 +82,7 @@ class CourseController extends Controller
             'title' => 'required|string|max:255',
             'price' => 'nullable|numeric',
             'description' => 'nullable|string',
-            'category' => 'nullable|string|max:100',
-            'language' => 'required|string',
+            'category' => 'required|string|in:IT,English,Japanese',
             'level' => 'required|string',
             'image' => 'nullable|string', // Base64
         ]);
@@ -92,7 +91,6 @@ class CourseController extends Controller
         $course->price = $request->price ?? 0;
         $course->description = $request->description;
         $course->category = $request->category;
-        $course->language = $request->language;
         $course->level = $request->level;
 
         if ($request->image) {
@@ -100,11 +98,9 @@ class CourseController extends Controller
             if ($course->image && Storage::disk('public')->exists($course->image)) {
                 Storage::disk('public')->delete($course->image);
             }
-
             $imageData = preg_replace('#^data:image/\w+;base64,#i', '', $request->image);
             $imageData = str_replace(' ', '+', $imageData);
             $imageName = time() . '.png';
-
             Storage::disk('public')->put('courses/' . $imageName, base64_decode($imageData));
             $course->image = 'courses/' . $imageName;
         }
@@ -135,5 +131,48 @@ class CourseController extends Controller
         $course = Course::with('topics')->findOrFail($id);
 
         return view('admin.courses.show', compact('course'));
+    }
+    // cousrses Activate
+
+    // コース個別
+    public function toggle(Request $request, Course $course)
+    {
+        DB::transaction(function () use ($course) {
+            $course->status = (bool) $course->status ? 0 : 1;
+            $course->save();
+            $course->topics()->update(['status' => $course->status]);
+        });
+
+        // ← ここを変更：開いておくIDをクエリと # に付けて返す
+        return redirect()->to(
+            route('admin.courses.index', ['open' => $course->id]) . '#heading-' . $course->id
+        )->with(
+                'success',
+                $course->status
+                ? 'Course & all topics activated.'
+                : 'Course & all topics deactivated.'
+            );
+    }
+
+    // 全体一括（押した行を開いたまま戻る）
+// ※ 呼び出し元から open を送っていないなら「最初のコースID」を開くなどでもOK
+    public function toggleAll(Request $request)
+    {
+        $to = strtolower($request->input('to', 'active'));
+        $new = $to === 'active' ? 1 : 0;
+
+        DB::transaction(function () use ($new) {
+            Course::query()->update(['status' => $new]);
+            Topic::query()->update(['status' => $new]);
+        });
+
+        // 直前のコースIDがあれば使う（hiddenで送る想定）。無ければそのまま。
+        $openId = $request->input('open');
+
+        return redirect()->to(
+            $openId
+            ? route('admin.courses.index', ['open' => $openId]) . '#heading-' . $openId
+            : route('admin.courses.index')
+        )->with('success', $new ? 'All courses & topics activated.' : 'All courses & topics deactivated.');
     }
 }
