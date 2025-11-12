@@ -71,8 +71,8 @@ class User extends Authenticatable
 
     public function courses()
     {
-        return $this->belongsToMany(\App\Models\Course::class, 'enrollments', 'user_id', 'course_id')
-            ->withPivot(['status'])
+        // pivot名が teacher_course、FK が teacher_id / course_id
+        return $this->belongsToMany(Course::class, 'teacher_course', 'teacher_id', 'course_id')
             ->withTimestamps();
     }
 
@@ -106,12 +106,11 @@ class User extends Authenticatable
 
     public function coursesTaught()
     {
-        // pivot名が違う場合は 'course_user' を合わせてください
         return $this->belongsToMany(\App\Models\Course::class, 'course_user', 'user_id', 'course_id');
     }
 
 
-// public function coursesTaught()
+    // public function coursesTaught()
 // {
 //     // 第3引数: 現在モデル側FK（teacher_id）, 第4引数: 相手側FK（course_id）
 //     return $this->belongsToMany(Course::class, 'teacher_course', 'teacher_id', 'course_id');
