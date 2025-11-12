@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Database\Seeders\TopicSeeder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\File;
 use Intervention\Image\Facades\Image;
@@ -32,9 +31,9 @@ class Lesson extends Model
 
     /* ---------- リレーション ---------- */
 
-    public function topic()
+    public function section()
     {
-        return $this->belongsTo(Topic::class);
+        return $this->belongsTo(Section::class);
     }
 
     public function users()
@@ -56,6 +55,7 @@ class Lesson extends Model
         return $this->hasMany(Progress::class);
     }
 
+    /* ---------- ユーティリティ ---------- */
 
     /**
      * 指定ユーザーがこのレッスンを完了しているか判定

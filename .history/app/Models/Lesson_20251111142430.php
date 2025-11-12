@@ -34,7 +34,7 @@ class Lesson extends Model
 
     public function topic()
     {
-        return $this->belongsTo(Topic::class);
+        return $this->belongsTo(TopicSeeder::class);
     }
 
     public function users()
