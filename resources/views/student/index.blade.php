@@ -9,7 +9,7 @@
 
         @if ($upNext)
             @php
-                $tz = config('app.timezone', 'Asia/Tokyo');
+                $tz = config('app.timezone', 'Asia/Manila');
 
                 // ▼ date と time を必ず文字列に正規化
                 $rawDate = $upNext->getAttribute('date');
@@ -29,8 +29,16 @@
 
                 $course = $upNext->course->title ?? 'Course Name';
                 $topic = $upNext->topic->name ?? 'Topic Name';
-                $teacher = $upNext->teacher->name ?? 'Teacher';
-                $iconUrl = $upNext->course->icon_url ?? asset('images/placeholder-course.png');
+                $teacherModel = $upNext->teacher; // モデル（null の可能性あり）
+                $teacherName = $teacherModel->name ?? 'Teacher';
+                $meetingUrl = $teacherModel->meeting_url;
+                $courseId = $upNext->course->id ?? null;
+                $teacherId = $teacherModel->id ?? null;
+                // $iconUrl = $upNext->course->image_url ?? asset('images/placeholder-course.png');
+                $iconUrl =
+                    $upNext->course && $upNext->course->image_url
+                        ? asset('storage/' . ltrim($upNext->course->image_url, '/'))
+                        : asset('images/placeholder-course.png');
 
                 $whenStr = $dt->format('D, M j H:i') . '–' . $end->format('H:i');
                 $isToday = $dt->isToday();
@@ -43,16 +51,26 @@
                     <div class="d-flex align-items-center gap-3 flex-wrap">
 
                         {{-- 左：アイコン --}}
+
                         <img src="{{ $iconUrl }}" alt="" class="rounded-3 border flex-shrink-0"
                             style="width:48px;height:48px;object-fit:cover;">
 
                         {{-- 中央：タイトル（1行）＋メタ（1行） --}}
                         <div class="min-w-0 flex-grow-1">
-                            <div class="fw-semibold fs-5 text-truncate">
-                                {{ $course }} <span class="text-body-secondary">・</span> {{ $topic }}
+                            <div class="fw-semibold text-truncate">
+                                @if ($courseId)
+                                    <a href="{{ route('courses.show', ['course' => $courseId]) }}"
+                                        class="text-dark text-decoration-none">
+                                        {{ $course }}
+                                    </a>
+                                @else
+                                    {{ $course }}
+                                @endif
+                                <span class="text-body-secondary">/</span>
+                                {{ $topic }}
                             </div>
 
-                            <div class="d-flex align-items-center flex-wrap gap-2 mt-1 text-secondary small">
+                            <div class="d-flex align-items-center flex-wrap gap-2 mt-1">
                                 {{-- とき（日時を一体化） --}}
                                 <span class="d-inline-flex align-items-center">
                                     <i class="fa-regular fa-calendar me-1"></i>{{ $whenStr }}
@@ -60,23 +78,38 @@
                                         <span class="badge text-bg-success ms-2">Today</span>
                                     @endif
                                 </span>
-
-                                <span>•</span>
-
                                 {{-- Teacher --}}
-                                <span>with <span class="text-body">{{ $teacher }}</span></span>
+                                <span>
+                                    with Teacher
+                                    @if ($teacherId)
+                                        <a href="{{ route('teachers.profile', ['user_id' => $teacherId]) }}"
+                                            class="text-dark text-decoration-none">
+                                            <strong>{{ $teacherName }}</strong>
+                                        </a>
+                                    @else
+                                        <span class="text-body"><strong>{{ $teacherName }}</strong></span>
+                                    @endif
+                                </span>
 
-                                <span>•</span>
+                                {{-- <span>•</span> --}}
+
+                                {{-- <span>•</span> --}}
 
                                 {{-- カウントダウン --}}
-                                <span id="upnext-countdown" class="badge text-bg-secondary" aria-live="polite"
-                                    data-start-ts="{{ $startTsMs }}"></span>
+                                {{-- <span id="upnext-countdown" class="badge text-bg-secondary" aria-live="polite"
+                                    data-start-ts="{{ $startTsMs }}"></span> --}}
                             </div>
                         </div>
 
                         {{-- Right: actions --}}
                         <div class="d-flex gap-2 ms-auto">
-                            <button type="button" class="btn btn-primary btn-sm px-3">Enter</button>
+                            @if ($meetingUrl)
+                                <a href="{{ $meetingUrl }}" target="_blank" rel="noopener"
+                                    class="btn btn-primary btn-sm px-3">Enter classroom</a>
+                            @else
+                                <button type="button" class="btn btn-secondary btn-sm px-3" disabled>No meeting
+                                    URL</button>
+                            @endif
 
                             {{-- Cancel (DELETE with confirmation) --}}
                             <form method="POST" action="{{ route('students.bookings.cancel', $upNext->id) }}"
@@ -86,7 +119,6 @@
                                 <button type="submit" class="btn btn-outline-danger btn-sm px-3">Cancel a lesson</button>
                             </form>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -143,8 +175,19 @@
             })();
         </script>
     @endpush
-    <section class="container py-4">
-        <div class="row g-4">
+    <section class="container py-2">
+        <div class="row gx-4 gy-1">
+
+            {{-- ▼ ここを新規追加：col-12 のレジェンド（先頭に置く） --}}
+            <div class="col-12 mb-0">
+                <div id="fcLegendStatic" class="d-flex flex-wrap justify-content-end gap-2 mb-0">
+                    <span class="legend-item"><span class="legend-dot" style="--c:#d63384"></span> Scheduled</span>
+                    <span class="legend-item"><span class="legend-dot" style="--c:#111827"></span> Teacher-canceled</span>
+                    <span class="legend-item"><span class="legend-dot" style="--c:#16a34a"></span> Report submitted</span>
+                    <span class="legend-item"><span class="legend-dot" style="--c:#6c757d"></span> Report pending</span>
+                </div>
+            </div>
+
             <!-- Book a class -->
             <div class="col-4">
                 <div class="card shadow-sm h-100">
@@ -214,7 +257,7 @@
 
                             {{-- <div class="row"> --}}
                             {{-- ▼ 先生選択アクション（常に表示） --}}
-                            <div id="teacherActions" class="mt-2">
+                            <div id="teacherActions" class="">
                                 <label class="form-label fw-semibold d-block mb-2">Teacher</label>
                                 <div class="d-flex gap-2 align-items-center">
                                     {{-- デフォルトで "Automatically assigned" 状態 --}}
@@ -254,7 +297,8 @@
                                             aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <ul id="teacherList" class="list-group">
+                                        <ul id="teacherList" class="list-group"
+                                            data-teacher-url-template="{{ route('teachers.profile', ['user_id' => '__ID__']) }}">
                                             {{-- JS で <li> を注入 --}}
                                         </ul>
                                     </div>
@@ -288,18 +332,20 @@
                                 let currentTeachers = []; // 現在の date/time に空いている先生の枠
                                 let selectedTeacherId = null; // 手動で選んだ teacher（date/time 変更で必ず破棄する）
 
+
+
                                 function normalizeYmd(input) {
                                     if (!input) return '';
-                                    if (input instanceof Date) {
-                                        const y = input.getFullYear();
-                                        const m = String(input.getMonth() + 1).padStart(2, '0');
-                                        const d = String(input.getDate()).padStart(2, '0');
-                                        return `${y}-${m}-${d}`;
+
+                                    const s = String(input).trim();
+
+                                    // "YYYY-MM-DD" または "YYYY-MM-DD ..." の先頭10文字だけを使う
+                                    const m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+                                    if (!m) {
+                                        return '';
                                     }
-                                    const s = String(input);
-                                    if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0, 10);
-                                    const dt = new Date(s);
-                                    return isNaN(dt) ? '' : normalizeYmd(dt);
+
+                                    return `${m[1]}-${m[2]}-${m[3]}`;
                                 }
 
                                 function normalizeHms(t) {
@@ -318,7 +364,7 @@
                                     const utcDate = new Date(Date.UTC(y, m - 1, d));
                                     const weekday = utcDate.toLocaleDateString(locale, {
                                         weekday: 'short',
-                                        timeZone: 'UTC'
+                                        timeZone: 'Asia/Manila'
                                     });
 
                                     return `${ymd}, ${weekday}`; // 例: "2025-10-31, Fri"
@@ -381,15 +427,32 @@
                                 // --- モーダルのリスト描画（手動選択用） ---
                                 function renderTeacherList(list) {
                                     teacherList.innerHTML = '';
+
+                                    const teacherUrlTpl = teacherList.dataset.teacherUrlTemplate || '';
+
                                     list.forEach(item => {
                                         const li = document.createElement('li');
                                         li.className = 'list-group-item d-flex align-items-center justify-content-between';
+
+                                        let nameHtml;
+                                        if (teacherUrlTpl && item.teacher_id) {
+                                            const url = teacherUrlTpl.replace('__ID__', item.teacher_id);
+                                            nameHtml = `
+                <a href="${url}" class="text-dark text-decoration-none">
+                    ${item.teacher_name}
+                </a>
+            `;
+                                        } else {
+                                            nameHtml = item.teacher_name;
+                                        }
+
                                         li.innerHTML = `
-        <div><div class="fw-semibold">${item.teacher_name}</div></div>
-        <button type="button" class="btn btn-sm btn-secondary">Select</button>
-      `;
+            <div><div class="fw-semibold">${nameHtml}</div></div>
+            <button type="button" class="btn btn-sm btn-secondary">Select</button>
+        `;
+
                                         li.querySelector('button').addEventListener('click', function() {
-                                            // 手動選択に切替
+                                            // ここは既存の Select 処理そのままでOK
                                             selectedTeacherId = item.teacher_id;
                                             tidInput.value = item.teacher_id;
 
@@ -406,7 +469,6 @@
                                                 bidInput.value = slot.booking_id;
                                                 setUITeacherSelected(item.teacher_name);
                                             } else {
-                                                // 今の date/time にその先生の空きが無ければ自動に戻す
                                                 clearTeacherSelectionToAuto();
                                                 const choices = slots.filter(s =>
                                                     normalizeYmd(s.date) === selectedDate &&
@@ -424,7 +486,6 @@
                                                 }
                                             }
 
-                                            // モーダルを閉じる
                                             const modalEl = document.getElementById('teacherModal');
                                             const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
                                             modal.hide();
@@ -436,6 +497,7 @@
                                                 once: true
                                             });
                                         });
+
                                         teacherList.appendChild(li);
                                     });
                                 }
@@ -621,458 +683,657 @@
 
             {{-- ★ 右側カレンダー枠：置き換え --}}
             <div class="col-8">
-                {{-- <div class="card h-100"> --}}
-                {{-- flexを外す → 高さはFullCalendar側(height)で管理 --}}
-                {{-- <div class="card-body pb-0"> --}}
-                {{-- <div class="d-flex align-items-center justify-content-between mb-3"> --}}
-                {{-- <h2 class="h5 mb-0">Schedule</h2> --}}
-                {{-- 内蔵ツールバーを使うので外部ナビは不要なら削除可 --}}
-                {{-- </div> --}}
-
-                {{-- FullCalendar を描画する領域（インラインmin-heightは不要） --}}
-                <div id="myCalendar" class="rounded-3 border shadow-sm"></div>
-                {{-- </div> --}}
-                {{-- </div> --}}
+                <div id="myCalendar" class="rounded-3 border"></div>
             </div>
+        </div>
 
-            {{-- ★ クリック詳細用モーダル（再利用） --}}
-            <div class="modal fade" id="calEventModal" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="calModalTitle">Lesson</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
-                        </div>
+        {{-- ★ クリック詳細用モーダル（再利用） --}}
+        <div class="modal fade" id="calEventModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="calModalTitle">Lesson</h5>
+                        <span id="calModalStatus" class="badge d-none ms-2"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
 
-                        <div class="modal-body">
-                            <dl class="row mb-0">
-                                <dt class="col-4">Course</dt>
-                                <dd class="col-8" id="calModalCourse">—</dd>
-                                <dt class="col-4">Topic</dt>
-                                <dd class="col-8" id="calModalTopic">—</dd>
-                                <dt class="col-4">Teacher</dt>
-                                <dd class="col-8" id="calModalTeacher">—</dd>
-                                <dt class="col-4">Date</dt>
-                                <dd class="col-8" id="calModalDate">—</dd>
-                                <dt class="col-4">Time</dt>
-                                <dd class="col-8" id="calModalTime">—</dd>
-                            </dl>
-                        </div>
+                    <div class="modal-body">
+                        <dl class="row mb-0">
+                            <dt class="col-4">Course</dt>
+                            <dd class="col-8" id="calModalCourse">—</dd>
+                            <dt class="col-4">Topic</dt>
+                            <dd class="col-8" id="calModalTopic">—</dd>
+                            <dt class="col-4">Teacher</dt>
+                            <dd class="col-8" id="calModalTeacher"
+                                data-url-template="{{ route('teachers.profile', ['user_id' => '__ID__']) }}">
+                                —
+                            </dd>
+                            <dt class="col-4">Date</dt>
+                            <dd class="col-8" id="calModalDate">—</dd>
+                            <dt class="col-4">Time</dt>
+                            <dd class="col-8" id="calModalTime">—</dd>
+                        </dl>
+                    </div>
 
-                        <div class="modal-footer justify-content-start gap-2 flex-wrap" id="calModalFooter"
-                            data-view-url-template="{{ url('/students/bookings/__ID__') }}"
-                            data-cancel-url-template="{{ route('students.bookings.cancel', ['booking' => '__ID__']) }}">
+                    <div class="modal-footer justify-content-start gap-2 flex-wrap" id="calModalFooter"
+                        data-view-url-template="{{ url('/students/bookings/__ID__') }}"
+                        data-cancel-url-template="{{ route('students.bookings.cancel', ['booking' => '__ID__']) }}">
 
-                            <a id="calModalViewBtn" href="#" class="btn btn-outline-secondary d-none">
-                                View details
-                            </a>
+                        <a id="calModalViewBtn" href="#" class="btn btn-outline-secondary d-none">
+                            View details
+                        </a>
 
-                            <form id="calModalCancelForm" class="d-none" method="POST" action="">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger"
-                                    onclick="return confirm('Cancel this booking?');">
-                                    Cancel a lesson
-                                </button>
-                            </form>
+                        <form id="calModalCancelForm" class="d-none" method="POST" action="">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger"
+                                onclick="return confirm('Cancel this booking?');">
+                                Cancel a lesson
+                            </button>
+                        </form>
 
-                            <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Close</button>
-                        </div>
+                        <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
+        </div>
 
-            @push('styles')
-                <style>
-                    /* ====== 基本：全体の文字サイズを小さめに統一、文字色は黒 ====== */
-                    :root {
-                        --app-font-size: 0.92rem;
+        <!-- 共通：Lesson historyと同じフォーマットの詳細モーダル -->
+        <div class="modal fade" id="calEventDetailsLikeHistory" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Lesson details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <!-- Booking block -->
+                        <div class="mb-3">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <i class="fa-regular fa-calendar-check text-primary"></i>
+                                <span class="text-uppercase text-muted small fw-semibold">Booking</span>
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item px-0">
+                                    <div class="row g-2 align-items-center">
+                                        <div class="col-6 text-secondary small d-flex align-items-center gap-2">
+                                            <i class="fa-regular fa-clone"></i><span>Course</span>
+                                        </div>
+                                        <div class="col-6 fw-semibold text-end text-truncate" id="calLikeHistCourse">-
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="list-group-item px-0">
+                                    <div class="row g-2 align-items-center">
+                                        <div class="col-6 text-secondary small d-flex align-items-center gap-2">
+                                            <i class="fa-regular fa-bookmark"></i><span>Topic</span>
+                                        </div>
+                                        <div class="col-6 fw-semibold text-end text-truncate" id="calLikeHistTopic">-
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="list-group-item px-0">
+                                    <div class="row g-2 align-items-center">
+                                        <div class="col-6 text-secondary small d-flex align-items-center gap-2">
+                                            <i class="fa-regular fa-user"></i><span>Teacher</span>
+                                        </div>
+                                        <div class="col-6 fw-semibold text-end text-truncate" id="calLikeHistTeacher">
+                                            -</div>
+                                    </div>
+                                </li>
+                                <li class="list-group-item px-0">
+                                    <div class="row g-2 align-items-center">
+                                        <div class="col-6 text-secondary small d-flex align-items-center gap-2">
+                                            <i class="fa-regular fa-clock"></i><span>Date & time</span>
+                                        </div>
+                                        <div class="col-6 fw-semibold text-end text-truncate" id="calLikeHistWhen">-
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Report block -->
+                        <div>
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <i class="fa-regular fa-clipboard text-primary"></i>
+                                <span class="text-uppercase text-muted small fw-semibold">Report</span>
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item px-0">
+                                    <div class="row g-2 align-items-center">
+                                        <div class="col-6 text-secondary small d-flex align-items-center gap-2">
+                                            <i class="fa-regular fa-flag"></i><span>Status</span>
+                                        </div>
+                                        <div class="col-6 text-end">
+                                            <span id="calLikeHistStatusBadge" class="badge text-bg-secondary">—</span>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="list-group-item px-0">
+                                    <div class="row g-2 align-items-center">
+                                        <div class="col-6 text-secondary small d-flex align-items-center gap-2">
+                                            <i class="fa-regular fa-lightbulb"></i><span>Next topic</span>
+                                        </div>
+                                        <div class="col-6 fw-semibold text-end text-truncate" id="calLikeHistNext">—
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="list-group-item px-0">
+                                    <div class="row g-2 align-items-start">
+                                        <div class="col-6 text-secondary small d-flex align-items-center gap-2">
+                                            <i class="fa-regular fa-comment-dots"></i><span>Feedback</span>
+                                        </div>
+                                        <div class="col-6 fw-semibold text-end text-wrap" id="calLikeHistFeedback">—
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <!-- 読取専用：操作ボタンなし -->
+                        <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @push('styles')
+            <style>
+                /* ====== 基本：全体の文字サイズを小さめに統一、文字色は黒 ====== */
+                :root {
+                    --app-font-size: 0.92rem;
+                }
+
+                body {
+                    font-size: var(--app-font-size);
+                    color: #000;
+                }
+
+                h1,
+                h2,
+                h3,
+                h4,
+                h5,
+                h6 {
+                    color: #000;
+                }
+
+                /* ====== 非リンクの見た目：下線なし＆黒 ====== */
+                a:not([href]),
+                a[href="#"] {
+                    text-decoration: none !important;
+                    color: #000 !important;
+                    cursor: default;
+                }
+
+                /* ====== FullCalendar の見た目調整 ====== */
+                #myCalendar .fc {
+                    /* トーン（必要に応じてブランド色に） */
+                    --fc-page-bg-color: #fff;
+                    --fc-neutral-bg-color: #f8f9fa;
+                    --fc-border-color: rgba(0, 0, 0, .08);
+
+                    --fc-button-text-color: #212529;
+                    --fc-button-bg-color: #f8f9fa;
+                    --fc-button-border-color: rgba(0, 0, 0, .12);
+                    --fc-button-hover-bg-color: #e9ecef;
+                    --fc-button-hover-border-color: rgba(0, 0, 0, .18);
+                    --fc-button-active-bg-color: #e9ecef;
+                    --fc-button-active-border-color: rgba(0, 0, 0, .18);
+
+                    --fc-today-bg-color: rgba(13, 110, 253, .08);
+
+                    /* --fc-event-bg-color: rgba(13, 110, 253, .10);
+                                                                                                                                                                                                                                                                                --fc-event-border-color: rgba(13, 110, 253, .40);
+                                                                                                                                                                                                                                                                                --fc-event-text-color: #0d6efd; */
+
+                    font-size: 0.90rem;
+                    /* カレンダー内を少し小さめ */
+                    color: #000;
+                }
+
+                /* イベント等に使われる<a>の下線は見た目から外す */
+                #myCalendar .fc a {
+                    text-decoration: none;
+                    color: inherit;
+                }
+
+                /* 罫線を軽やかに */
+                #myCalendar .fc-theme-standard td,
+                #myCalendar .fc-theme-standard th {
+                    border-color: rgba(0, 0, 0, .08);
+                }
+
+                /* グリッドの角丸＋薄い内枠 */
+                #myCalendar .fc .fc-scrollgrid {
+                    border-radius: .75rem;
+                    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .04);
+                    overflow: hidden;
+                }
+
+                /* タイトル/ヘッダ/時刻のサイズと色 */
+                #myCalendar .fc-toolbar-title {
+                    font-size: .95rem;
+                    font-weight: 600;
+                    color: #000;
+                }
+
+                #myCalendar .fc-col-header-cell-cushion,
+                #myCalendar .fc-daygrid-day-number {
+                    color: #000;
+                    font-size: .85rem;
+                }
+
+                #myCalendar .fc-timegrid-slot-label {
+                    color: #6c757d;
+                    font-size: .85rem;
+                }
+
+                /* イベント外観 */
+                #myCalendar .fc-timegrid-event,
+                #myCalendar .fc-daygrid-event {
+                    border-radius: .5rem;
+                    padding: .15rem .35rem;
+                }
+
+                /* スクロールバー控えめ（webkit系） */
+                #myCalendar .fc-scroller::-webkit-scrollbar {
+                    width: 10px;
+                    height: 10px;
+                }
+
+                #myCalendar .fc-scroller::-webkit-scrollbar-thumb {
+                    background: rgba(0, 0, 0, .12);
+                    border-radius: 999px;
+                }
+
+                /* 月ビューのイベントで時間だけを見やすく（リンク下線消しも再確認） */
+                #myCalendar .fc a {
+                    text-decoration: none;
+                    color: inherit;
+                }
+
+                /* クリックできるカーソル */
+                #myCalendar .fc .fc-event {
+                    cursor: pointer;
+                }
+
+                /* 滑らかなアニメーション */
+                #myCalendar .fc .fc-daygrid-event .fc-event-main,
+                #myCalendar .fc .fc-timegrid-event {
+                    transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+                }
+
+                /* ホバー時：少し持ち上げて影を濃く、わずかに明るく */
+                #myCalendar .fc .fc-daygrid-event:hover .fc-event-main,
+                #myCalendar .fc .fc-timegrid-event:hover {
+                    transform: translateY(-1px);
+                    box-shadow: 0 6px 14px rgba(0, 0, 0, .16);
+                    filter: brightness(1.05);
+                }
+
+                /* 既存の .legend-item / .legend-dot を使い回し */
+                #fcLegendStatic .legend-item {
+                    font-size: .85rem;
+                    color: #000;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: .35rem;
+                    white-space: nowrap;
+                }
+
+                #fcLegendStatic .legend-dot {
+                    width: .8rem;
+                    height: .8rem;
+                    border-radius: 999px;
+                    background: var(--c, #6c757d);
+                    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .18);
+                    display: inline-block;
+                }
+
+                /* モバイル時は中央揃えに */
+                @media (max-width: 991.98px) {
+                    #fcLegendStatic {
+                        flex-direction: column;
+                        align-items: flex-start;
+                        gap: .5rem;
                     }
+                }
+            </style>
+        @endpush
 
-                    body {
-                        font-size: var(--app-font-size);
-                        color: #000;
-                    }
+        @push('scripts')
+            <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+            <script>
+                // Manila（UTC+8）での「今」をミリ秒で返す
+                function nowMsInManila() {
+                    // Date.UTC は常にUTCとして解釈されるので、UTCの「今」を作ってから +8h する
+                    const nowUtcMs = Date.now();
+                    // 固定オフセットでOK（Asia/Manila は通年 UTC+8）
+                    return nowUtcMs + 8 * 60 * 60 * 1000;
+                }
+                document.addEventListener('DOMContentLoaded', function() {
+                    const el = document.getElementById('myCalendar');
+                    if (!el) return;
 
-                    h1,
-                    h2,
-                    h3,
-                    h4,
-                    h5,
-                    h6 {
-                        color: #000;
-                    }
+                    const CAL_HEIGHT = 500; // 月ビューでも外寸を固定
 
-                    /* ====== 非リンクの見た目：下線なし＆黒 ====== */
-                    a:not([href]),
-                    a[href="#"] {
-                        text-decoration: none !important;
-                        color: #000 !important;
-                        cursor: default;
-                    }
+                    // ヘルパー（ゼロ埋め / 時刻フォーマット）
+                    const pad2 = n => String(n).padStart(2, '0');
+                    const fmtHM = d => `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
 
-                    /* ====== FullCalendar の見た目調整 ====== */
-                    #myCalendar .fc {
-                        /* トーン（必要に応じてブランド色に） */
-                        --fc-page-bg-color: #fff;
-                        --fc-neutral-bg-color: #f8f9fa;
-                        --fc-border-color: rgba(0, 0, 0, .08);
+                    const calendar = new FullCalendar.Calendar(el, {
+                        themeSystem: 'bootstrap5',
+                        initialView: 'dayGridMonth',
+                        headerToolbar: {
+                            left: 'prev,next today',
+                            center: 'title',
+                            right: 'dayGridMonth'
+                        },
+                        timeZone: 'Asia/Manila',
+                        height: 500,
+                        expandRows: false,
+                        fixedWeekCount: true,
+                        showNonCurrentDates: true,
 
-                        --fc-button-text-color: #212529;
-                        --fc-button-bg-color: #f8f9fa;
-                        --fc-button-border-color: rgba(0, 0, 0, .12);
-                        --fc-button-hover-bg-color: #e9ecef;
-                        --fc-button-hover-border-color: rgba(0, 0, 0, .18);
-                        --fc-button-active-bg-color: #e9ecef;
-                        --fc-button-active-border-color: rgba(0, 0, 0, .18);
+                        eventClassNames(arg) {
+                            const start = arg.event.start;
+                            // 終了が無いときは50分レッスン前提
+                            const end = arg.event.end ?? new Date(start.getTime() + 50 * 60000);
+                            return (end.getTime() < nowMsInManila()) ? ['is-past'] : [];
+                        },
 
-                        --fc-today-bg-color: rgba(13, 110, 253, .08);
+                        eventDidMount(arg) {
+                            // まず既存のラッパ装飾は維持
+                            arg.el.style.setProperty('background', 'transparent', 'important');
+                            arg.el.style.setProperty('background-color', 'transparent', 'important');
+                            arg.el.style.setProperty('border', 'none', 'important');
+                            arg.el.style.setProperty('box-shadow', 'none', 'important');
+                            const dot = arg.el.querySelector('.fc-daygrid-event-dot');
+                            if (dot) {
+                                dot.style.setProperty('border-color', 'transparent', 'important');
+                                dot.style.setProperty('background', 'transparent', 'important');
+                            }
 
-                        /* --fc-event-bg-color: rgba(13, 110, 253, .10);
-                                                                --fc-event-border-color: rgba(13, 110, 253, .40);
-                                                                --fc-event-text-color: #0d6efd; */
-
-                        font-size: 0.90rem;
-                        /* カレンダー内を少し小さめ */
-                        color: #000;
-                    }
-
-                    /* イベント等に使われる<a>の下線は見た目から外す */
-                    #myCalendar .fc a {
-                        text-decoration: none;
-                        color: inherit;
-                    }
-
-                    /* 罫線を軽やかに */
-                    #myCalendar .fc-theme-standard td,
-                    #myCalendar .fc-theme-standard th {
-                        border-color: rgba(0, 0, 0, .08);
-                    }
-
-                    /* グリッドの角丸＋薄い内枠 */
-                    #myCalendar .fc .fc-scrollgrid {
-                        border-radius: .75rem;
-                        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .04);
-                        overflow: hidden;
-                    }
-
-                    /* タイトル/ヘッダ/時刻のサイズと色 */
-                    #myCalendar .fc-toolbar-title {
-                        font-size: .95rem;
-                        font-weight: 600;
-                        color: #000;
-                    }
-
-                    #myCalendar .fc-col-header-cell-cushion,
-                    #myCalendar .fc-daygrid-day-number {
-                        color: #000;
-                        font-size: .85rem;
-                    }
-
-                    #myCalendar .fc-timegrid-slot-label {
-                        color: #6c757d;
-                        font-size: .85rem;
-                    }
-
-                    /* イベント外観 */
-                    #myCalendar .fc-timegrid-event,
-                    #myCalendar .fc-daygrid-event {
-                        border-radius: .5rem;
-                        padding: .15rem .35rem;
-                    }
-
-                    /* スクロールバー控えめ（webkit系） */
-                    #myCalendar .fc-scroller::-webkit-scrollbar {
-                        width: 10px;
-                        height: 10px;
-                    }
-
-                    #myCalendar .fc-scroller::-webkit-scrollbar-thumb {
-                        background: rgba(0, 0, 0, .12);
-                        border-radius: 999px;
-                    }
-
-
-                    /* 小さめ文字＆黒基調、FullCalendar のトーン */
-                    /* #myCalendar .fc {
-                                                        --fc-page-bg-color: #fff;
-                                                        --fc-border-color: rgba(0, 0, 0, .08);
-                                                        --fc-today-bg-color: rgba(13, 110, 253, .08);
-                                                        --fc-event-bg-color: rgba(13, 110, 253, .10);
-                                                        --fc-event-border-color: rgba(13, 110, 253, .40);
-                                                        --fc-event-text-color: #0d6efd;
-                                                        font-size: .90rem;
-                                                        color: #000;
-                                                    } */
-
-                    #myCalendar .fc a {
-                        text-decoration: none;
-                        color: inherit;
-                    }
-
-                    #myCalendar .fc .fc-scrollgrid {
-                        border-radius: .75rem;
-                        overflow: hidden;
-                    }
-
-                    /* 月ビューのイベントで時間だけを見やすく（リンク下線消しも再確認） */
-                    #myCalendar .fc a {
-                        text-decoration: none;
-                        color: inherit;
-                    }
-
-                    /* クリックできるカーソル */
-                    #myCalendar .fc .fc-event {
-                        cursor: pointer;
-                    }
-
-                    /* 滑らかなアニメーション */
-                    #myCalendar .fc .fc-daygrid-event .fc-event-main,
-                    #myCalendar .fc .fc-timegrid-event {
-                        transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
-                    }
-
-                    /* ホバー時：少し持ち上げて影を濃く、わずかに明るく */
-                    #myCalendar .fc .fc-daygrid-event:hover .fc-event-main,
-                    #myCalendar .fc .fc-timegrid-event:hover {
-                        transform: translateY(-1px);
-                        box-shadow: 0 6px 14px rgba(0, 0, 0, .16);
-                        filter: brightness(1.05);
-                    }
-                </style>
-            @endpush
-
-            @push('scripts')
-                <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
-                <script>
-                    document.addEventListener('DOMContentLoaded', function() {
-                        const el = document.getElementById('myCalendar');
-                        if (!el) return;
-
-                        const CAL_HEIGHT = 500; // 月ビューでも外寸を固定
-
-                        // ヘルパー（ゼロ埋め / 時刻フォーマット）
-                        const pad2 = n => String(n).padStart(2, '0');
-                        const fmtHM = d => `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
-
-                        const calendar = new FullCalendar.Calendar(el, {
-                            themeSystem: 'bootstrap5',
-                            initialView: 'dayGridMonth',
-                            headerToolbar: {
-                                left: 'prev,next today',
-                                center: 'title',
-                                right: 'dayGridMonth'
-                            },
-                            timeZone: 'Asia/Tokyo',
-                            height: 500,
-                            expandRows: false,
-                            fixedWeekCount: true,
-                            showNonCurrentDates: true,
-
-                            // ← ここを追加
-                            eventClassNames(arg) {
-                                const start = arg.event.start;
-                                // 終了が無いときは50分レッスン前提
-                                const end = arg.event.end ?? new Date(start.getTime() + 50 * 60000);
-                                return (end.getTime() < Date.now()) ? ['is-past'] : [];
-                            },
-
-                            eventDidMount(arg) {
-                                const start = arg.event.start;
-                                const end = arg.event.end ?? new Date(start.getTime() + 50 * 60000);
-                                const isPast = end.getTime() < Date.now();
-
-                                // ビュー判定
-                                const isDayGrid = arg.el.classList.contains('fc-daygrid-event');
+                            // 便利ヘルパ：色セット
+                            const palette = {
+                                blue: {
+                                    bg: '#d63384',
+                                    border: '1px solid #c12d76'
+                                }, // booked
+                                yellow: {
+                                    bg: '#f59e0b',
+                                    border: '1px solid #b45309'
+                                }, // open
+                                black: {
+                                    bg: '#111827',
+                                    border: '1px solid #0b1220'
+                                }, // canceled by teacher
+                                green: {
+                                    bg: '#16a34a',
+                                    border: '1px solid #166534'
+                                }, // report submitted
+                                second: {
+                                    bg: '#6c757d',
+                                    border: '1px solid #5c636a'
+                                }, // report not submitted
+                            };
+                            const applyMain = (col) => {
                                 const isTimeGrid = arg.el.classList.contains('fc-timegrid-event');
+                                const main = isTimeGrid ? arg.el : (arg.el.querySelector('.fc-event-main') ||
+                                    arg.el);
+                                main.style.setProperty('background', col.bg, 'important');
+                                main.style.setProperty('border', col.border, 'important');
+                                main.style.borderRadius = '.5rem';
+                                main.style.padding = '.15rem .35rem';
+                                main.style.fontWeight = '600';
+                                main.style.setProperty('color', '#fff', 'important');
+                                (arg.el.querySelectorAll('*') || []).forEach(n => n.style.setProperty('color',
+                                    '#fff', 'important'));
+                            };
 
-                                // 中身(main)を取得：dayGridは .fc-event-main、timeGridは要素自体
-                                const main = isTimeGrid ?
-                                    arg.el :
-                                    (arg.el.querySelector('.fc-event-main') || arg.el);
+                            // 状態判定
+                            const now = nowMsInManila();
+                            const start = arg.event.start;
+                            const end = arg.event.end ?? new Date(start.getTime() + 50 * 60000);
 
-                                // ── 外側（ラッパー）を常に透明化：これで “濃い青の外側” を消す ──
-                                // dayGridは<a>が外側、timeGridはdivなので、どちらも無条件で透明化してOK
-                                arg.el.style.setProperty('background', 'transparent', 'important');
-                                arg.el.style.setProperty('background-color', 'transparent', 'important');
-                                arg.el.style.setProperty('border', 'none', 'important');
-                                arg.el.style.setProperty('box-shadow', 'none', 'important');
+                            const ext = arg.event.extendedProps || {};
+                            const status = String(ext.report_status || '').trim().toLowerCase();
+                            const hasReport = ext.has_report === true;
 
-                                // dayGridのドット表示が有効な場合の小丸も透明化（念のため）
-                                const dot = arg.el.querySelector('.fc-daygrid-event-dot');
-                                if (dot) {
-                                    dot.style.setProperty('border-color', 'transparent', 'important');
-                                    dot.style.setProperty('background', 'transparent', 'important');
-                                }
+                            const looksOpen =
+                                String(ext.state || '').toLowerCase() === 'open' ||
+                                String(arg.event.title || '').toLowerCase().includes('open');
 
-                                // 中身のスタイル
-                                const setMain = (bg, border) => {
-                                    main.style.setProperty('background', bg, 'important');
-                                    main.style.setProperty('border', border, 'important');
-                                    main.style.borderRadius = '.5rem';
-                                    main.style.padding = '.15rem .35rem';
-                                    main.style.fontWeight = '600';
+                            const isCanceledByTeacher = status === 'canceled by teacher';
+                            const isPast = end.getTime() < now;
 
-                                    // 文字は常に白
-                                    main.style.setProperty('color', '#fff', 'important');
-                                    // タイトル・時間などの子要素も強制的に白
-                                    (arg.el.querySelectorAll('*') || []).forEach(n => {
-                                        n.style.setProperty('color', '#fff', 'important');
-                                    });
-                                };
+                            // マッピング
+                            // open → yellow
+                            // booked → blue（未来で、キャンセルでもレポート提出でもなく、“open” でもない）
+                            // canceled by teacher → black
+                            // report submitted → green（has_report=true を採用）
+                            // report not submitted → secondary（過去なのに has_report=false）
+                            if (isCanceledByTeacher) {
+                                applyMain(palette.black);
+                            } else if (looksOpen) {
+                                applyMain(palette.yellow);
+                            } else if (hasReport) {
+                                applyMain(palette.green);
+                            } else if (isPast && !hasReport) {
+                                applyMain(palette.second);
+                            } else {
+                                // デフォルトは booked（未来の通常レッスン）
+                                applyMain(palette.blue);
+                            }
 
-                                if (isPast) {
-                                    // 過去＝グレー
-                                    setMain('rgba(108,117,125,1)', '1px solid rgba(108,117,125,.9)');
-                                } else {
-                                    // 未来＝青
-                                    setMain('#0d6efd', '1px solid rgba(13,110,253,.9)');
-                                }
+                            arg.el.style.cursor = 'pointer';
+                        },
 
-                                // クリックできる見た目
-                                arg.el.style.cursor = 'pointer';
+                        eventMouseEnter(info) {
+                            const main = info.el.querySelector('.fc-event-main') || info.el;
 
-                                // ホバー用トランジション（main に付与）
-                                main.style.transition = 'transform .15s ease, box-shadow .15s ease, filter .15s ease';
+                            // 少し持ち上げ＋影を濃く＋わずかに明るく
+                            main.style.transform = 'translateY(-1px)';
+                            main.style.boxShadow = '0 6px 14px rgba(0,0,0,.16)';
+                            main.style.filter = 'brightness(1.05)';
 
-                                // Tab 移動でも“押せそう”に（アクセシビリティ）
-                                arg.el.tabIndex = 0;
-                                arg.el.setAttribute('role', 'button');
-                            },
+                            // 影が切れないよう浮かせる
+                            info.el.style.zIndex = 3;
+                        },
 
-                            eventMouseEnter(info) {
-                                const main = info.el.querySelector('.fc-event-main') || info.el;
+                        eventMouseLeave(info) {
+                            const main = info.el.querySelector('.fc-event-main') || info.el;
 
-                                // 少し持ち上げ＋影を濃く＋わずかに明るく
-                                main.style.transform = 'translateY(-1px)';
-                                main.style.boxShadow = '0 6px 14px rgba(0,0,0,.16)';
-                                main.style.filter = 'brightness(1.05)';
+                            // 元に戻す
+                            main.style.transform = '';
+                            main.style.boxShadow = '';
+                            main.style.filter = '';
+                            info.el.style.zIndex = '';
+                        },
 
-                                // 影が切れないよう浮かせる
-                                info.el.style.zIndex = 3;
-                            },
+                        // ★ ここを追加：すべてのイベントをブロック表示に
+                        eventDisplay: 'block',
 
-                            eventMouseLeave(info) {
-                                const main = info.el.querySelector('.fc-event-main') || info.el;
+                        // ★ 追加：24h表記にして、分も出す
+                        eventTimeFormat: {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: false
+                        },
 
-                                // 元に戻す
-                                main.style.transform = '';
-                                main.style.boxShadow = '';
-                                main.style.filter = '';
-                                info.el.style.zIndex = '';
-                            },
+                        // ★ 追加：終了時刻も一緒に表示（"12:00 - 12:50" になる）
+                        displayEventEnd: true,
 
-                            // ★ ここを追加：すべてのイベントをブロック表示に
-                            eventDisplay: 'block',
+                        // ★ ここで色を確実に適用（CSSより確実）
+                        // eventBackgroundColor: 'rgba(13,110,253,.12)',
+                        // eventBorderColor: 'rgba(13,110,253,.35)',
+                        // eventTextColor: '#0d6efd',
 
-                            // ★ 追加：24h表記にして、分も出す
-                            eventTimeFormat: {
+                        events: @json($fcEvents ?? []),
+
+                        // 時刻のみ表示
+                        eventContent(arg) {
+                            const div = document.createElement('div');
+                            // FCが timeZone を考慮して作る時刻テキスト（例: "12:00 - 12:50"）
+                            div.textContent = arg.timeText;
+                            div.className = 'small';
+                            return {
+                                domNodes: [div]
+                            };
+                        },
+
+                        eventClick(info) {
+                            info.jsEvent.preventDefault();
+
+                            const e = info.event;
+                            const bookingId = String(e.id || '');
+                            const end = e.end ?? new Date(e.start.getTime() + 50 * 60000);
+
+                            const isPast = end.getTime() < nowMsInManila();
+                            const isCanceledByTeacher =
+                                e.extendedProps?.has_report === true &&
+                                String(e.extendedProps?.report_status || '').trim().toLowerCase() ===
+                                'canceled by teacher';
+
+                            // 1) 過去 → 履歴モーダル（個別に用意済み）を優先
+                            const historyModalEl = document.getElementById(`bookingDetails-${bookingId}`);
+                            if (isPast && historyModalEl) {
+                                const historyModal = bootstrap.Modal.getOrCreateInstance(historyModalEl);
+                                historyModal.show();
+                                return;
+                            }
+
+                            // 2) 未来 かつ Canceled by teacher → 「Lesson history と同じフォーマット」モーダルのみを開く
+                            if (isCanceledByTeacher) {
+                                // 念のため、開いているモーダルがあれば閉じる（多重オープン防止）
+                                document.querySelectorAll('.modal.show').forEach(m => {
+                                    const inst = bootstrap.Modal.getInstance(m);
+                                    if (inst) inst.hide();
+                                });
+
+                                const likeEl = document.getElementById('calEventDetailsLikeHistory');
+                                const likeModal = bootstrap.Modal.getOrCreateInstance(likeEl);
+
+                                const fDate = (d) => calendar.formatDate(d, {
+                                    weekday: 'short',
+                                    year: 'numeric',
+                                    month: 'short',
+                                    day: '2-digit'
+                                });
+                                const fTime = (d) => calendar.formatDate(d, {
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    hour12: false
+                                });
+
+                                const start = e.start;
+                                const eend = e.end ?? new Date(start.getTime() + 50 * 60000);
+
+                                // Booking block
+                                document.getElementById('calLikeHistCourse').textContent = e.extendedProps
+                                    ?.course_name ?? '-';
+                                document.getElementById('calLikeHistTopic').textContent = e.extendedProps
+                                    ?.topic_name ?? '-';
+                                document.getElementById('calLikeHistTeacher').textContent = e.extendedProps
+                                    ?.teacher ?? '-';
+                                document.getElementById('calLikeHistWhen').textContent =
+                                    `${fDate(start)} ${fTime(start)}–${fTime(eend)}`;
+                                document.getElementById('calLikeHistFeedback').textContent = e.extendedProps
+                                    ?.report_feedback ?? '—';
+
+                                // Report block
+                                const statusText = e.extendedProps?.report_status ?? '—';
+                                const statusBadge = document.getElementById('calLikeHistStatusBadge');
+                                statusBadge.textContent = statusText;
+
+                                const st = String(statusText).trim().toLowerCase();
+                                let badgeClass = 'badge text-bg-secondary';
+                                if (st === 'canceled by teacher') badgeClass = 'badge text-bg-danger';
+                                else if (st === 'attended' || st === 'done' || st === 'completed') badgeClass =
+                                    'badge text-bg-success';
+                                else if (st === 'pending' || st === 'todo') badgeClass = 'badge text-bg-warning';
+                                else if (st === 'missed' || st === 'absent') badgeClass = 'badge text-bg-danger';
+                                statusBadge.className = badgeClass;
+
+                                document.getElementById('calLikeHistNext').textContent = e.extendedProps
+                                    ?.report_next ?? '—';
+                                likeModal.show();
+                                return; // ★ ここで終了（通常モーダルは開かない）
+                            }
+
+                            // 3) 上記以外（未来の通常レッスン） → 従来の #calEventModal
+                            const footer = document.getElementById('calModalFooter');
+                            const cancelTpl = footer.dataset.cancelUrlTemplate;
+                            const viewBtn = document.getElementById('calModalViewBtn');
+                            const cancelFm = document.getElementById('calModalCancelForm');
+
+                            viewBtn.classList.add('d-none');
+                            viewBtn.href = '#';
+                            cancelFm.classList.remove('d-none');
+                            cancelFm.action = cancelTpl.replace('__ID__', bookingId);
+
+                            const fDate = (d) => calendar.formatDate(d, {
+                                weekday: 'short',
+                                year: 'numeric',
+                                month: 'short',
+                                day: '2-digit'
+                            });
+                            const fTime = (d) => calendar.formatDate(d, {
                                 hour: '2-digit',
                                 minute: '2-digit',
                                 hour12: false
-                            },
+                            });
 
-                            // ★ 追加：終了時刻も一緒に表示（"12:00 - 12:50" になる）
-                            displayEventEnd: true,
+                            const start = e.start;
+                            const eend = e.end ?? new Date(start.getTime() + 50 * 60000);
 
-                            // ★ ここで色を確実に適用（CSSより確実）
-                            // eventBackgroundColor: 'rgba(13,110,253,.12)',
-                            // eventBorderColor: 'rgba(13,110,253,.35)',
-                            // eventTextColor: '#0d6efd',
+                            document.getElementById('calModalTitle').textContent = e.title || 'Lesson';
+                            document.getElementById('calModalDate').textContent = fDate(start);
+                            document.getElementById('calModalTime').textContent = `${fTime(start)}-${fTime(eend)}`;
+                            document.getElementById('calModalCourse').textContent = e.extendedProps?.course_name ??
+                                '-';
+                            document.getElementById('calModalTopic').textContent = e.extendedProps?.topic_name ??
+                                '-';
+                            // document.getElementById('calModalTeacher').textContent = e.extendedProps?.teacher ??
+                            //     '-';
+                            // Teacher セルを書き換え
+                            const teacherCell = document.getElementById('calModalTeacher');
+                            const teacherName = e.extendedProps?.teacher ?? '-';
+                            const teacherId = e.extendedProps?.teacher_id ?? null;
+                            const teacherUrlTpl = teacherCell.dataset.urlTemplate || '';
 
-                            events: @json($fcEvents ?? []),
-
-                            // 時刻のみ表示
-                            eventContent(arg) {
-                                const div = document.createElement('div');
-                                // FCが timeZone を考慮して作る時刻テキスト（例: "12:00 - 12:50"）
-                                div.textContent = arg.timeText;
-                                div.className = 'small';
-                                return {
-                                    domNodes: [div]
-                                };
-                            },
-
-                            eventClick(info) {
-                                info.jsEvent.preventDefault();
-
-                                const e = info.event;
-                                const bookingId = String(e.id || '');
-
-                                // 過去かどうかの判定（絶対時刻でOK）
-                                const isPast = e.start.getTime() < Date.now();
-
-                                // Lesson history モーダル優先（あなたの元コードのまま）
-                                if (isPast) {
-                                    const historyModalEl = document.getElementById(`bookingDetails-${bookingId}`);
-                                    if (historyModalEl) {
-                                        const historyModal = bootstrap.Modal.getOrCreateInstance(historyModalEl);
-                                        historyModal.show();
-                                        return;
-                                    }
-                                    window.location.href = `/students/bookings/${bookingId}`;
-                                    return;
-                                }
-
-                                // 予約（将来）用UIの準備（元コードのまま）
-                                const footer = document.getElementById('calModalFooter');
-                                const cancelTpl = footer.dataset.cancelUrlTemplate;
-
-                                const viewBtn = document.getElementById('calModalViewBtn');
-                                const cancelFm = document.getElementById('calModalCancelForm');
-
-                                viewBtn.classList.add('d-none');
-                                viewBtn.href = '#';
-
-                                cancelFm.classList.remove('d-none');
-                                cancelFm.action = cancelTpl.replace('__ID__', bookingId);
-
-                                // ====== ここが肝：表示用のフォーマットは calendar.formatDate を使う ======
-                                // FullCalendar の timeZone 設定（'Asia/Tokyo'）が内部で使われる
-                                const fDate = (d) =>
-                                    calendar.formatDate(d, {
-                                        weekday: 'short',
-                                        year: 'numeric',
-                                        month: 'short',
-                                        day: '2-digit'
-                                    });
-
-                                const fTime = (d) =>
-                                    calendar.formatDate(d, {
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                        hour12: false
-                                    });
-
-                                const start = e.start;
-                                const end = e.end ?? new Date(start.getTime() + 50 * 60000);
-
-                                // 画面反映（ローカルDateのgetHoursは一切使わない）
-                                document.getElementById('calModalTitle').textContent = e.title || 'Lesson';
-                                document.getElementById('calModalDate').textContent = fDate(start);
-                                document.getElementById('calModalTime').textContent = `${fTime(start)}-${fTime(end)}`;
-                                document.getElementById('calModalCourse').textContent = e.extendedProps?.course_name ??
-                                    '-';
-                                document.getElementById('calModalTopic').textContent = e.extendedProps?.topic_name ??
-                                    '-';
-                                document.getElementById('calModalTeacher').textContent = e.extendedProps?.teacher ??
-                                    '-';
-
-                                // （デバッグしたい場合は下を一時的に有効化）
-                                // console.log('FC tz =', calendar.getOption('timeZone'), 'start=', start.toISOString(), 'shown=', fDate(start), fTime(start));
-
-                                const modalEl = document.getElementById('calEventModal');
-                                const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-                                modal.show();
+                            if (teacherId && teacherUrlTpl) {
+                                teacherCell.innerHTML =
+                                    `<a href="${teacherUrlTpl.replace('__ID__', teacherId)}"
+            class="text-dark text-decoration-none">
+            ${teacherName}
+        </a>`;
+                            } else {
+                                teacherCell.textContent = teacherName;
                             }
-                        });
 
-                        calendar.render();
+                            const badge = document.getElementById('calModalStatus');
+                            if (badge) {
+                                badge.textContent = '';
+                                badge.className = 'badge d-none ms-2';
+                            }
+
+                            const modalEl = document.getElementById('calEventModal');
+                            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                            modal.show();
+                        }
                     });
-                </script>
-            @endpush
-        </div>
+
+                    calendar.render();
+                });
+            </script>
+        @endpush
+
     </section>
     {{-- ===== Lesson history (line-card with Details modal) ===== --}}
     <section class="container py-4">
@@ -1081,7 +1342,7 @@
         <div class="vstack gap-3">
             @forelse ($history as $b)
                 @php
-                    $tz = config('app.timezone', 'Asia/Tokyo');
+                    $tz = config('app.timezone', 'Asia/Manila');
 
                     // ① date を 'Y-m-d' の文字列に正規化（casts で Carbon になっている可能性がある）
                     $rawDate = $b->getAttribute('date');
@@ -1107,19 +1368,42 @@
                     $course = $b->course->title ?? 'Course';
                     $topic = $b->topic->name ?? 'Topic';
                     $teacher = $b->teacher->name ?? 'Teacher';
-                    $iconUrl = $b->course->icon_url ?? asset('images/placeholder-course.png');
-
+                    // $iconUrl = $b->course->image_url ?? asset('images/placeholder-course.png');
+                    $iconUrl =
+                        $b->course && $b->course->image_url
+                            ? asset('storage/' . ltrim($b->course->image_url, '/'))
+                            : asset('images/placeholder-course.png');
                     // 例: Wed, Oct 29 18:00–18:50
                     $whenStr = $dt->format('D, M j H:i') . '–' . $end->format('H:i');
 
                     $status = $b->report->status ?? null;
                     $nextTop = $b->report->next_topic ?? '—';
+                    $nextTopName = $b->report?->nextTopic?->name ?? '—';
+                    $feedback = $b->report->feedback ?? '—';
                     $statusClass = match (strtolower((string) $status)) {
                         'done', 'completed' => 'text-bg-success',
                         'pending', 'todo' => 'text-bg-warning',
                         'missed', 'absent' => 'text-bg-danger',
                         default => 'text-bg-secondary',
                     };
+                    // $courseId = $b->course->id ?? null;
+                    $teacherId = $b->teacher->id ?? null;
+                    $statusRaw = trim((string) ($b->report->status ?? ''));
+                    $statusLower = strtolower($statusRaw);
+
+                    if ($statusLower === 'canceled by teacher') {
+                        $statusClass = 'badge bg-dark text-white';
+                    } elseif ($statusRaw !== '') {
+                        $statusClass = 'badge bg-success text-white';
+                    } else {
+                        $statusClass = '';
+                    }
+
+                    $nextTopName = $b->report?->nextTopic?->name ?? '—';
+                    $feedback = $b->report->feedback ?? '—';
+
+                    $courseId = $b->course->id ?? null;
+                    $teacherIdRow = $b->teacher->id ?? null;
                 @endphp
 
                 <div class="card shadow-sm">
@@ -1131,16 +1415,42 @@
                                 style="width:48px;height:48px;object-fit:cover;">
 
                             {{-- Middle: title + meta --}}
+                            {{-- Middle: title + meta（Up next と同じ構造） --}}
                             <div class="min-w-0 flex-grow-1">
-                                <div class="fw-semibold fs-5 text-truncate">
-                                    {{ $course }} <span class="text-body-secondary">·</span> {{ $topic }}
+                                <div class="fw-semibold text-truncate">
+                                    @if ($courseId)
+                                        <a href="{{ route('courses.show', ['course' => $courseId]) }}"
+                                            class="text-dark text-decoration-none">
+                                            {{ $course }}
+                                        </a>
+                                    @else
+                                        {{ $course }}
+                                    @endif
+                                    <span class="text-body-secondary">/</span>
+                                    {{ $topic }}
                                 </div>
-                                <div class="d-flex align-items-center flex-wrap gap-2 mt-1 text-secondary small">
+
+                                <div class="d-flex align-items-center flex-wrap gap-2 mt-1">
                                     <span class="d-inline-flex align-items-center">
                                         <i class="fa-regular fa-calendar me-1"></i>{{ $whenStr }}
                                     </span>
-                                    <span>•</span>
-                                    <span>with <span class="text-body">{{ $teacher }}</span></span>
+
+                                    <span>
+                                        with Teacher
+                                        @if ($teacherId)
+                                            <a href="{{ route('teachers.profile', ['user_id' => $teacherId]) }}"
+                                                class="text-dark text-decoration-none fw-bold">
+                                                {{ $teacher }}
+                                            </a>
+                                        @else
+                                            <span class="text-body fw-bold">{{ $teacher }}</span>
+                                        @endif
+                                       @if ($statusRaw !== '')
+                                            <span class="{{ $statusClass }} ms-2">
+                                                {{ $statusRaw }}
+                                            </span>
+                                        @endif
+                                    </span>
                                 </div>
                             </div>
 
@@ -1181,7 +1491,16 @@
                                                     <i class="fa-regular fa-clone"></i><span>Course</span>
                                                 </div>
                                                 <div class="col-6 fw-semibold text-end text-truncate"
-                                                    title="{{ $course }}">{{ $course }}</div>
+                                                    title="{{ $course }}">
+                                                    @if ($courseId)
+                                                        <a href="{{ route('courses.show', ['course' => $courseId]) }}"
+                                                            class="text-dark text-decoration-none">
+                                                            {{ $course }}
+                                                        </a>
+                                                    @else
+                                                        {{ $course }}
+                                                    @endif
+                                                </div>
                                             </div>
                                         </li>
 
@@ -1197,11 +1516,23 @@
 
                                         <li class="list-group-item px-0">
                                             <div class="row g-2 align-items-center">
+                                                {{-- 左：ラベル --}}
                                                 <div class="col-6 text-secondary small d-flex align-items-center gap-2">
                                                     <i class="fa-regular fa-user"></i><span>Teacher</span>
                                                 </div>
+
+                                                {{-- 右：値 --}}
                                                 <div class="col-6 fw-semibold text-end text-truncate"
-                                                    title="{{ $teacher }}">{{ $teacher }}</div>
+                                                    title="{{ $teacher }}">
+                                                    @if ($teacherId)
+                                                        <a href="{{ route('teachers.profile', ['user_id' => $teacherId]) }}"
+                                                            class="text-dark text-decoration-none">
+                                                            {{ $teacher }}
+                                                        </a>
+                                                    @else
+                                                        {{ $teacher }}
+                                                    @endif
+                                                </div>
                                             </div>
                                         </li>
 
@@ -1242,7 +1573,17 @@
                                                     <i class="fa-regular fa-lightbulb"></i><span>Next topic</span>
                                                 </div>
                                                 <div class="col-6 fw-semibold text-end text-truncate"
-                                                    title="{{ $nextTop }}">{{ $nextTop }}</div>
+                                                    title="{{ $nextTopName }}">{{ $nextTopName }}</div>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item px-0">
+                                            <div class="row g-2 align-items-start">
+                                                <div class="col-6 text-secondary small d-flex align-items-center gap-2">
+                                                    <i class="fa-regular fa-comment-dots"></i><span>Comment</span>
+                                                </div>
+                                                <div class="col-6 fw-semibold text-end text-wrap">
+                                                    {{ $feedback }}
+                                                </div>
                                             </div>
                                         </li>
                                     </ul>
@@ -1266,7 +1607,7 @@
 
         {{-- View more --}}
         <div class="text-center mt-3">
-            <a href="{{ route('students.lessonhistory') }}" class="btn btn-light border">
+            <a href="{{ route('students.lessonhistory', ['student' => Auth::id()]) }}" class="btn btn-light border">
                 View more
             </a>
         </div>
