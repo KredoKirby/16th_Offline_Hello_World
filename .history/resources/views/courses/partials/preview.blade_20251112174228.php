@@ -51,8 +51,7 @@
 
         {{-- Teacher の場合：自分が担当しているコースならプレビュー表示 --}}
         @if($user && $user->role_id == 2)
-           @if($course->teachers->contains('id', $user->id))
-
+            @if($topic->teacher_id == $user->id)
                 @foreach($topic->lessons as $lesson)
                     <div class="d-flex align-items-center mb-2 p-2 border rounded bg-white shadow-sm">
                         <img src="{{ $course->display_image }}"
@@ -64,7 +63,7 @@
                 @endforeach
             @endif
 
-        {{-- Student (3), Admin (1), Basic (4) → 全レッスン閲覧可 --}}
+        {{-- 👨Student (3), Admin (1), Basic (4) → 全レッスン閲覧可 --}}
         @else
             @foreach($topic->lessons as $lesson)
                 <div class="d-flex align-items-center mb-2 p-2 border rounded bg-white shadow-sm">
