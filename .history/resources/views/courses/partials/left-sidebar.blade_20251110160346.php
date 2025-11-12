@@ -27,24 +27,23 @@ unset($allQuery['status']);
 
 {{-- タブ --}}
 @auth
-    @if(Auth::user()->role_id != 2) {{-- Teacherにはタブ非表示 --}}
+    @if(Auth::user()->role_id != 3)
         <ul class="nav custom-tabs mb-3">
             <li class="nav-item">
                 <a class="nav-link {{ !request()->has('status') ? 'active' : '' }}" 
-                   href="{{ route('courses.index', $allQuery) }}">All</a>
+                href="{{ route('courses.index', $allQuery) }}">All</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link {{ request('status')=='active' ? 'active' : '' }}" 
-                   href="{{ route('courses.index', array_merge($query, ['status'=>'active'])) }}">Active</a>
+                href="{{ route('courses.index', array_merge($query, ['status'=>'active'])) }}">Active</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link {{ request('status')=='completed' ? 'active' : '' }}" 
-                   href="{{ route('courses.index', array_merge($query, ['status'=>'completed'])) }}">Completed</a>
+                href="{{ route('courses.index', array_merge($query, ['status'=>'completed'])) }}">Completed</a>
             </li>
         </ul>
     @endif
 @endauth
-
 
 
 {{-- 言語フィルタ --}}
@@ -57,6 +56,12 @@ unset($allQuery['status']);
 
 @foreach($courses as $c)
     @php
+        // 教師は自分が担当するコースのみ表示
+        if(Auth::check() && Auth::user()->role_id == 3) {
+            $isTeacherOfCourse = $c->topics->contains(fn($t) => $t->teacher_id == Auth::id());
+            if(!$isTeacherOfCourse) continue;
+        }
+
         $isEnrolled = in_array($c->id, $enrolledCourseIds ?? []);
         $rate = $isEnrolled ? $c->completionRate(auth()->id()) : 0;
 
@@ -64,10 +69,8 @@ unset($allQuery['status']);
         if(request('status')=='completed' && (!$isEnrolled || $rate<100)) continue;
         if(request('lang') && request('lang') != $c->language) continue;
 
-        $isSelected = isset($course) && $course->id === $c->id;
+        $isSelected = isset($selectedCourse) ? $selectedCourse->id === $c->id : (isset($course) ? $course->id === $c->id : false);
     @endphp
-
-
 
 
     <a href="{{ route('courses.show', $c->id) }}" class="text-decoration-none text-dark">

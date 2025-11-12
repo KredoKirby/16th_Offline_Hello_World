@@ -119,10 +119,10 @@
         {{-- 右カラム --}}
         <div class="col-lg-3 col-12">
             {{-- Schedule --}}
-            {{-- <div class="dashboard-side-card mb-4">
+            <div class="dashboard-side-card mb-4">
                 <h6 class="fw-bold">Schedule</h6>
                 <img src="{{ asset('images/calendar.jpg') }}" class="img-fluid rounded" alt="calendar">
-            </div> --}}
+            </div>
 
           {{-- Recommended --}}
                 <div class="dashboard-side-card">

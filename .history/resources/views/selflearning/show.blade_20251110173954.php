@@ -87,7 +87,7 @@
                         $formattedDuration = sprintf('%02d:%02d', $minutes, $seconds);
                     @endphp
 
-                    <span class="ms-auto section-meta text-muted small">
+                    <span class="ms-auto topic-meta text-muted small">
                         {{ $topic->lessons->count() }} lectures ・
                         {{ $topic->lessons->sum('pages') }} pages ・
                         {{ $formattedDuration }}

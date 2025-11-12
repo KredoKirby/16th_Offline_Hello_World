@@ -11,53 +11,58 @@ use Illuminate\Support\Facades\Log;
 
 class CourseController extends Controller
 {
-   public function index(Request $request)
-{
-    $user = auth()->user();
-    $query = Course::with('topics.lessons');
-
-    if ($request->filled('search')) {
-        $query->where('title', 'like', '%' . $request->search . '%');
-    }
-
-    if ($request->filled('lang')) {
-        $query->where('language', $request->lang);
-    }
-
-    if ($user && $user->role_id == 2) {
-        $query->whereHas('teachers', function ($q) use ($user) {
-            $q->where('teacher_id', $user->id);
-        });
-    }
-
-    $courses = $query->get();
-
-    // 以下はステータスフィルタなど既存のまま
-    if ($request->status && $user) {
-        $completedLessonIds = $user->lessons()->wherePivot('is_completed', true)->pluck('lessons.id')->toArray();
-
-        if ($request->status === 'active') {
-            $courses = $courses->filter(function ($c) use ($completedLessonIds) {
-                $lessonIds = $c->topics->flatMap(fn($s) => $s->lessons)->pluck('id')->toArray();
-                $total = count($lessonIds);
-                $completed = $total ? count(array_intersect($lessonIds, $completedLessonIds)) : 0;
-                return $total > 0 && $completed < $total;
-            });
-        } elseif ($request->status === 'completed') {
-            $courses = $courses->filter(function ($c) use ($completedLessonIds) {
-                $lessonIds = $c->topics->flatMap(fn($s) => $s->lessons)->pluck('id')->toArray();
-                $total = count($lessonIds);
-                $completed = $total ? count(array_intersect($lessonIds, $completedLessonIds)) : 0;
-                return $total > 0 && $completed === $total;
-            });
+    public function index(Request $request)
+    {
+        $user = auth()->user();
+        $query = Course::with('topics.lessons');
+        // 検索
+        if ($request->filled('search')) {
+            $query->where('title', 'like', '%' . $request->search . '%');
         }
+        // 言語フィルタ
+        if ($request->filled('lang')) {
+            $query->where('language', $request->lang);
+        }
+        // ステータスフィルタ（active / completed）
+        $courses = $query->get();
+
+        if ($request->status && $user) {
+            $completedLessonIds = $user->lessons()->wherePivot('is_completed', true)->pluck('lessons.id')->toArray();
+
+            if ($request->status === 'active') {
+                $courses = $courses->filter(function ($c) use ($completedLessonIds) {
+                    $lessonIds = $c->topics->flatMap(fn($s) => $s->lessons)->pluck('id')->toArray();
+                    $total = count($lessonIds);
+                    $completed = $total ? count(array_intersect($lessonIds, $completedLessonIds)) : 0;
+                    return $total > 0 && $completed < $total;
+                });
+            } elseif ($request->status === 'completed') {
+                $courses = $courses->filter(function ($c) use ($completedLessonIds) {
+                    $lessonIds = $c->topics->flatMap(fn($s) => $s->lessons)->pluck('id')->toArray();
+                    $total = count($lessonIds);
+                    $completed = $total ? count(array_intersect($lessonIds, $completedLessonIds)) : 0;
+                    return $total > 0 && $completed === $total;
+                });
+            }
+        }
+        // ページネーション（コレクションを paginate に変換）
+        $page = $request->get('page', 1);
+        $perPage = 10;
+        $courses = new \Illuminate\Pagination\LengthAwarePaginator(
+            $courses->forPage($page, $perPage),
+            $courses->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        // ログインユーザーが enroll 済みの course_id
+        $enrolledCourseIds = $user
+            ? $user->courses()->pluck('courses.id')->toArray()
+            : [];
+
+        return view('courses.index', compact('courses', 'enrolledCourseIds'));
     }
-
-    $enrolledCourseIds = $user ? $user->courses()->pluck('courses.id')->toArray() : [];
-
-    return view('courses.index', compact('courses', 'enrolledCourseIds'));
-}
-
 
    
    public function show(Request $request, $id)
@@ -65,8 +70,9 @@ class CourseController extends Controller
     $user = auth()->user();
     $course = Course::with('topics.lessons')->findOrFail($id);
 
+    // Teacherが他人のコースを見れないようにする
     if ($user && $user->role_id == 2) {
-        $isOwnCourse = $user->teachingCourses()->where('course_id', $course->id)->exists();
+        $isOwnCourse = $course->topics->contains(fn($t) => $t->teacher_id == $user->id);
         if (!$isOwnCourse) {
             return redirect()->route('courses.index')
                 ->with('error', 'You are not authorized to view this course.');
@@ -81,8 +87,15 @@ class CourseController extends Controller
         ? $user->courses()->pluck('courses.id')->toArray()
         : [];
 
+    /**
+     * 左サイドの一覧
+     * - Teacher → 自分が担当しているトピックを含むコースのみ
+     * - 他のユーザー → 通常通り
+     */
     if ($user && $user->role_id == 2) {
-        $courses = $user->teachingCourses()->with('topics.lessons')->get();
+        $courses = Course::whereHas('topics', function ($q) use ($user) {
+            $q->where('teacher_id', $user->id);
+        })->with('topics.lessons')->get();
     } else {
         $query = Course::with('topics.lessons');
         if ($request->filled('lang')) {
@@ -91,6 +104,7 @@ class CourseController extends Controller
         $courses = $query->get();
     }
 
+    // （以下は進捗計算などそのまま）
     $sectionProgress = [];
     $totalCourseLessons = 0;
     $completedCourseLessons = 0;
@@ -119,7 +133,6 @@ class CourseController extends Controller
         'courses'
     ));
 }
-
 
     
     /**

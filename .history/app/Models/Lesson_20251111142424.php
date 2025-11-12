@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Database\Seeders\TopicSeeder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\File;
 use Intervention\Image\Facades\Image;
@@ -34,7 +33,7 @@ class Lesson extends Model
 
     public function topic()
     {
-        return $this->belongsTo(Topic::class);
+        return $this->belongsTo(Section::class);
     }
 
     public function users()

@@ -140,7 +140,7 @@
                                  data-page="{{ $p }}"
                                  style="display:none; opacity:0; transition: opacity 0.3s;">
                                 @if($lesson->images && isset($lesson->images[$p-1]))
-                                    <img src="{{ $lesson->images[$p-1] }}" class="img-fluid rounded mb-2">
+                                    <img src="{{ asset('images/lessons/' . $lesson->images[$p-1]) }}" class="img-fluid rounded mb-2">
                                 @elseif($lesson->content)
                                     <div class="lesson-text-content">{!! nl2br(e($lesson->content)) !!}</div>
                                 @else

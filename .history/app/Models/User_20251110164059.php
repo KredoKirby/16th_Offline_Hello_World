@@ -3,10 +3,9 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
@@ -21,24 +20,9 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
-        'about',
         'password',
-        'role_id',
-        'meeting_url',
-        'avatar_path',
+        'role_id'
     ];
-
-    //   public function getAvatarUrlAttribute(): string
-    // {
-    //     if (!empty($this->avatar_path)) {
-    //         // avatar_path: "avatars/xxx.png" を想定
-    //         // → /storage/avatars/xxx.png に変換
-    //         return asset('storage/' . ltrim($this->avatar_path, '/'));
-    //     }
-
-    //     // 未設定時のデフォルト画像
-    //     return asset('images/default-avatar.png');
-    // }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -71,8 +55,8 @@ class User extends Authenticatable
 
     public function courses()
     {
-        // pivot名が teacher_course、FK が teacher_id / course_id
-        return $this->belongsToMany(Course::class, 'teacher_course', 'teacher_id', 'course_id')
+        return $this->belongsToMany(\App\Models\Course::class, 'enrollments', 'user_id', 'course_id')
+            ->withPivot(['status'])
             ->withTimestamps();
     }
 
@@ -106,8 +90,12 @@ class User extends Authenticatable
 
     public function coursesTaught()
     {
+        // pivot名が違う場合は 'course_user' を合わせてください
         return $this->belongsToMany(\App\Models\Course::class, 'course_user', 'user_id', 'course_id');
     }
+
+
+    // app/Models/User.php
 
 public function teachingCourses()
 {
@@ -115,14 +103,5 @@ public function teachingCourses()
                 ->withTimestamps();
 }
 
-    public function skills()
-{
-    return $this->belongsToMany(
-        \App\Models\Course::class,
-        'teacher_course',   // pivot table 名
-        'teacher_id',       // pivot 側の teacher 外部キー
-        'course_id'         // pivot 側の course 外部キー
-    );
- }
 
 }

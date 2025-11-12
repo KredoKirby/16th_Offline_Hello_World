@@ -24,6 +24,7 @@ class CourseController extends Controller
         $query->where('language', $request->lang);
     }
 
+    // ✅ Teacherは自分が担当しているコースのみ
     if ($user && $user->role_id == 2) {
         $query->whereHas('teachers', function ($q) use ($user) {
             $q->where('teacher_id', $user->id);

@@ -3,21 +3,15 @@
 @section('content')
 <div class="container-fluid p-3">
 
- {{-- 右上ログアウト --}}
-<div class="d-flex justify-content-end mb-3">
-    @auth
-        @if(Auth::user()->role_id == 4)
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="btn btn-outline-danger btn-sm">
-                    Logout
-                </button>
-            </form>
-        @endif
-    @endauth
-</div>
-
-
+    {{-- 右上ログアウト --}}
+    <div class="d-flex justify-content-end mb-3">
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit" class="btn btn-outline-danger btn-sm">
+                Logout
+            </button>
+        </form>
+    </div>
 
     <div class="row">
 

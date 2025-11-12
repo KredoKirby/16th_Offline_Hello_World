@@ -4,10 +4,10 @@
 <div class="container-fluid p-3">
     <div class="row">
 
-      {{-- 右上ログアウト --}}
+       {{-- 右上ログアウト --}}
 <div class="d-flex justify-content-end mb-3">
     @auth
-        @if(Auth::user()->role_id == 4)
+        @if(Auth::user()->role == 4)
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit" class="btn btn-outline-danger btn-sm">
@@ -17,7 +17,6 @@
         @endif
     @endauth
 </div>
-
 
     
         {{-- 左サイド --}}
