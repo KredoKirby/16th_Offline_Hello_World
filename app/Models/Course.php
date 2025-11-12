@@ -55,8 +55,7 @@ class Course extends Model
 
 public function topics()
 {
-    // return $this->hasMany(Topic::class);
-     return $this->hasMany(\App\Models\Topic::class, 'course_id');
+     return $this->hasMany(Topic::class, 'course_id');
 }
 
  public function teachers()
@@ -97,11 +96,6 @@ public function getImagePathAttribute()
 
     // デフォルト画像
     return asset('images/courses/sample.jpg');
-}
-
-public function topics()
-{
-    return $this->hasMany(Topic::class);
 }
 
 public function bookings()
