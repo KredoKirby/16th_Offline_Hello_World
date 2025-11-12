@@ -92,7 +92,6 @@ Route::prefix('admin')->middleware('can:admin')->name('admin.')->group(function 
 
     Route::delete('courses/{course}/topics/{topic}', [CourseTopicController::class, 'destroy'])->name('courses.topics.destroy');
 
-    // teacherに担当courseを割り当てる。
     Route::post('/teachers/{user}/courses', [AdminTeacherController::class, 'attach'])->name('courses.attach');
     Route::delete('/teachers/{user}/courses/{course}', [AdminTeacherController::class, 'detach'])->name('courses.detach');
     Route::patch('courses/{course}/toggle-all-topics', [CourseTopicController::class, 'toggleCourse'])
@@ -111,7 +110,21 @@ Route::prefix('admin')->middleware('can:admin')->name('admin.')->group(function 
         ->name('admin.teachers.toggle');
         //teacher Edit
     Route::resource('teachers', TeacherController::class);
+
+    // teacherに担当courseを割り当てる。
+    // Route::post('/admin/teachers/{teacher}/attach', [AdminTeacherController::class, 'attach'])
+    //     ->name('teachers.courses.attach');
+    // Route::delete('/admin/teachers/{teacher}/detach', [AdminTeacherController::class, 'detach'])
+    //     ->name('teachers.courses.dettach');
+
+    Route::post('teachers/{user}/courses', [AdminTeacherController::class, 'attach'])
+            ->name('teachers.courses.attach');
+
+    // コース解除（status=1のみ）
+    Route::delete('teachers/{user}/courses/{course}', [AdminTeacherController::class, 'detach'])
+        ->name('teachers.courses.detach');
 });
+
 //student 
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin/students', [AdminStudentController::class, 'index'])->name('admin.students.index');
@@ -178,7 +191,7 @@ Route::prefix('students')->middleware('can:students')->name('students.')->group(
 Route::prefix('students')->middleware('can:students')->name('students.')->group(function () {
     Route::get('/', [StudentIndexController::class, 'index'])->name('index');
     // Route::get('mylearning',      [MylearningController::class, 'show'])->name('mylearning');
-    Route::get('lesson_history', [LessonhistoryController::class, 'show'])->name('lessonhistory');
+    
     // Cancel (DELETE) an upcoming booking (student only)
     Route::delete('bookings/{booking}', [StudentBookingController::class, 'destroy'])
         ->name('bookings.cancel');
@@ -237,6 +250,11 @@ Route::get('teachers/profile/{user_id}', [TeacherProfileController::class, 'show
 // Route::get('students/profile/{user_id}', [StudentProfileController::class, 'show'])->name('students.profile');
 Route::get('students/profile/{user}', [StudentProfileController::class, 'show'])->name('students.profile.show');
 
+// Lesson history
+Route::get('students/{student}/lesson_history', [LessonhistoryController::class, 'show'])
+    ->name('students.lessonhistory');
+Route::get('teachers/{teacher}/lesson_history', [TeacherLessonhistoryController::class, 'index'])->name('teachers.lessonhistory');
+
 /* ------------------- Teacher area ------------------- */
 Route::prefix('teachers')->middleware('can:teachers')->name('teachers.')->group(function () {
     Route::get('/', [TeacherIndexController::class, 'index'])->name('index');
@@ -258,6 +276,12 @@ Route::prefix('teachers')->middleware('can:teachers')->name('teachers.')->group(
     // Route::post('reports/{booking}', [ReportController::class, 'update'])->name('reports.update');
     // topics 一覧（id 昇順）
     // Route::get('/teachers/next_topic', [ReportController::class, 'index'])->name('next_topic.index');
-    Route::put('/{user}/profile', [ProfileController::class, 'update'])
-        ->name('profile.update');
+    Route::put('/{user}/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/{user}/profile/photo', [ProfileController::class, 'updatePhoto'])->name('profile.photo.update');
+     // ★ 追加: Open slot をドラッグで移動する用
+        Route::patch('/{booking}/move', [TeacherBookingController::class, 'move'])
+            ->name('bookings.move');
+             // ★ 追加：選択した複数スロットを一括削除
+        Route::post('/bulk-delete-selected', [TeacherBookingController::class, 'bulkDestroySelected'])
+            ->name('bookings.bulkDeleteSelected');
 });

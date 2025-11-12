@@ -3,18 +3,26 @@
 @section('title', 'Profile')
 
 @section('content')
-    @php
-        /** @var \App\Models\User|null $viewer */
-        $viewer = auth()->user();
-        $isAdmin = (int) ($viewer->role_id ?? 0) === 1;
-        $isSelf = (int) ($viewer->id ?? 0) === (int) ($user->id ?? -1);
-        // 表示権限：Admin or 本人
+   @php
+    /** @var \App\Models\User|null $viewer */
+    $viewer = auth()->user();
+
+    $roleId   = (int) ($viewer->role_id ?? 0);
+    $roleName = (string) ($viewer->role ?? '');
+
+    $isAdmin   = $roleId === 1 || $roleName === 'admin';
+    $isTeacher = $roleId === 2 || $roleName === 'teacher';
+    $isSelf    = (int) ($viewer->id ?? 0) === (int) ($user->id ?? -1);
+
+    // プロフィールの基本情報表示権限（現状どおり Admin or 本人）
     $canSeeAll = $isAdmin || $isSelf;
 
-    // 編集権限：本人のみ（Admin は不可）
-    $canEdit = $isSelf;
-    @endphp
+    // Enrolled / History を見せてよい人：本人 or Teacher or Admin
+    $canSeeProgress = $isSelf || $isTeacher || $isAdmin;
 
+    // 編集権限：本人のみ
+    $canEdit = $isSelf;
+@endphp
     <style>
         .profile-container {
             max-width: 900px;
@@ -165,6 +173,12 @@
 
     <section class="py-4">
         <div class="container profile-container">
+             @if (!empty($isInactive) && $isInactive)
+        {{-- ★ status !== active の場合だけ表示するメッセージ（英語） --}}
+        <div class="alert alert-warning">
+            This student account is currently <strong>inactive</strong>, so profile details and lesson history are not available.
+        </div>
+    @else
 
             {{-- ===== Profile Area ===== --}}
             <div class="area-block mb-4">
@@ -277,6 +291,7 @@
             </div>
 
             {{-- ===== Enrolled & History Areas ===== --}}
+            @if ($canSeeProgress)
             <div class="row g-2">
 
                 {{-- ==== Enrolled Courses Area ==== --}}
@@ -644,6 +659,12 @@
                 </div>
 
             </div>
+            @else
+    {{-- 権限がない閲覧者向けメッセージ（英語） --}}
+    <div class="mt-3 alert alert-light border small">
+        This user's enrolled courses and lesson history are visible only to the student, teachers, and administrators.
+    </div>
+@endif
 
             {{-- ===== Edit Profile Modal ===== --}}
             @if ($canEdit)
@@ -697,7 +718,7 @@
                     </div>
                 </div>
             @endif
-
+@endif
         </div>
     </section>
 @endsection

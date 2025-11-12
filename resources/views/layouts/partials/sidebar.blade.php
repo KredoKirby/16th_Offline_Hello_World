@@ -74,8 +74,8 @@
                 href="{{ route('teachers.index') }}"><i class="fa-solid fa-calendar-days me-2"></i> Schedule</a>
             <a class="nav-link s-link mb-1 {{ request()->routeIs('courses.index') ? 'active' : '' }}"
                 href="{{ route('courses.index') }}"><i class="fa-solid fa-book-open me-2"></i> Courses</a>
-            <a class="nav-link s-link mb-1 {{ request()->routeIs('teachers.lessonhistory', ['student' => Auth::id()]) ? 'active' : '' }}"
-                href="{{ route('teachers.lessonhistory') }}">
+            <a class="nav-link s-link mb-1 {{ request()->routeIs('teachers.lessonhistory') ? 'active' : '' }}"
+                href="{{ route('teachers.lessonhistory', ['teacher' => Auth::id()]) }}">
                 <i class="fa-solid fa-clock-rotate-left me-2"></i> Lesson History
             </a>
             {{-- <a class="nav-link s-link" href="#">Forum</a> --}}
