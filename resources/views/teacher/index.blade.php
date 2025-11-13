@@ -4,6 +4,23 @@
 
 @section('content')
     <section class="container py-3">
+        @php
+    $isTeacherInactive = mb_strtolower(Auth::user()->status ?? '') === 'inactive';
+@endphp
+
+@if ($isTeacherInactive)
+<div class="alert alert-danger alert-dismissible fade show mb-2" role="alert">
+  <div class="d-flex align-items-start gap-2">
+    <i class="fa-solid fa-triangle-exclamation fa-lg mt-1" aria-hidden="true"></i>
+    <div>
+      <strong>Account inactive.</strong>
+      You can still attend already-scheduled lessons, but opening new slots is disabled.
+      All future <em>Open</em> slots on your calendar will be removed automatically.
+    </div>
+  </div>
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endif
         {{-- CSRF（fetch用） --}}
         <meta name="csrf-token" content="{{ csrf_token() }}">
         @if (!$hasMeetingUrl)
@@ -198,6 +215,9 @@
             data-bulkdel-selected-url="{{ route('teachers.bookings.bulkDeleteSelected') }}"
             data-has-meeting-url="{{ $hasMeetingUrl ? 1 : 0 }}" style="min-height: 500px;"
             data-student-history-url="{{ route('students.lessonhistory', ['student' => '__ID__']) }}"
+            {{-- ★ 追加：inactiveフラグと将来Open一括削除API --}}
+     data-teacher-inactive="{{ $isTeacherInactive ? 1 : 0 }}"
+     data-purge-future-open-url="{{ route('teachers.bookings.purgeFutureOpen') }}"
             data-meeting-url="{{ $hasMeetingUrl ? Auth::user()->meeting_url : '' }}" style="min-height: 500px;"></div>
 
         <div id="slot-context-menu" class="dropdown-menu" style="position:absolute; display:none; z-index:9999;">
@@ -371,6 +391,9 @@
 
             const ctxMenu = document.getElementById('slot-context-menu');
             const ctxDeleteBtn = document.getElementById('ctx-delete-selected');
+
+            const isTeacherInactive = (el.dataset.teacherInactive === '1');
+const purgeFutureOpenUrl = el.dataset.purgeFutureOpenUrl || '';
 
             function showContextMenu(x, y) {
                 if (!ctxMenu) return;
@@ -576,13 +599,17 @@
                 selectAllow(span) {
                     const isMonth = calendar.view?.type === 'dayGridMonth';
                     if (isMonth) return false; // ← 月表示では新規作成不可
+                    if (isTeacherInactive) return false;
                     if (!hasMeetingUrl) return false;
                     return span.start.getTime() >= nowLocal().getTime();
                 },
 
                 // 複数枠作成
                 select(info) {
-
+                    if (isTeacherInactive) {               // ★ 念のための二重防御
+        calendar.unselect();
+        return;
+    }
                     // ★追加：URL未設定なら何もしない（メッセージ表示して解除）
                     if (!hasMeetingUrl) {
                         alert('To open a slot, set your meeting URL in Profile.');
@@ -609,6 +636,7 @@
                 },
 
                 eventDrop(info) {
+                    if (isTeacherInactive) { info.revert(); return; }
                     const ep = info.event.extendedProps || {};
                     const isBooked = !!ep.student_id;
                     const hasReport = ep.has_report === true;
@@ -1386,6 +1414,32 @@
                 hint?.classList.toggle('d-none', !!disabled);
                 msg?.classList.toggle('d-none', !disabled);
             }
+            // ★ inactive の場合、ページ表示ごとに将来の Open 枠を一括削除（安全に冪等に）
+(async function purgeFutureOpensOnce() {
+    if (!isTeacherInactive) return;
+    if (!purgeFutureOpenUrl) return;
+
+    try {
+        const res = await fetch(purgeFutureOpenUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrf,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ confirm: true })
+        });
+        const j = await res.json().catch(() => ({}));
+        // 成功時はイベント再読込
+        if (res.ok && (j.ok ?? true)) {
+            calendar.refetchEvents();
+        } else {
+            console.warn('Purge future open failed', j);
+        }
+    } catch (e) {
+        console.warn('Purge request error', e);
+    }
+})();
         });
     </script>
 @endpush

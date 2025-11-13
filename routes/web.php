@@ -295,4 +295,7 @@ Route::prefix('teachers')->middleware('can:teachers')->name('teachers.')->group(
              // ★ 追加：選択した複数スロットを一括削除
         Route::post('/bulk-delete-selected', [TeacherBookingController::class, 'bulkDestroySelected'])
             ->name('bookings.bulkDeleteSelected');
+    Route::post('bookings/purge-future-open',
+    [\App\Http\Controllers\Teacher\BookingController::class, 'purgeFutureOpen']
+)->name('bookings.purgeFutureOpen');
 });

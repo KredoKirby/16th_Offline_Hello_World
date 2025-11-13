@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Booking;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
@@ -278,5 +279,33 @@ $teacher = $this->currentTeacherOrAbort();
         'ok'    => true,
         'count' => $count,
     ]);
+}
+public function purgeFutureOpen(Request $request)
+{
+    $teacher = Auth::user();
+    abort_unless($teacher && (int)$teacher->role_id === 2, 403); // teacherのみ
+
+    // inactive のときだけ動作（誤操作防止）
+    $status = strtolower((string)($teacher->status ?? ''));
+    abort_unless($status === 'inactive', 403);
+
+    // 未来の（今以降）Openスロットを削除
+    $now   = Carbon::now(config('app.timezone', 'Asia/Manila'));
+    $today = $now->toDateString();     // 'YYYY-MM-DD'
+    $nowT  = $now->format('H:i:s');    // 'HH:MM:SS'
+
+    $deleted = DB::table('bookings')
+        ->where('teacher_id', $teacher->id)
+        ->whereNull('student_id')  // Openのみ
+        ->where(function ($q) use ($today, $nowT) {
+            $q->where('date', '>', $today)
+              ->orWhere(function ($q) use ($today, $nowT) {
+                  $q->where('date', '=', $today)
+                    ->where('time', '>=', $nowT);
+              });
+        })
+        ->delete();
+
+    return response()->json(['ok' => true, 'deleted' => $deleted]);
 }
 }
