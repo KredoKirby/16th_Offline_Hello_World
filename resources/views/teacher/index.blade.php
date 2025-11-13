@@ -146,7 +146,7 @@
                                 <option value="Absent">Absent</option>
                                 {{-- <option value="canceled by student">canceled by student</option> --}}
                                 <option value="Canceled by teacher">Canceled by teacher</option> {{-- ★ 要望の選択肢 --}}
-                                <option value="Others">Others</option> {{-- ★ 要望の選択肢 --}}
+                                <option value="Other">Other</option> {{-- ★ 要望の選択肢 --}}
                             </select>
                         </div>
 
@@ -516,8 +516,8 @@ const purgeFutureOpenUrl = el.dataset.purgeFutureOpenUrl || '';
                     label: 'Canceled by teacher'
                 },
                 {
-                    value: 'Others',
-                    label: 'Others'
+                    value: 'Other',
+                    label: 'Other'
                 },
             ];
 
