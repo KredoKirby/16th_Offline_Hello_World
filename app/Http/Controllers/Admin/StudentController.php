@@ -13,20 +13,35 @@ class StudentController extends Controller
     /**
      * 学生一覧
      */
-    public function index(Request $request)
-    {
-        // role_id はあなたの定義に合わせて（例：Student=3）
-        $students = User::where('role_id', 3)
-            ->with(['courses' => function ($q) {
-                // 一覧で使う項目だけに絞る（任意）
-                $q->select('courses.id', 'title');
-            }])
-            ->withCount('courses')          // $row->courses_count を使えるように
-            ->orderByDesc('id')
-            ->paginate(10);                 // 量が少ないなら ->get() でもOK
+    // public function index(Request $request)
+    // {
+    //     // role_id はあなたの定義に合わせて（例：Student=3）
+    //     $students = User::where('role_id', 3)
+    //         ->with(['courses' => function ($q) {
+    //             // 一覧で使う項目だけに絞る（任意）
+    //             $q->select('courses.id', 'title');
+    //         }])
+    //         ->withCount('courses')          // $row->courses_count を使えるように
+    //         ->orderByDesc('id')
+    //         ->paginate(10);                 // 量が少ないなら ->get() でもOK
 
-        return view('admin.students.index', compact('students'));
-    }
+    //     return view('admin.students.index', compact('students'));
+    // }
+    public function index(Request $request)
+{
+    // role_id はあなたの定義に合わせて（例：Student=3）
+    $students = User::where('role_id', 3)
+        ->with(['enrolledCourses' => function ($q) {
+            // 一覧で使う項目だけに絞る（任意）
+            $q->select('courses.id', 'title');
+        }])
+        // ← enrollments 経由のコースの数を courses_count として使えるようにする
+        ->withCount(['enrolledCourses as courses_count'])
+        ->orderByDesc('id')
+        ->paginate(10); // 量が少ないなら ->get() でもOK
+
+    return view('admin.students.index', compact('students'));
+}
 
     /**
      * ステータス切替（Active/Inactive）

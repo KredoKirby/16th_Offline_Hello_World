@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Models\Course;
 
 class User extends Authenticatable
 {
@@ -97,11 +98,21 @@ class User extends Authenticatable
         return $this->hasMany(Progress::class);
     }
 
-    public function enrolledCourses()
+    // public function enrolledCourses()
+    // {
+    //     return $this->belongsToMany(Course::class, 'enrollments')
+    //         ->withPivot('status', 'progress')
+    //         ->withTimestamps();
+    // }
+      public function enrolledCourses()
     {
-        return $this->belongsToMany(Course::class, 'enrollments')
-            ->withPivot('status', 'progress')
-            ->withTimestamps();
+        // enrollments テーブル: user_id, course_id
+        return $this->belongsToMany(
+            Course::class,
+            'enrollments',   // 中間テーブル名
+            'user_id',       // enrollments 側の外部キー
+            'course_id'      // courses 側の外部キー
+        );
     }
 
     public function coursesTaught()

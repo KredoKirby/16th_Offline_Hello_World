@@ -198,7 +198,7 @@
         document.querySelectorAll('tbody.data-rows tr').forEach(tr=>{
           tr.style.display = tr.dataset.key.includes(q) ? '' : 'none';
         });">
-        </div>
+            </div>
             {{-- <a href="{{ route('admin.students.create') }}" class="btn add-btn d-none d-sm-inline-flex">＋ Add Student</a> --}}
         </div>
     </div>
@@ -244,7 +244,7 @@
                             <td class="text-muted">{{ $row->email }}</td>
 
                             {{-- COURSES --}}
-                            <td>
+                            {{-- <td>
                                 @if ($courseNames)
                                     {{ $courseNames }}
                                     @if ($extra > 0)
@@ -252,6 +252,18 @@
                                     @endif
                                 @else
                                     <span class="text-muted">-</span>
+                                @endif
+                            </td> --}}
+                            <td>
+                                @if ($row->enrolledCourses->isNotEmpty())
+                                    @foreach ($row->enrolledCourses as $course)
+                                        <span class="badge rounded-pill px-3 py-1 me-1"
+                                            style="background-color:#E6FFFB; color:#047857; border:1px solid #A7F3D0;">
+                                            {{ $course->title }}
+                                        </span>
+                                    @endforeach
+                                @else
+                                    -
                                 @endif
                             </td>
 
@@ -275,7 +287,8 @@
                                         data-bs-toggle="dropdown" aria-expanded="false" aria-label="More actions">…</button>
                                     <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                                         <li>
-                                            <a class="dropdown-item" href="{{ route('admin.students.edit', $row->id) }}"> Edit</a>
+                                            <a class="dropdown-item" href="{{ route('admin.students.edit', $row->id) }}">
+                                                Edit</a>
                                         </li>
                                     </ul>
                                 </div>
