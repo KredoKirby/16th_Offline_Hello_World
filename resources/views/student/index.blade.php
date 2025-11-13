@@ -5,6 +5,27 @@
 @section('content')
     {{-- ===== Up next (date & time unified) ===== --}}
     <section class="container py-3">
+        @php
+    $isStudentInactive = mb_strtolower(Auth::user()->status ?? '') === 'inactive';
+@endphp
+@if ($isStudentInactive)
+  <div class="alert alert-danger alert-dismissible fade show shadow-sm border-0 sticky-top"
+       role="alert"
+       style="top: 0; z-index: 1080;">
+    <div class="container d-flex align-items-start gap-2 py-2">
+      <i class="fa-solid fa-triangle-exclamation mt-1"></i>
+      <div>
+        <div class="fw-semibold">Account is deactivated</div>
+        <div class="small">
+          New bookings are disabled. You can still attend your existing bookings.
+          If this is a mistake, please contact support.
+        </div>
+      </div>
+      <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  </div>
+@endif
+
         <h2 class="h4 mb-2">Up next</h2>
 
         @if ($upNext)
@@ -203,7 +224,8 @@
                             {{-- <div class="mb-3 col-6"> --}}
                             <div class="mb-2">
                                 <label for="course_id" class="form-label fw-semibold">Course</label>
-                                <select name="course_id" id="course_id" class="form-select form-select-sm" required>
+                                <select name="course_id" id="course_id" class="form-select form-select-sm" required @disabled($isStudentInactive)
+    aria-disabled="{{ $isStudentInactive ? 'true' : 'false' }}">
                                     <option value="" disabled {{ old('course_id') ? '' : 'selected' }}>Choose a
                                         course
                                     </option>
@@ -289,7 +311,8 @@
                             <input type="hidden" name="booking_id" id="booking_id">
                             <input type="hidden" name="teacher_id" id="teacher_id">
 
-                            <button type="submit" class="btn btn-primary w-100 mt-4">Book a class</button>
+                            <button type="submit" class="btn btn-primary w-100 mt-4" @disabled($isStudentInactive)
+    aria-disabled="{{ $isStudentInactive ? 'true' : 'false' }}">Book a class</button>
                         </form>
 
                         {{-- ▼ 先生一覧モーダル（Bootstrap） --}}
