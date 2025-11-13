@@ -62,7 +62,7 @@ class TeacherController extends Controller
         ]);
 
         // pivot 反映
-        $teacher->courses()->sync($data['course_ids'] ?? []);
+        $teacher->skills()->sync($data['course_ids'] ?? []);
 
         return redirect()->route('admin.teachers.index')->with('status', 'Teacher added.');
     }

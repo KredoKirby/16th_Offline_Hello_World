@@ -237,8 +237,8 @@
                             $avatar = $t->avatar ? asset('storage/' . $t->avatar) : asset('images/avatar1.jpg');
 
                             // ✅ 正しいリレーション名に揃える (courses)
-                            $firstTwo = $t->courses?->take(2) ?? collect();
-                            $totalCount = $t->courses?->count() ?? 0;
+                            $firstTwo = $t->skills?->take(2) ?? collect();
+                            $totalCount = $t->skills?->count() ?? 0;
                             $extraCount = max($totalCount - $firstTwo->count(), 0);
 
                             $rowKey = strtolower(($t->name ?? '') . ' ' . ($t->email ?? ''));
