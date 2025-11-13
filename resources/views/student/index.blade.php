@@ -224,8 +224,7 @@
                             {{-- <div class="mb-3 col-6"> --}}
                             <div class="mb-2">
                                 <label for="course_id" class="form-label fw-semibold">Course</label>
-                                <select name="course_id" id="course_id" class="form-select form-select-sm" required @disabled($isStudentInactive)
-    aria-disabled="{{ $isStudentInactive ? 'true' : 'false' }}">
+                                <select name="course_id" id="course_id" class="form-select form-select-sm" required @disabled($isStudentInactive) aria-disabled="{{ $isStudentInactive ? 'true' : 'false' }}">
                                     <option value="" disabled {{ old('course_id') ? '' : 'selected' }}>Choose a
                                         course
                                     </option>
