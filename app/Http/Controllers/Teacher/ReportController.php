@@ -18,7 +18,7 @@ class ReportController extends Controller
         'Attended',
         'Absent',
         'Canceled by teacher',
-        'Others',
+        'Other',
     ];
 
     /**

@@ -56,10 +56,24 @@
                 $courseId = $upNext->course->id ?? null;
                 $teacherId = $teacherModel->id ?? null;
                 // $iconUrl = $upNext->course->image_url ?? asset('images/placeholder-course.png');
-                $iconUrl =
-                    $upNext->course && $upNext->course->image_url
-                        ? asset('storage/' . ltrim($upNext->course->image_url, '/'))
-                        : asset('images/placeholder-course.png');
+                // $iconUrl =
+                //     $upNext->course && $upNext->course->image
+                //         ? asset('storage/' . ltrim($upNext->course->image, '/'))
+                //         : asset('images/placeholder-course.png');
+                $img = $upNext->course->image ?? null; // DBに保存している値（パス or データURL想定）
+
+    // 1) data: で始まる → そのまま使う
+    if (is_string($img) && Str::startsWith($img, 'data:image/')) {
+        $iconUrl = $img;
+
+    // 2) ストレージへの相対パス（例: 'courses/xxx.png'）→ asset('storage/...')に変換
+    } elseif (is_string($img) && !empty($img)) {
+        $iconUrl = asset('storage/' . ltrim($img, '/'));
+
+    // 3) 何もなければプレースホルダ
+    } else {
+        $iconUrl = asset('images/placeholder-course.png');
+    }
 
                 $whenStr = $dt->format('D, M j H:i') . '–' . $end->format('H:i');
                 $isToday = $dt->isToday();
@@ -1400,10 +1414,24 @@
                     $topic = $b->topic->name ?? 'Topic';
                     $teacher = $b->teacher->name ?? 'Teacher';
                     // $iconUrl = $b->course->image_url ?? asset('images/placeholder-course.png');
-                    $iconUrl =
-                        $b->course && $b->course->image_url
-                            ? asset('storage/' . ltrim($b->course->image_url, '/'))
-                            : asset('images/placeholder-course.png');
+                    // $iconUrl =
+                    //     $b->course && $b->course->image
+                    //         ? asset('storage/' . ltrim($b->course->image, '/'))
+                    //         : asset('images/placeholder-course.png');
+                    $img = $upNext->course->image ?? null; // DBに保存している値（パス or データURL想定）
+
+    // 1) data: で始まる → そのまま使う
+    if (is_string($img) && Str::startsWith($img, 'data:image/')) {
+        $iconUrl = $img;
+
+    // 2) ストレージへの相対パス（例: 'courses/xxx.png'）→ asset('storage/...')に変換
+    } elseif (is_string($img) && !empty($img)) {
+        $iconUrl = asset('storage/' . ltrim($img, '/'));
+
+    // 3) 何もなければプレースホルダ
+    } else {
+        $iconUrl = asset('images/placeholder-course.png');
+    }
                     // 例: Wed, Oct 29 18:00–18:50
                     $whenStr = $dt->format('D, M j H:i') . '–' . $end->format('H:i');
 

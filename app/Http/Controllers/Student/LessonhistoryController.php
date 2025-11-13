@@ -101,7 +101,7 @@ class LessonhistoryController extends Controller
         $bookings = Booking::query()
             ->select(['id', 'student_id', 'teacher_id', 'course_id', 'topic_id', 'date', 'time'])
             ->with([
-                'course:id,title,image_url',
+                'course:id,title,image',
                 'topic:id,course_id,name',
                 'teacher:id,name',
                 'report:booking_id,status,next_topic',

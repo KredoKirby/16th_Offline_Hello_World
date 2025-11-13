@@ -85,7 +85,7 @@ class LessonHistoryController extends Controller
         $bookings = Booking::query()
             ->with([
                 'student:id,name',
-                'course:id,title,image_url',
+                'course:id,title,image',
                 'topic:id,course_id,name',
                 'report:booking_id,status,next_topic',
             ])
